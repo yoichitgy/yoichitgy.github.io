@@ -1,21 +1,211 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on My New Hugo Site</title>
+    <title>Posts on Swift Injection</title>
     <link>http://yoichitgy.github.io/post/</link>
-    <description>Recent content in Posts on My New Hugo Site</description>
+    <description>Recent content in Posts on Swift Injection</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Apr 2015 23:20:41 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2015 13:20:41 +0900</lastBuildDate>
     <atom:link href="http://yoichitgy.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>first</title>
-      <link>http://yoichitgy.github.io/post/first/</link>
-      <pubDate>Fri, 03 Apr 2015 23:20:41 +0200</pubDate>
+      <title>Dependency Injection Framework for Swift - Introduction to Swinject</title>
+      <link>http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/</link>
+      <pubDate>Tue, 11 Aug 2015 13:20:41 +0900</pubDate>
       
-      <guid>http://yoichitgy.github.io/post/first/</guid>
-      <description>&lt;p&gt;This is the first blog post.&lt;/p&gt;
+      <guid>http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/</guid>
+      <description>
+
+&lt;p&gt;This blog post introduces &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, a dependency injection framework for Swift. Swift 2 will come with &lt;a href=&#34;https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-ID521&#34;&gt;protocol extension&lt;/a&gt; and encourage &lt;a href=&#34;https://developer.apple.com/videos/wwdc/2015/?id=408&#34;&gt;protocol oriented programming&lt;/a&gt;. In addition, Xcode 7 will introduce &lt;a href=&#34;https://developer.apple.com/videos/wwdc/2015/?id=406&#34;&gt;UI testing&lt;/a&gt;. In this context, it is getting more important to decouple components of an app by protocols. The pattern of the decoupling is called &lt;a href=&#34;https://en.wikipedia.org/wiki/Dependency_injection&#34;&gt;dependency injection&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Dependency Injection&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with an example. You are going to develop an app that lists current weather of some locations like the screenshot image below. The weather information will be received from a server through an API, and the data are used to present in the table view. Of course you will write unit tests. According to the screenshot, the tests will expect that the weather in Montreal&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; should be &amp;ldquo;Clouds&amp;rdquo;, in Moscow &amp;ldquo;Clear&amp;rdquo; and in Los Angeles &amp;ldquo;Clouds&amp;rdquo;, but wait, if you write test code like that, will the tests pass tomorrow too? They will rarely pass because the weather changes.&lt;/p&gt;
+
+&lt;p&gt;The problem here is that the parts of network access and data processing are coupled. In other words, the data processing depends on the network access. If the dependency is hard-coded, it is difficult to write unit tests around the dependency. To solve the problem, the dependency should be passed from somewhere else. This is the dependency injection (DI) pattern. The external code provides dependencies to the client code. The injector is called DI container or simply container&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://yoichitgy.github.io/images/SwinjectSimpleExampleScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Screenshot&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;swinject:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Swinject&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt; is a lightweight dependency injection framework written in Swift to use with Swift. The framework APIs are easy to learn and use because of the generic type and first class function features of Swift. Swinject is available through &lt;a href=&#34;https://cocoapods.org/&#34;&gt;CocoaPods&lt;/a&gt; or &lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;installation-with-cocoapods:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Installation with CocoaPods&lt;/h3&gt;
+
+&lt;p&gt;To install Swinject with CocoaPods, add the following lines to your &lt;code&gt;Podfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;source &#39;https://github.com/CocoaPods/Specs.git&#39;
+platform :ios, &#39;8.0&#39;
+use_frameworks!
+
+pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.0&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run &lt;code&gt;pod install&lt;/code&gt; command. For details of the installation and usage of CocoaPods, visit &lt;a href=&#34;https://cocoapods.org&#34;&gt;its official website&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Later in the example app, we will use CocoaPods to install Swinject.&lt;/p&gt;
+
+&lt;h3 id=&#34;installation-with-carthage:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Installation with Carthage&lt;/h3&gt;
+
+&lt;p&gt;To install Swinject with Carthage, add the following line to your &lt;code&gt;Cartfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;github &amp;quot;Swinject/Swinject&amp;quot; ~&amp;gt; 0.2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run &lt;code&gt;carthage update&lt;/code&gt; command. For details of the installation and usage of Carthage, visit &lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;its project page&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;basics:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Basics&lt;/h2&gt;
+
+&lt;p&gt;Before continuing to details of the example app, let me introduce the basics of dependency injection with Swinject. Its project has a playground and it is easy to try dependency injection with Swinject. Download &lt;a href=&#34;https://github.com/Swinject/Swinject/releases&#34;&gt;the source code&lt;/a&gt; or clone &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;the project&lt;/a&gt;, and open the project file to use the playground.&lt;/p&gt;
+
+&lt;h3 id=&#34;without-dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Without Dependency Injection&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say we are writing a game to play with animals. First we will write the program without dependency injection. Here is &lt;code&gt;Cat&lt;/code&gt; class to represent an animal,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Cat {
+    let name: String
+
+    init(name: String) {
+        self.name = name
+    }
+
+    func sound() -&amp;gt; String {
+        return &amp;quot;Meow!&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and &lt;code&gt;PetOwner&lt;/code&gt; class has an instance of &lt;code&gt;Cat&lt;/code&gt; as a pet to play with.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class PetOwner {
+    let pet = Cat(name: &amp;quot;Mimi&amp;quot;)
+
+    func play() -&amp;gt; String {
+        return &amp;quot;I&#39;m playing with \(pet.name). \(pet.sound())&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can instantiate &lt;code&gt;PetOwner&lt;/code&gt; to play.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let petOwner = PetOwner()
+print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is great if everyone is a cat person, but in reality some are dog persons. Because the instantiation of a &lt;code&gt;Cat&lt;/code&gt; is hard-coded, &lt;code&gt;PetOwner&lt;/code&gt; class depends on &lt;code&gt;Cat&lt;/code&gt; class. The dependency must be decoupled to support &lt;code&gt;Dog&lt;/code&gt; or other classes.&lt;/p&gt;
+
+&lt;h3 id=&#34;with-dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;With Dependency Injection&lt;/h3&gt;
+
+&lt;p&gt;Now is the time to start taking advantage of dependency injection. Here we are going to introduce &lt;code&gt;AnimalType&lt;/code&gt; protocol to get rid of the dependency.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;protocol AnimalType {
+    var name: String { get }
+    func sound() -&amp;gt; String
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Cat&lt;/code&gt; class is modified to conform the protocol,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Cat: AnimalType {
+    let name: String
+
+    init(name: String) {
+        self.name = name
+    }
+
+    func sound() -&amp;gt; String {
+        return &amp;quot;Meow!&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and &lt;code&gt;PetOwner&lt;/code&gt; class is modified to get an &lt;code&gt;AnimalType&lt;/code&gt; injected through its initializer.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class PetOwner {
+    let pet: AnimalType
+
+    init(pet: AnimalType) {
+        self.pet = pet
+    }
+
+    func play() -&amp;gt; String {
+        return &amp;quot;I&#39;m playing with \(pet.name). \(pet.sound())&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can inject the dependency to &lt;code&gt;AnimalType&lt;/code&gt; protocol when a &lt;code&gt;PetOwner&lt;/code&gt; instance is created.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let catOwner = PetOwner(pet: Cat(name: &amp;quot;Mimi&amp;quot;))
+print(catOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If we have &lt;code&gt;Dog&lt;/code&gt; class,&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Dog: AnimalType {
+    let name: String
+
+    init(name: String) {
+        self.name = name
+    }
+
+    func sound() -&amp;gt; String {
+        return &amp;quot;Bow wow!&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;we can play with a dog too.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let dogOwner = PetOwner(pet: Dog(name: &amp;quot;Hachi&amp;quot;))
+print(dogOwner.play()) // prints &amp;quot;I&#39;m plaing with Hachi. Bow wow!&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So far, we injected the dependency of &lt;code&gt;PetOwner&lt;/code&gt; by ourselves, but if we get more dependencies as the app evolved, it is harder to maintain dependency injection by hand. Let&amp;rsquo;s introduce Swinject to manage the dependencies here.&lt;/p&gt;
+
+&lt;p&gt;To use Swinject, add the following line to a playground or source code.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Swinject
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then create an instance of &lt;code&gt;Container&lt;/code&gt; and register the dependency.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let container = Container()
+container.register(AnimalType.self) { _ in Cat(name: &amp;quot;Mimi&amp;quot;) }
+container.register(PetOwner.self) { r in
+    PetOwner(pet: r.resolve(AnimalType.self)!)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the code above, we told the &lt;code&gt;container&lt;/code&gt; to resolve &lt;code&gt;AnimalType&lt;/code&gt; to a &lt;code&gt;Cat&lt;/code&gt; instance named &amp;ldquo;Mimi&amp;rdquo;, and &lt;code&gt;PetOwner&lt;/code&gt; to an instance with an &lt;code&gt;AnimalType&lt;/code&gt; as a pet resolved by the &lt;code&gt;container&lt;/code&gt;. The &lt;code&gt;resolve&lt;/code&gt; method returns nil if the container cannot resolve an instance, but here we know &lt;code&gt;AnimalType&lt;/code&gt; is already registered and force-unwrap the optional parameter.&lt;/p&gt;
+
+&lt;p&gt;We have got the configured container. Let&amp;rsquo;s get an instance of &lt;code&gt;PetOwner&lt;/code&gt; from the &lt;code&gt;container&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let petOwner = container.resolve(PetOwner.self)!
+print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is so simple to configure a &lt;code&gt;Container&lt;/code&gt; and to retrieve a resolved instance with its dependencies injected.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;The concept of dependency injection has been introduced with the scenario to write unit tests for the weather app, and its basic use case has been demonstrated. With Swinject, it is easy to configure the dependencies and to get instances with the dependencies resolved. In the next blog post, we will see how to use Swinject with unit tests in the example weather app.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;The cities listed in the example app are the summer Olympic host cities since 1976.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;DI container is also called assembler, provider, builder, spring or injector.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;Specify version 0.1.0 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;Specify version 0.1 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
 </description>
     </item>
     
