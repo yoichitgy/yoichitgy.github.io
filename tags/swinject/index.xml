@@ -420,7 +420,7 @@ pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.0&#39;
 &lt;p&gt;Now we can instantiate &lt;code&gt;PetOwner&lt;/code&gt; to play.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;let petOwner = PetOwner()
-print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+print(petOwner.play()) // prints &amp;quot;I&#39;m playing with Mimi. Meow!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;This is great if everyone is a cat person, but in reality some are dog persons. Because the instantiation of a &lt;code&gt;Cat&lt;/code&gt; is hard-coded, &lt;code&gt;PetOwner&lt;/code&gt; class depends on &lt;code&gt;Cat&lt;/code&gt; class. The dependency must be decoupled to support &lt;code&gt;Dog&lt;/code&gt; or other classes.&lt;/p&gt;
@@ -468,7 +468,7 @@ print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;q
 &lt;p&gt;Now we can inject the dependency to &lt;code&gt;AnimalType&lt;/code&gt; protocol when a &lt;code&gt;PetOwner&lt;/code&gt; instance is created.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;let catOwner = PetOwner(pet: Cat(name: &amp;quot;Mimi&amp;quot;))
-print(catOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+print(catOwner.play()) // prints &amp;quot;I&#39;m playing with Mimi. Meow!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;If we have &lt;code&gt;Dog&lt;/code&gt; class,&lt;/p&gt;
@@ -489,7 +489,7 @@ print(catOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;q
 &lt;p&gt;we can play with a dog too.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;let dogOwner = PetOwner(pet: Dog(name: &amp;quot;Hachi&amp;quot;))
-print(dogOwner.play()) // prints &amp;quot;I&#39;m plaing with Hachi. Bow wow!&amp;quot;
+print(dogOwner.play()) // prints &amp;quot;I&#39;m playing with Hachi. Bow wow!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;So far, we injected the dependency of &lt;code&gt;PetOwner&lt;/code&gt; by ourselves, but if we get more dependencies as the app evolved, it is harder to maintain dependency injection by hand. Let&amp;rsquo;s introduce Swinject to manage the dependencies here.&lt;/p&gt;
@@ -513,7 +513,7 @@ container.register(PetOwner.self) { r in
 &lt;p&gt;We have got the configured container. Let&amp;rsquo;s get an instance of &lt;code&gt;PetOwner&lt;/code&gt; from the &lt;code&gt;container&lt;/code&gt;.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;let petOwner = container.resolve(PetOwner.self)!
-print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;quot;
+print(petOwner.play()) // prints &amp;quot;I&#39;m playing with Mimi. Meow!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;It is so simple to configure a &lt;code&gt;Container&lt;/code&gt; and to retrieve a resolved instance with its dependencies injected.&lt;/p&gt;

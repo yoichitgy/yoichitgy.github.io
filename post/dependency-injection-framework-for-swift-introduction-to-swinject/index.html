@@ -142,7 +142,7 @@ pod 'Swinject', '~&gt; 0.2.0'
 <p>Now we can instantiate <code>PetOwner</code> to play.</p>
 
 <pre><code>let petOwner = PetOwner()
-print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
+print(petOwner.play()) // prints &quot;I'm playing with Mimi. Meow!&quot;
 </code></pre>
 
 <p>This is great if everyone is a cat person, but in reality some are dog persons. Because the instantiation of a <code>Cat</code> is hard-coded, <code>PetOwner</code> class depends on <code>Cat</code> class. The dependency must be decoupled to support <code>Dog</code> or other classes.</p>
@@ -190,7 +190,7 @@ print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
 <p>Now we can inject the dependency to <code>AnimalType</code> protocol when a <code>PetOwner</code> instance is created.</p>
 
 <pre><code>let catOwner = PetOwner(pet: Cat(name: &quot;Mimi&quot;))
-print(catOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
+print(catOwner.play()) // prints &quot;I'm playing with Mimi. Meow!&quot;
 </code></pre>
 
 <p>If we have <code>Dog</code> class,</p>
@@ -211,7 +211,7 @@ print(catOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
 <p>we can play with a dog too.</p>
 
 <pre><code>let dogOwner = PetOwner(pet: Dog(name: &quot;Hachi&quot;))
-print(dogOwner.play()) // prints &quot;I'm plaing with Hachi. Bow wow!&quot;
+print(dogOwner.play()) // prints &quot;I'm playing with Hachi. Bow wow!&quot;
 </code></pre>
 
 <p>So far, we injected the dependency of <code>PetOwner</code> by ourselves, but if we get more dependencies as the app evolved, it is harder to maintain dependency injection by hand. Let&rsquo;s introduce Swinject to manage the dependencies here.</p>
@@ -235,7 +235,7 @@ container.register(PetOwner.self) { r in
 <p>We have got the configured container. Let&rsquo;s get an instance of <code>PetOwner</code> from the <code>container</code>.</p>
 
 <pre><code>let petOwner = container.resolve(PetOwner.self)!
-print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
+print(petOwner.play()) // prints &quot;I'm playing with Mimi. Meow!&quot;
 </code></pre>
 
 <p>It is so simple to configure a <code>Container</code> and to retrieve a resolved instance with its dependencies injected.</p>
