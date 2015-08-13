@@ -75,17 +75,25 @@
 
 <p><img src="/images/SwinjectSimpleExampleScreenshot.png" alt="SwinjectSimpleExample Screenshot" /></p>
 
-<h2 id="requirement:929d1b9e13edd8ae673f74cad40c219d">Requirement</h2>
+<h2 id="requirements:929d1b9e13edd8ae673f74cad40c219d">Requirements</h2>
+
+<ul>
+<li>Xcode 7 (beta)</li>
+<li>OpenWeatherMap API key</li>
+<li>CocoaPods 0.38 or later</li>
+</ul>
 
 <p>We are going to use Xcode 7 although it is still beta. It is beta 5 at the timing of writing this blog post. Xcode 7 supports <code>@testable import</code> to access <code>internal</code> types, functions or properties in unit test targets.</p>
 
 <p>Also, we will use <a href="http://openweathermap.org">OpenWeatherMap</a> for a free API to get weather information. <a href="http://home.openweathermap.org/users/sign_up">Sign up</a> and get a free API key.</p>
 
+<p>To install Swinject and some frameworks, we will use <a href="https://cocoapods.org">CocoaPods</a>.</p>
+
 <h2 id="preparation-of-the-project:929d1b9e13edd8ae673f74cad40c219d">Preparation of the Project</h2>
 
 <p>Let&rsquo;s start with a new Xcode project. Select <code>File &gt; New &gt; Project...</code> menu and <code>iOS &gt; Application &gt; Single View Application</code> item. Set  its product name to <code>SwinjectSimpleExample</code>, language to Swift and devices to iPhone. Check <code>Include Unit Tests</code> only<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:1"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:1">1</a></sup>, then save it anywhere in your local storage.</p>
 
-<p>Then, we are going to install <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a> with CocoaPods. Create <code>Podfile</code> with the following text content in the project root directory. Then run <code>pod install</code> command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:2"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:2">2</a></sup>.</p>
+<p>Then, we are going to install <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a> with <a href="https://cocoapods.org">CocoaPods</a>. Create <code>Podfile</code> with the following text content in the project root directory. Then run <code>pod install</code> command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:2"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:2">2</a></sup>.</p>
 
 <pre><code>source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
@@ -101,7 +109,7 @@ target 'SwinjectSimpleExampleTests' do
 end
 </code></pre>
 
-<p>Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a behavior-driven development framework to write tests as specs fluently. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.</p>
+<p>Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a <a href="https://en.wikipedia.org/wiki/Behavior-driven_development">behavior-driven development</a> framework to write tests as specs in simple structures. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.</p>
 
 <p>To use the free weather API on iOS 9, we have to allow HTTP connections. Open <code>Info.plist</code> and add <code>NSAppTransportSecurity</code> dictionary with <code>NSAllowsArbitraryLoads</code> element set to <code>true</code><sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:3"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:3">3</a></sup>.  <a href="http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9">Here</a> is more information about the setting and its background.</p>
 
@@ -208,7 +216,7 @@ class WeatherFetcherSpec: QuickSpec {
 
 <p>With Quick and Nimble, each test is written in an <code>it</code> closure, and each expectation is expressed as <code>expect(something).to(condition)</code> or <code>expect(something).toNot(condition)</code> synchronously, or <code>expect(something).toEventually(condition)</code> or <code>expect(something).toEventuallyNot(condition)</code> asynchronously. <code>WeatherFetcher.fetch</code> sets <code>cities</code> asynchronously when weather data is retrieved, so we use the latter ones here.</p>
 
-<p>First, we check <code>cities</code>, which is initialized with <code>nil</code>, should be set to an array after <code>fetch</code> invokes the callback asynchronously. Second, the number of <code>cities</code> should be <code>12</code> because our request to the API has 12 city IDs. From the third to fifth, we check only the first city for simplicity. The <code>id</code>, <code>name</code> and <code>weather</code> should be <code>6077243</code>, &ldquo;Montreal&rdquo; and &ldquo;Clouds&rdquo; respectively.</p>
+<p>First, we check <code>cities</code>, which is initialized with <code>nil</code>, should be set to an array after <code>fetch</code> invokes the callback asynchronously. Second, the number of <code>cities</code> should be <code>12</code> because our request to the API has 12 city IDs. From the third to fifth, we check only the first city for simplicity. The <code>id</code>, <code>name</code> and <code>weather</code> should be <code>6077243</code>, <code>&quot;Montreal&quot;</code> and <code>&quot;Clouds&quot;</code> respectively.</p>
 
 <p>Okay. We are ready to run the unit test. Type <code>Command-U</code> to run. Did you see the test passed? I think some people saw it passed, but the others not. Why? Because the weather in &ldquo;Montreal&rdquo; in the real world right now must be &ldquo;Clouds&rdquo; to pass the test. How can we write a test passing regardless of the current weather? It is actually difficult to write if the part parsing JSON data depends on the part retrieving the data from the server.</p>
 
@@ -244,7 +252,7 @@ struct Network : Networking {
 }
 </code></pre>
 
-<p>Modify <code>WeatherFetcher</code> to get <code>Networking</code> injected when it is instantiated and to use it to request weather data to the server. Note that <code>fetch</code> and <code>decode</code> functions were static in the last section, but here they are instance methods to use the <code>networking</code> property. A default initializer taking <code>network</code> is implicitly created by Swift. Now <code>WeatherFetcher</code> has no dependency on Alamofire.</p>
+<p>Modify <code>WeatherFetcher</code> to get <code>Networking</code> injected when it is instantiated and to use it to request weather data to the server. Note that <code>fetch</code> and <code>decode</code> functions were <code>static</code> in the last section, but here they are instance methods to use the <code>networking</code> property. A default initializer taking <code>networking</code> is implicitly created by Swift. Now <code>WeatherFetcher</code> has no dependency on Alamofire.</p>
 
 <p><strong>WeatherFetcher.swift</strong></p>
 
