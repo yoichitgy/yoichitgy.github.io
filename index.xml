@@ -520,7 +520,7 @@ print(petOwner.play()) // prints &amp;quot;I&#39;m playing with Mimi. Meow!&amp;
 
 &lt;h2 id=&#34;conclusion:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;The concept of dependency injection has been introduced with the scenario to write unit tests for the weather app, and its basic use case has been demonstrated. With Swinject, it is easy to configure the dependencies and to get instances with the dependencies resolved. In the next blog post, we will see how to use Swinject with unit tests in the example weather app.&lt;/p&gt;
+&lt;p&gt;The concept of dependency injection has been introduced with the scenario to write unit tests for the weather app, and its basic use case has been demonstrated. With Swinject, it is easy to configure the dependencies and to get instances with the dependencies resolved. &lt;a href=&#34;http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;In the next blog post&lt;/a&gt;, we will see how to use Swinject with unit tests in the example weather app.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
 
 &lt;hr /&gt;
