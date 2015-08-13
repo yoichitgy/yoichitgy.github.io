@@ -6,8 +6,338 @@
     <description>Recent content in Dependency Injection on Swift Injection</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 11 Aug 2015 13:20:41 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 13 Aug 2015 09:16:58 +0900</lastBuildDate>
     <atom:link href="http://yoichitgy.github.io/tags/dependency-injection/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2</title>
+      <link>http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</link>
+      <pubDate>Thu, 13 Aug 2015 09:16:58 +0900</pubDate>
+      
+      <guid>http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</guid>
+      <description>
+
+&lt;p&gt;In &lt;a href=&#34;http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/&#34;&gt;the last blog post&lt;/a&gt;, we walked through the concept of dependency injection and basic usage of &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.&lt;/p&gt;
+
+&lt;p&gt;The source code used in this blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectSimpleExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://yoichitgy.github.io/images/SwinjectSimpleExampleScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Screenshot&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;requirement:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Requirement&lt;/h2&gt;
+
+&lt;p&gt;We are going to use Xcode 7 although it is still beta. It is beta 5 at the timing of writing this blog post. Xcode 7 supports &lt;code&gt;@testable import&lt;/code&gt; to access &lt;code&gt;internal&lt;/code&gt; types, functions or properties in unit test targets.&lt;/p&gt;
+
+&lt;p&gt;Also, we will use &lt;a href=&#34;http://openweathermap.org&#34;&gt;OpenWeatherMap&lt;/a&gt; for a free API to get weather information. &lt;a href=&#34;http://home.openweathermap.org/users/sign_up&#34;&gt;Sign up&lt;/a&gt; and get a free API key.&lt;/p&gt;
+
+&lt;h2 id=&#34;preparation-of-the-project:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Preparation of the Project&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;rsquo;s start with a new Xcode project. Select &lt;code&gt;File &amp;gt; New &amp;gt; Project...&lt;/code&gt; menu and &lt;code&gt;iOS &amp;gt; Application &amp;gt; Single View Application&lt;/code&gt; item. Set  its product name to &lt;code&gt;SwinjectSimpleExample&lt;/code&gt;, language to Swift and devices to iPhone. Check &lt;code&gt;Include Unit Tests&lt;/code&gt; only&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;, then save it anywhere in your local storage.&lt;/p&gt;
+
+&lt;p&gt;Then, we are going to install &lt;a href=&#34;https://github.com/Alamofire/Alamofire&#34;&gt;Alamofire&lt;/a&gt;, &lt;a href=&#34;https://github.com/SwiftyJSON/SwiftyJSON&#34;&gt;SwiftyJSON&lt;/a&gt;, &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, &lt;a href=&#34;https://github.com/Quick/Quick&#34;&gt;Quick&lt;/a&gt; and &lt;a href=&#34;https://github.com/Quick/Nimble&#34;&gt;Nimble&lt;/a&gt; with CocoaPods. Create &lt;code&gt;Podfile&lt;/code&gt; with the following text content in the project root directory. Then run &lt;code&gt;pod install&lt;/code&gt; command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;source &#39;https://github.com/CocoaPods/Specs.git&#39;
+platform :ios, &#39;8.0&#39;
+use_frameworks!
+
+pod &#39;Alamofire&#39;, :git =&amp;gt; &#39;https://github.com/Alamofire/Alamofire.git&#39;, :commit =&amp;gt; &#39;1b7b1f1aa&#39;
+pod &#39;SwiftyJSON&#39;, :git =&amp;gt; &#39;https://github.com/SwiftyJSON/SwiftyJSON.git&#39;, :commit =&amp;gt; &#39;45ca854ce&#39;
+pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2&#39;
+
+target &#39;SwinjectSimpleExampleTests&#39; do
+    pod &#39;Quick&#39;, &#39;~&amp;gt; 0.5.0&#39;
+    pod &#39;Nimble&#39;, &#39;2.0.0-rc.2&#39;
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a behavior-driven development framework to write tests as specs fluently. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.&lt;/p&gt;
+
+&lt;p&gt;To use the free weather API on iOS 9, we have to allow HTTP connections. Open &lt;code&gt;Info.plist&lt;/code&gt; and add &lt;code&gt;NSAppTransportSecurity&lt;/code&gt; dictionary with &lt;code&gt;NSAllowsArbitraryLoads&lt;/code&gt; element set to &lt;code&gt;true&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;.  &lt;a href=&#34;http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9&#34;&gt;Here&lt;/a&gt; is more information about the setting and its background.&lt;/p&gt;
+
+&lt;h2 id=&#34;without-dependency-injection:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Without Dependency Injection&lt;/h2&gt;
+
+&lt;p&gt;First, without dependency injection, we are going to implement a model to handle weather information retrieved through the network service. We will see what can be a problem if we do not care about coupled dependencies.&lt;/p&gt;
+
+&lt;p&gt;Add &lt;code&gt;City.swift&lt;/code&gt; to &lt;code&gt;SwinjectSimpleExample&lt;/code&gt; group in the project. We define &lt;code&gt;City&lt;/code&gt; to be an entity representing a city with weather information.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;City.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct City {
+    let id: Int
+    let name: String
+    let weather: String
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add &lt;code&gt;OpenWeatherMap.swift&lt;/code&gt; to store configurations of OpenWeatherMap API. Here please fill &lt;code&gt;apiKey&lt;/code&gt; with your own API key.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;OpenWeatherMap.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct OpenWeatherMap {
+    private static let apiKey = &amp;quot;YOUR API KEY HERE&amp;quot;
+
+    private static let cityIds = [
+        6077243, 524901, 5368361, 1835848, 3128760, 4180439,
+        2147714, 264371, 1816670, 2643743, 3451190, 1850147
+    ]
+
+    static let url = &amp;quot;http://api.openweathermap.org/data/2.5/group&amp;quot;
+
+    static var parameters: [String: String] {
+        return [
+            &amp;quot;APPID&amp;quot;: apiKey,
+            &amp;quot;id&amp;quot;: &amp;quot;,&amp;quot;.join(cityIds.map { String($0) })
+        ]
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add &lt;code&gt;WeatherFetcher.swift&lt;/code&gt; to implement &lt;code&gt;WeatherFetcher&lt;/code&gt;, which has &lt;code&gt;fetch&lt;/code&gt; function taking a callback to handle an optional array of &lt;code&gt;Cities&lt;/code&gt; returned from OpenWeatherMap.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;WeatherFetcher.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Foundation
+import Alamofire
+import SwiftyJSON
+
+struct WeatherFetcher {
+    static func fetch(response: [City]? -&amp;gt; ()) {
+        Alamofire.request(.GET, OpenWeatherMap.url, parameters: OpenWeatherMap.parameters)
+            .response { _, _, data, _ in
+                let cities = data.map { decode($0) }
+                response(cities)
+            }
+    }
+
+    private static func decode(data: NSData) -&amp;gt; [City] {
+        let json = JSON(data: data)
+        var cities = [City]()
+        for (_, j) in json[&amp;quot;list&amp;quot;] {
+            if let id = j[&amp;quot;id&amp;quot;].int {
+                let city = City(
+                    id: id,
+                    name: j[&amp;quot;name&amp;quot;].string ?? &amp;quot;&amp;quot;,
+                    weather: j[&amp;quot;weather&amp;quot;][0][&amp;quot;main&amp;quot;].string ?? &amp;quot;&amp;quot;)
+                cities.append(city)
+            }
+        }
+        return cities
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;fetch&lt;/code&gt; function uses Alamofire to send a request to the server and to get a response as JSON data asynchronously. The specifications of API call and response JSON format are described in &lt;a href=&#34;http://openweathermap.org/current#severalid&#34;&gt;&amp;ldquo;Call for several city IDs&amp;rdquo; section of OpenWeatherMap site&lt;/a&gt;.
+The &lt;code&gt;data&lt;/code&gt; parameter in the closure passed to &lt;code&gt;response&lt;/code&gt; from &lt;code&gt;Alamofire&lt;/code&gt; is &lt;code&gt;nil&lt;/code&gt; if the response has an error. We do not care about details of the error and just pass &lt;code&gt;nil&lt;/code&gt; to the callback to &lt;code&gt;fetch&lt;/code&gt; in this example although the error should be handled in a product app.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;decode&lt;/code&gt; function parses the JSON data returned from the server. It is called as &lt;code&gt;data.map { decode($0) }&lt;/code&gt; in &lt;code&gt;fetch&lt;/code&gt; where &lt;code&gt;map&lt;/code&gt; executes the trailing closure if &lt;code&gt;data&lt;/code&gt; is not &lt;code&gt;nil&lt;/code&gt;, otherwise returns nil. The &lt;code&gt;decode&lt;/code&gt; function uses SwiftyJSON to map the JSON data to an array of our &lt;code&gt;City&lt;/code&gt; entities.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s add a unit test to &lt;code&gt;SwinjectSimpleExampleTests&lt;/code&gt; group in our project. The filename is &lt;code&gt;WeatherFetcherSpec.swift&lt;/code&gt; and its target is set to &lt;code&gt;SwinjectSimpleExampleTests&lt;/code&gt; when we create the file. The test is going to check whether the weather data can be retrieved and parsed correctly.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;WeatherFetcherSpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+@testable import SwinjectSimpleExample
+
+class WeatherFetcherSpec: QuickSpec {
+    override func spec() {
+        it(&amp;quot;returns cities.&amp;quot;) {
+            var cities: [City]?
+            WeatherFetcher.fetch { cities = $0 }
+
+            expect(cities).toEventuallyNot(beNil())
+            expect(cities?.count).toEventually(equal(12))
+            expect(cities?[0].id).toEventually(equal(6077243))
+            expect(cities?[0].name).toEventually(equal(&amp;quot;Montreal&amp;quot;))
+            expect(cities?[0].weather).toEventually(equal(&amp;quot;Clouds&amp;quot;))
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With Quick and Nimble, each test is written in an &lt;code&gt;it&lt;/code&gt; closure, and each expectation is expressed as &lt;code&gt;expect(something).to(condition)&lt;/code&gt; or &lt;code&gt;expect(something).toNot(condition)&lt;/code&gt; synchronously, or &lt;code&gt;expect(something).toEventually(condition)&lt;/code&gt; or &lt;code&gt;expect(something).toEventuallyNot(condition)&lt;/code&gt; asynchronously. &lt;code&gt;WeatherFetcher.fetch&lt;/code&gt; sets &lt;code&gt;cities&lt;/code&gt; asynchronously when weather data is retrieved, so we use the latter ones here.&lt;/p&gt;
+
+&lt;p&gt;First, we check &lt;code&gt;cities&lt;/code&gt;, which is initialized with &lt;code&gt;nil&lt;/code&gt;, should be set to an array after &lt;code&gt;fetch&lt;/code&gt; invokes the callback asynchronously. Second, the number of &lt;code&gt;cities&lt;/code&gt; should be &lt;code&gt;12&lt;/code&gt; because our request to the API has 12 city IDs. From the third to fifth, we check only the first city for simplicity. The &lt;code&gt;id&lt;/code&gt;, &lt;code&gt;name&lt;/code&gt; and &lt;code&gt;weather&lt;/code&gt; should be &lt;code&gt;6077243&lt;/code&gt;, &amp;ldquo;Montreal&amp;rdquo; and &amp;ldquo;Clouds&amp;rdquo; respectively.&lt;/p&gt;
+
+&lt;p&gt;Okay. We are ready to run the unit test. Type &lt;code&gt;Command-U&lt;/code&gt; to run. Did you see the test passed? I think some people saw it passed, but the others not. Why? Because the weather in &amp;ldquo;Montreal&amp;rdquo; in the real world right now must be &amp;ldquo;Clouds&amp;rdquo; to pass the test. How can we write a test passing regardless of the current weather? It is actually difficult to write if the part parsing JSON data depends on the part retrieving the data from the server.&lt;/p&gt;
+
+&lt;h2 id=&#34;with-dependency-injection:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;With Dependency Injection&lt;/h2&gt;
+
+&lt;p&gt;In the last section, we found the tightly coupled dependency of the parser on the network, namely Alamofire, made the test difficult. In this section, we are going to decouple them, inject the dependency and write a better test.&lt;/p&gt;
+
+&lt;p&gt;First, add &lt;code&gt;Networking.swift&lt;/code&gt; with the following protocol definition. It has &lt;code&gt;request&lt;/code&gt; method taking a callback to pass response data from the network.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Networking.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Foundation
+
+protocol Networking {
+    func request(response: NSData? -&amp;gt; ())
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Add &lt;code&gt;Network.swift&lt;/code&gt; to implement &lt;code&gt;Network&lt;/code&gt; that conforms &lt;code&gt;Networking&lt;/code&gt; protocol. It encapsulates Alamofire.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Network.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Foundation
+import Alamofire
+
+struct Network : Networking {
+    func request(response: NSData? -&amp;gt; ()) {
+        Alamofire.request(.GET, OpenWeatherMap.url, parameters: OpenWeatherMap.parameters)
+            .response { _, _, data, _ in
+                response(data)
+            }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Modify &lt;code&gt;WeatherFetcher&lt;/code&gt; to get &lt;code&gt;Networking&lt;/code&gt; injected when it is instantiated and to use it to request weather data to the server. Note that &lt;code&gt;fetch&lt;/code&gt; and &lt;code&gt;decode&lt;/code&gt; functions were static in the last section, but here they are instance methods to use the &lt;code&gt;networking&lt;/code&gt; property. A default initializer taking &lt;code&gt;network&lt;/code&gt; is implicitly created by Swift. Now &lt;code&gt;WeatherFetcher&lt;/code&gt; has no dependency on Alamofire.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;WeatherFetcher.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct WeatherFetcher {
+    let networking: Networking
+
+    func fetch(response: [City]? -&amp;gt; ()) {
+        networking.request { data in
+            let cities = data.map { self.decode($0) }
+            response(cities)
+        }
+    }
+
+    private func decode(data: NSData) -&amp;gt; [City] {
+        let json = JSON(data: data)
+        var cities = [City]()
+        for (_, j) in json[&amp;quot;list&amp;quot;] {
+            if let id = j[&amp;quot;id&amp;quot;].int {
+                let city = City(
+                    id: id,
+                    name: j[&amp;quot;name&amp;quot;].string ?? &amp;quot;&amp;quot;,
+                    weather: j[&amp;quot;weather&amp;quot;][0][&amp;quot;main&amp;quot;].string ?? &amp;quot;&amp;quot;)
+                cities.append(city)
+            }
+        }
+        return cities
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then modify &lt;code&gt;WeatherFetcherSpec&lt;/code&gt; to test the decoupled network and JSON parser.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;WeatherFetcherSpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+import Swinject
+@testable import SwinjectSimpleExample
+
+class WeatherFetcherSpec: QuickSpec {
+    struct StubNetwork: Networking {
+        private static let json =
+        &amp;quot;{&amp;quot; +
+            &amp;quot;\&amp;quot;list\&amp;quot;: [&amp;quot; +
+                &amp;quot;{&amp;quot; +
+                    &amp;quot;\&amp;quot;id\&amp;quot;: 2643743,&amp;quot; +
+                    &amp;quot;\&amp;quot;name\&amp;quot;: \&amp;quot;London\&amp;quot;,&amp;quot; +
+                    &amp;quot;\&amp;quot;weather\&amp;quot;: [&amp;quot; +
+                        &amp;quot;{&amp;quot; +
+                            &amp;quot;\&amp;quot;main\&amp;quot;: \&amp;quot;Rain\&amp;quot;&amp;quot; +
+                        &amp;quot;}&amp;quot; +
+                    &amp;quot;]&amp;quot; +
+                &amp;quot;},&amp;quot; +
+                &amp;quot;{&amp;quot; +
+                    &amp;quot;\&amp;quot;id\&amp;quot;: 3451190,&amp;quot; +
+                    &amp;quot;\&amp;quot;name\&amp;quot;: \&amp;quot;Rio de Janeiro\&amp;quot;,&amp;quot; +
+                    &amp;quot;\&amp;quot;weather\&amp;quot;: [&amp;quot; +
+                        &amp;quot;{&amp;quot; +
+                            &amp;quot;\&amp;quot;main\&amp;quot;: \&amp;quot;Clear\&amp;quot;&amp;quot; +
+                        &amp;quot;}&amp;quot; +
+                    &amp;quot;]&amp;quot; +
+                &amp;quot;}&amp;quot; +
+            &amp;quot;]&amp;quot; +
+        &amp;quot;}&amp;quot;
+
+        func request(response: NSData? -&amp;gt; ()) {
+            let data = StubNetwork.json.dataUsingEncoding(
+                NSUTF8StringEncoding, allowLossyConversion: false)
+            response(data)
+        }
+    }
+
+    override func spec() {
+        var container: Container!
+        beforeEach {
+            container = Container()
+
+            // Registrations for the network using Alamofire.
+            container.register(Networking.self) { _ in Network() }
+            container.register(WeatherFetcher.self) { r in
+                WeatherFetcher(networking: r.resolve(Networking.self)!)
+            }
+
+            // Registration for the stub network.
+            container.register(Networking.self, name: &amp;quot;stub&amp;quot;) { _ in
+                StubNetwork()
+            }
+            container.register(WeatherFetcher.self, name: &amp;quot;stub&amp;quot;) { r in
+                WeatherFetcher(
+                    networking: r.resolve(Networking.self, name: &amp;quot;stub&amp;quot;)!)
+            }
+        }
+
+        it(&amp;quot;returns cities.&amp;quot;) {
+            var cities: [City]?
+            let fetcher = container.resolve(WeatherFetcher.self)!
+            fetcher.fetch { cities = $0 }
+
+            expect(cities).toEventuallyNot(beNil())
+            expect(cities?.count).toEventually(beGreaterThan(0))
+        }
+        it(&amp;quot;fills weather data.&amp;quot;) {
+            var cities: [City]?
+            let fetcher = container.resolve(WeatherFetcher.self, name: &amp;quot;stub&amp;quot;)!
+            fetcher.fetch { cities = $0 }
+
+            expect(cities?[0].id).toEventually(equal(2643743))
+            expect(cities?[0].name).toEventually(equal(&amp;quot;London&amp;quot;))
+            expect(cities?[0].weather).toEventually(equal(&amp;quot;Rain&amp;quot;))
+            expect(cities?[1].id).toEventually(equal(3451190))
+            expect(cities?[1].name).toEventually(equal(&amp;quot;Rio de Janeiro&amp;quot;))
+            expect(cities?[1].weather).toEventually(equal(&amp;quot;Clear&amp;quot;))
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;StubNetwork&lt;/code&gt; is a stub that conforms &lt;code&gt;Networking&lt;/code&gt;. It has a definition of JSON data that has the same structure as the data returned from the server. Its &lt;code&gt;request&lt;/code&gt; method returns the identical data any time regardless of the current weather in the real world. In &lt;code&gt;spec&lt;/code&gt;, &lt;code&gt;container&lt;/code&gt; is configured at the beginning, and it is used later in the two &lt;code&gt;it&lt;/code&gt; specifications. Without a registration name, &lt;code&gt;container&lt;/code&gt; is configured to use &lt;code&gt;Network&lt;/code&gt;. With the registration name &amp;ldquo;stub&amp;rdquo;, it is configured to use &lt;code&gt;StubNetwork&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The first &lt;code&gt;it&lt;/code&gt; tests that the real network through Alamofire returns some JSON data&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt; by getting an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; from &lt;code&gt;container&lt;/code&gt; without a registration name. We do not test detail of &lt;code&gt;cities&lt;/code&gt;. We just confirm that &lt;code&gt;fetch&lt;/code&gt; can get some data from the server.&lt;/p&gt;
+
+&lt;p&gt;The second &lt;code&gt;it&lt;/code&gt; tests that the JSON data are parsed correctly by getting an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; with the registration name &amp;ldquo;stub&amp;rdquo;. Because the stub returns two cities as defined in &lt;code&gt;StubNetwork&lt;/code&gt;, we write expectations for the two cities and check whether each expectation asynchronously gets the value specified in the stub definition.&lt;/p&gt;
+
+&lt;p&gt;Okay. We are ready to run the tests. Type &lt;code&gt;Command-U&lt;/code&gt; to run. This time you got the tests passed regardless of the current weather, didn&amp;rsquo;t you? This is the advantage of the dependency injection pattern to decouple a component from another, in this example decoupling of the parser component from network component.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;The problem of dependencies to write unit tests has been explained and fixed with dependency injection in the scenario to develop the app using the network service and JSON parser. By decoupling these two parts, the unit tests have become reproducible under any circumstances. In the next blog post, we will develop the UI part of the example app to learn how to use Swinject in a product app.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;UI tests are excluded because still Xcode 7 is beta (just caring NDA). This blog post will be updated to include them after Xcode 7 is officially released.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;code&gt;Podfile&lt;/code&gt; in this blog post will be updated after Xcode 7 is officially released.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;Actually this setting is not preferable if you develop an app to release. In this blog post, I used the setting just because the free API only supports HTTP.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;This test may fail if the network is disconnected or has a problem, but these cases can be practically ignored in our unit tests.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Dependency Injection Framework for Swift - Introduction to Swinject</title>
@@ -19,21 +349,21 @@
 
 &lt;p&gt;This blog post introduces &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, a dependency injection framework for Swift. Swift 2 will come with &lt;a href=&#34;https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-ID521&#34;&gt;protocol extension&lt;/a&gt; and encourage &lt;a href=&#34;https://developer.apple.com/videos/wwdc/2015/?id=408&#34;&gt;protocol oriented programming&lt;/a&gt;. In addition, Xcode 7 will introduce &lt;a href=&#34;https://developer.apple.com/videos/wwdc/2015/?id=406&#34;&gt;UI testing&lt;/a&gt;. In this context, it is getting more important to decouple components of an app by protocols. The typical pattern of the decoupling is called &lt;a href=&#34;https://en.wikipedia.org/wiki/Dependency_injection&#34;&gt;dependency injection&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id=&#34;dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Dependency Injection&lt;/h2&gt;
+&lt;h2 id=&#34;dependency-injection:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Dependency Injection&lt;/h2&gt;
 
-&lt;p&gt;Let&amp;rsquo;s start with an example. You are going to develop an app that lists current weather of some locations like the screenshot image below. The weather information will be received from a server through an API, and the data are used to present in the table view. Of course you will write unit tests. According to the screenshot, the tests will expect that the weather in Montreal&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; should be &amp;ldquo;Clouds&amp;rdquo;, in Moscow &amp;ldquo;Clear&amp;rdquo; and in Los Angeles &amp;ldquo;Clouds&amp;rdquo;, but wait, if you write test code like that, will the tests pass tomorrow too? They will rarely pass because the weather changes.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s start with an example. You are going to develop an app that lists current weather of some locations like the screenshot image below. The weather information will be received from a server through an API, and the data are used to present in the table view. Of course you will write unit tests. According to the screenshot, the tests will expect that the weather in Montreal&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:144b804cfefadcc68c3843d860fdf9b1:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:144b804cfefadcc68c3843d860fdf9b1:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; should be &amp;ldquo;Clouds&amp;rdquo;, in Moscow &amp;ldquo;Clear&amp;rdquo; and in Los Angeles &amp;ldquo;Clouds&amp;rdquo;, but wait, if you write test code like that, will the tests pass tomorrow too? They will rarely pass because the weather changes.&lt;/p&gt;
 
-&lt;p&gt;The problem here is that the parts of network access and data processing are coupled. In other words, the data processing depends on the network access. If the dependency is hard-coded, it is difficult to write unit tests around the dependency. To solve the problem, the dependency should be passed from somewhere else. This is the dependency injection (DI) pattern. The external code provides dependencies to the client code. The injector is called DI container or simply container&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;The problem here is that the parts of network access and data processing are coupled. In other words, the data processing depends on the network access. If the dependency is hard-coded, it is difficult to write unit tests around the dependency. To solve the problem, the dependency should be passed from somewhere else. This is the dependency injection (DI) pattern. The external code provides dependencies to the client code. The injector is called DI container or simply container&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:144b804cfefadcc68c3843d860fdf9b1:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:144b804cfefadcc68c3843d860fdf9b1:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://yoichitgy.github.io/images/SwinjectSimpleExampleScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Screenshot&#34; /&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;swinject:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Swinject&lt;/h2&gt;
+&lt;h2 id=&#34;swinject:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Swinject&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt; is a lightweight dependency injection framework written in Swift to use with Swift. The framework APIs are easy to learn and use because of the generic type and first class function features of Swift. Swinject is available through &lt;a href=&#34;https://cocoapods.org/&#34;&gt;CocoaPods&lt;/a&gt; or &lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;installation-with-cocoapods:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Installation with CocoaPods&lt;/h3&gt;
+&lt;h3 id=&#34;installation-with-cocoapods:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Installation with CocoaPods&lt;/h3&gt;
 
-&lt;p&gt;To install Swinject with CocoaPods, add the following lines to your &lt;code&gt;Podfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;To install Swinject with CocoaPods, add the following lines to your &lt;code&gt;Podfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:144b804cfefadcc68c3843d860fdf9b1:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:144b804cfefadcc68c3843d860fdf9b1:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;source &#39;https://github.com/CocoaPods/Specs.git&#39;
 platform :ios, &#39;8.0&#39;
@@ -46,20 +376,20 @@ pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.0&#39;
 
 &lt;p&gt;Later in the example app, we will use CocoaPods to install Swinject.&lt;/p&gt;
 
-&lt;h3 id=&#34;installation-with-carthage:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Installation with Carthage&lt;/h3&gt;
+&lt;h3 id=&#34;installation-with-carthage:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Installation with Carthage&lt;/h3&gt;
 
-&lt;p&gt;To install Swinject with Carthage, add the following line to your &lt;code&gt;Cartfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;To install Swinject with Carthage, add the following line to your &lt;code&gt;Cartfile&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:144b804cfefadcc68c3843d860fdf9b1:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:144b804cfefadcc68c3843d860fdf9b1:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;github &amp;quot;Swinject/Swinject&amp;quot; ~&amp;gt; 0.2
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Then run &lt;code&gt;carthage update&lt;/code&gt; command. For details of the installation and usage of Carthage, visit &lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;its project page&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id=&#34;basics:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Basics&lt;/h2&gt;
+&lt;h2 id=&#34;basics:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Basics&lt;/h2&gt;
 
 &lt;p&gt;Before continuing to details of the example app, let me introduce the basics of dependency injection with Swinject. Its project has a playground and it is easy to try dependency injection with Swinject. Download &lt;a href=&#34;https://github.com/Swinject/Swinject/releases&#34;&gt;the source code&lt;/a&gt; or clone &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;the project&lt;/a&gt;, and open the project file to use the playground.&lt;/p&gt;
 
-&lt;h3 id=&#34;without-dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Without Dependency Injection&lt;/h3&gt;
+&lt;h3 id=&#34;without-dependency-injection:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Without Dependency Injection&lt;/h3&gt;
 
 &lt;p&gt;Let&amp;rsquo;s say we are writing a game to play with animals. First we will write the program without dependency injection. Here is &lt;code&gt;Cat&lt;/code&gt; class to represent an animal,&lt;/p&gt;
 
@@ -95,7 +425,7 @@ print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;q
 
 &lt;p&gt;This is great if everyone is a cat person, but in reality some are dog persons. Because the instantiation of a &lt;code&gt;Cat&lt;/code&gt; is hard-coded, &lt;code&gt;PetOwner&lt;/code&gt; class depends on &lt;code&gt;Cat&lt;/code&gt; class. The dependency must be decoupled to support &lt;code&gt;Dog&lt;/code&gt; or other classes.&lt;/p&gt;
 
-&lt;h3 id=&#34;with-dependency-injection:a483802b6eda81edac2f4a17d876e65b&#34;&gt;With Dependency Injection&lt;/h3&gt;
+&lt;h3 id=&#34;with-dependency-injection:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;With Dependency Injection&lt;/h3&gt;
 
 &lt;p&gt;Now is the time to start taking advantage of dependency injection. Here we are going to introduce &lt;code&gt;AnimalType&lt;/code&gt; protocol to get rid of the dependency.&lt;/p&gt;
 
@@ -188,7 +518,7 @@ print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;q
 
 &lt;p&gt;It is so simple to configure a &lt;code&gt;Container&lt;/code&gt; and to retrieve a resolved instance with its dependencies injected.&lt;/p&gt;
 
-&lt;h2 id=&#34;conclusion:a483802b6eda81edac2f4a17d876e65b&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;h2 id=&#34;conclusion:144b804cfefadcc68c3843d860fdf9b1&#34;&gt;Conclusion&lt;/h2&gt;
 
 &lt;p&gt;The concept of dependency injection has been introduced with the scenario to write unit tests for the weather app, and its basic use case has been demonstrated. With Swinject, it is easy to configure the dependencies and to get instances with the dependencies resolved. In the next blog post, we will see how to use Swinject with unit tests in the example weather app.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
@@ -196,14 +526,14 @@ print(petOwner.play()) // prints &amp;quot;I&#39;m plaing with Mimi. Meow!&amp;q
 &lt;hr /&gt;
 
 &lt;ol&gt;
-&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;The cities listed in the example app are the summer Olympic host cities since 1976.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;DI container is also called assembler, provider, builder, spring or injector.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;Specify version 0.1.0 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;Specify version 0.1 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:a483802b6eda81edac2f4a17d876e65b:4&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:144b804cfefadcc68c3843d860fdf9b1:1&#34;&gt;The cities listed in the example app are the summer Olympic host cities since 1976.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:144b804cfefadcc68c3843d860fdf9b1:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:144b804cfefadcc68c3843d860fdf9b1:2&#34;&gt;DI container is also called assembler, provider, builder, spring or injector.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:144b804cfefadcc68c3843d860fdf9b1:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:144b804cfefadcc68c3843d860fdf9b1:3&#34;&gt;Specify version 0.1.0 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:144b804cfefadcc68c3843d860fdf9b1:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:144b804cfefadcc68c3843d860fdf9b1:4&#34;&gt;Specify version 0.1 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:144b804cfefadcc68c3843d860fdf9b1:4&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
 </description>

@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  
+  <meta charset="UTF-8">
+  <title>
+    Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2 | Swift Injection
+  </title>
+
+
+  
+  <meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1,initial-scale=1">
+
+
+  
+  <link rel="stylesheet" href="/css/sanitize.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/highlight_monokai.css">
+  <link rel="stylesheet/less" href="/css/theme.less">
+  <link rel="stylesheet" href="/css/custom.css">
+
+
+  
+  <script src="/js/less.js" type="text/javascript"></script>
+
+
+</head>
+
+
+
+<body>
+<div class="container">
+
+  
+  <header role="banner">
+    <div class="row gutters">
+      <div id="site-title" class="col span_6">
+        <h1><a href="/">Swift Injection</a></h1>
+        <h2>Swift patterns and practices</h2>
+      </div>
+      <div id="social" class="col span_6">
+        <ul>
+          
+          
+          <li><a href="https://github.com/yoichitgy" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+
+  
+  <main id="single" role="main">
+    <div class="article-header">
+      <h1>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2</h1>
+      <div class="meta">
+        Aug 13, 2015 &nbsp;
+        
+          #<a href="/tags/swinject">swinject</a>&nbsp;
+        
+          #<a href="/tags/dependency-injection">dependency-injection</a>&nbsp;
+        
+          #<a href="/tags/swift">swift</a>&nbsp;
+        
+      </div>
+    </div>
+    <article>
+      
+
+<p>In <a href="http://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/">the last blog post</a>, we walked through the concept of dependency injection and basic usage of <a href="https://github.com/Swinject/Swinject">Swinject</a>, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.</p>
+
+<p>The source code used in this blog post is available at <a href="https://github.com/Swinject/SwinjectSimpleExample">a repository on GitHub</a>.</p>
+
+<p><img src="/images/SwinjectSimpleExampleScreenshot.png" alt="SwinjectSimpleExample Screenshot" /></p>
+
+<h2 id="requirement:929d1b9e13edd8ae673f74cad40c219d">Requirement</h2>
+
+<p>We are going to use Xcode 7 although it is still beta. It is beta 5 at the timing of writing this blog post. Xcode 7 supports <code>@testable import</code> to access <code>internal</code> types, functions or properties in unit test targets.</p>
+
+<p>Also, we will use <a href="http://openweathermap.org">OpenWeatherMap</a> for a free API to get weather information. <a href="http://home.openweathermap.org/users/sign_up">Sign up</a> and get a free API key.</p>
+
+<h2 id="preparation-of-the-project:929d1b9e13edd8ae673f74cad40c219d">Preparation of the Project</h2>
+
+<p>Let&rsquo;s start with a new Xcode project. Select <code>File &gt; New &gt; Project...</code> menu and <code>iOS &gt; Application &gt; Single View Application</code> item. Set  its product name to <code>SwinjectSimpleExample</code>, language to Swift and devices to iPhone. Check <code>Include Unit Tests</code> only<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:1"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:1">1</a></sup>, then save it anywhere in your local storage.</p>
+
+<p>Then, we are going to install <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a> with CocoaPods. Create <code>Podfile</code> with the following text content in the project root directory. Then run <code>pod install</code> command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:2"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:2">2</a></sup>.</p>
+
+<pre><code>source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '8.0'
+use_frameworks!
+
+pod 'Alamofire', :git =&gt; 'https://github.com/Alamofire/Alamofire.git', :commit =&gt; '1b7b1f1aa'
+pod 'SwiftyJSON', :git =&gt; 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit =&gt; '45ca854ce'
+pod 'Swinject', '~&gt; 0.2'
+
+target 'SwinjectSimpleExampleTests' do
+    pod 'Quick', '~&gt; 0.5.0'
+    pod 'Nimble', '2.0.0-rc.2'
+end
+</code></pre>
+
+<p>Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a behavior-driven development framework to write tests as specs fluently. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.</p>
+
+<p>To use the free weather API on iOS 9, we have to allow HTTP connections. Open <code>Info.plist</code> and add <code>NSAppTransportSecurity</code> dictionary with <code>NSAllowsArbitraryLoads</code> element set to <code>true</code><sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:3"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:3">3</a></sup>.  <a href="http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9">Here</a> is more information about the setting and its background.</p>
+
+<h2 id="without-dependency-injection:929d1b9e13edd8ae673f74cad40c219d">Without Dependency Injection</h2>
+
+<p>First, without dependency injection, we are going to implement a model to handle weather information retrieved through the network service. We will see what can be a problem if we do not care about coupled dependencies.</p>
+
+<p>Add <code>City.swift</code> to <code>SwinjectSimpleExample</code> group in the project. We define <code>City</code> to be an entity representing a city with weather information.</p>
+
+<p><strong>City.swift</strong></p>
+
+<pre><code>struct City {
+    let id: Int
+    let name: String
+    let weather: String
+}
+</code></pre>
+
+<p>Add <code>OpenWeatherMap.swift</code> to store configurations of OpenWeatherMap API. Here please fill <code>apiKey</code> with your own API key.</p>
+
+<p><strong>OpenWeatherMap.swift</strong></p>
+
+<pre><code>struct OpenWeatherMap {
+    private static let apiKey = &quot;YOUR API KEY HERE&quot;
+
+    private static let cityIds = [
+        6077243, 524901, 5368361, 1835848, 3128760, 4180439,
+        2147714, 264371, 1816670, 2643743, 3451190, 1850147
+    ]
+
+    static let url = &quot;http://api.openweathermap.org/data/2.5/group&quot;
+
+    static var parameters: [String: String] {
+        return [
+            &quot;APPID&quot;: apiKey,
+            &quot;id&quot;: &quot;,&quot;.join(cityIds.map { String($0) })
+        ]
+    }
+}
+</code></pre>
+
+<p>Add <code>WeatherFetcher.swift</code> to implement <code>WeatherFetcher</code>, which has <code>fetch</code> function taking a callback to handle an optional array of <code>Cities</code> returned from OpenWeatherMap.</p>
+
+<p><strong>WeatherFetcher.swift</strong></p>
+
+<pre><code>import Foundation
+import Alamofire
+import SwiftyJSON
+
+struct WeatherFetcher {
+    static func fetch(response: [City]? -&gt; ()) {
+        Alamofire.request(.GET, OpenWeatherMap.url, parameters: OpenWeatherMap.parameters)
+            .response { _, _, data, _ in
+                let cities = data.map { decode($0) }
+                response(cities)
+            }
+    }
+
+    private static func decode(data: NSData) -&gt; [City] {
+        let json = JSON(data: data)
+        var cities = [City]()
+        for (_, j) in json[&quot;list&quot;] {
+            if let id = j[&quot;id&quot;].int {
+                let city = City(
+                    id: id,
+                    name: j[&quot;name&quot;].string ?? &quot;&quot;,
+                    weather: j[&quot;weather&quot;][0][&quot;main&quot;].string ?? &quot;&quot;)
+                cities.append(city)
+            }
+        }
+        return cities
+    }
+}
+</code></pre>
+
+<p>The <code>fetch</code> function uses Alamofire to send a request to the server and to get a response as JSON data asynchronously. The specifications of API call and response JSON format are described in <a href="http://openweathermap.org/current#severalid">&ldquo;Call for several city IDs&rdquo; section of OpenWeatherMap site</a>.
+The <code>data</code> parameter in the closure passed to <code>response</code> from <code>Alamofire</code> is <code>nil</code> if the response has an error. We do not care about details of the error and just pass <code>nil</code> to the callback to <code>fetch</code> in this example although the error should be handled in a product app.</p>
+
+<p>The <code>decode</code> function parses the JSON data returned from the server. It is called as <code>data.map { decode($0) }</code> in <code>fetch</code> where <code>map</code> executes the trailing closure if <code>data</code> is not <code>nil</code>, otherwise returns nil. The <code>decode</code> function uses SwiftyJSON to map the JSON data to an array of our <code>City</code> entities.</p>
+
+<p>Let&rsquo;s add a unit test to <code>SwinjectSimpleExampleTests</code> group in our project. The filename is <code>WeatherFetcherSpec.swift</code> and its target is set to <code>SwinjectSimpleExampleTests</code> when we create the file. The test is going to check whether the weather data can be retrieved and parsed correctly.</p>
+
+<p><strong>WeatherFetcherSpec.swift</strong></p>
+
+<pre><code>import Quick
+import Nimble
+@testable import SwinjectSimpleExample
+
+class WeatherFetcherSpec: QuickSpec {
+    override func spec() {
+        it(&quot;returns cities.&quot;) {
+            var cities: [City]?
+            WeatherFetcher.fetch { cities = $0 }
+
+            expect(cities).toEventuallyNot(beNil())
+            expect(cities?.count).toEventually(equal(12))
+            expect(cities?[0].id).toEventually(equal(6077243))
+            expect(cities?[0].name).toEventually(equal(&quot;Montreal&quot;))
+            expect(cities?[0].weather).toEventually(equal(&quot;Clouds&quot;))
+        }
+    }
+}
+</code></pre>
+
+<p>With Quick and Nimble, each test is written in an <code>it</code> closure, and each expectation is expressed as <code>expect(something).to(condition)</code> or <code>expect(something).toNot(condition)</code> synchronously, or <code>expect(something).toEventually(condition)</code> or <code>expect(something).toEventuallyNot(condition)</code> asynchronously. <code>WeatherFetcher.fetch</code> sets <code>cities</code> asynchronously when weather data is retrieved, so we use the latter ones here.</p>
+
+<p>First, we check <code>cities</code>, which is initialized with <code>nil</code>, should be set to an array after <code>fetch</code> invokes the callback asynchronously. Second, the number of <code>cities</code> should be <code>12</code> because our request to the API has 12 city IDs. From the third to fifth, we check only the first city for simplicity. The <code>id</code>, <code>name</code> and <code>weather</code> should be <code>6077243</code>, &ldquo;Montreal&rdquo; and &ldquo;Clouds&rdquo; respectively.</p>
+
+<p>Okay. We are ready to run the unit test. Type <code>Command-U</code> to run. Did you see the test passed? I think some people saw it passed, but the others not. Why? Because the weather in &ldquo;Montreal&rdquo; in the real world right now must be &ldquo;Clouds&rdquo; to pass the test. How can we write a test passing regardless of the current weather? It is actually difficult to write if the part parsing JSON data depends on the part retrieving the data from the server.</p>
+
+<h2 id="with-dependency-injection:929d1b9e13edd8ae673f74cad40c219d">With Dependency Injection</h2>
+
+<p>In the last section, we found the tightly coupled dependency of the parser on the network, namely Alamofire, made the test difficult. In this section, we are going to decouple them, inject the dependency and write a better test.</p>
+
+<p>First, add <code>Networking.swift</code> with the following protocol definition. It has <code>request</code> method taking a callback to pass response data from the network.</p>
+
+<p><strong>Networking.swift</strong></p>
+
+<pre><code>import Foundation
+
+protocol Networking {
+    func request(response: NSData? -&gt; ())
+}
+</code></pre>
+
+<p>Add <code>Network.swift</code> to implement <code>Network</code> that conforms <code>Networking</code> protocol. It encapsulates Alamofire.</p>
+
+<p><strong>Network.swift</strong></p>
+
+<pre><code>import Foundation
+import Alamofire
+
+struct Network : Networking {
+    func request(response: NSData? -&gt; ()) {
+        Alamofire.request(.GET, OpenWeatherMap.url, parameters: OpenWeatherMap.parameters)
+            .response { _, _, data, _ in
+                response(data)
+            }
+    }
+}
+</code></pre>
+
+<p>Modify <code>WeatherFetcher</code> to get <code>Networking</code> injected when it is instantiated and to use it to request weather data to the server. Note that <code>fetch</code> and <code>decode</code> functions were static in the last section, but here they are instance methods to use the <code>networking</code> property. A default initializer taking <code>network</code> is implicitly created by Swift. Now <code>WeatherFetcher</code> has no dependency on Alamofire.</p>
+
+<p><strong>WeatherFetcher.swift</strong></p>
+
+<pre><code>struct WeatherFetcher {
+    let networking: Networking
+
+    func fetch(response: [City]? -&gt; ()) {
+        networking.request { data in
+            let cities = data.map { self.decode($0) }
+            response(cities)
+        }
+    }
+
+    private func decode(data: NSData) -&gt; [City] {
+        let json = JSON(data: data)
+        var cities = [City]()
+        for (_, j) in json[&quot;list&quot;] {
+            if let id = j[&quot;id&quot;].int {
+                let city = City(
+                    id: id,
+                    name: j[&quot;name&quot;].string ?? &quot;&quot;,
+                    weather: j[&quot;weather&quot;][0][&quot;main&quot;].string ?? &quot;&quot;)
+                cities.append(city)
+            }
+        }
+        return cities
+    }
+}
+</code></pre>
+
+<p>Then modify <code>WeatherFetcherSpec</code> to test the decoupled network and JSON parser.</p>
+
+<p><strong>WeatherFetcherSpec.swift</strong></p>
+
+<pre><code>import Quick
+import Nimble
+import Swinject
+@testable import SwinjectSimpleExample
+
+class WeatherFetcherSpec: QuickSpec {
+    struct StubNetwork: Networking {
+        private static let json =
+        &quot;{&quot; +
+            &quot;\&quot;list\&quot;: [&quot; +
+                &quot;{&quot; +
+                    &quot;\&quot;id\&quot;: 2643743,&quot; +
+                    &quot;\&quot;name\&quot;: \&quot;London\&quot;,&quot; +
+                    &quot;\&quot;weather\&quot;: [&quot; +
+                        &quot;{&quot; +
+                            &quot;\&quot;main\&quot;: \&quot;Rain\&quot;&quot; +
+                        &quot;}&quot; +
+                    &quot;]&quot; +
+                &quot;},&quot; +
+                &quot;{&quot; +
+                    &quot;\&quot;id\&quot;: 3451190,&quot; +
+                    &quot;\&quot;name\&quot;: \&quot;Rio de Janeiro\&quot;,&quot; +
+                    &quot;\&quot;weather\&quot;: [&quot; +
+                        &quot;{&quot; +
+                            &quot;\&quot;main\&quot;: \&quot;Clear\&quot;&quot; +
+                        &quot;}&quot; +
+                    &quot;]&quot; +
+                &quot;}&quot; +
+            &quot;]&quot; +
+        &quot;}&quot;
+
+        func request(response: NSData? -&gt; ()) {
+            let data = StubNetwork.json.dataUsingEncoding(
+                NSUTF8StringEncoding, allowLossyConversion: false)
+            response(data)
+        }
+    }
+
+    override func spec() {
+        var container: Container!
+        beforeEach {
+            container = Container()
+
+            // Registrations for the network using Alamofire.
+            container.register(Networking.self) { _ in Network() }
+            container.register(WeatherFetcher.self) { r in
+                WeatherFetcher(networking: r.resolve(Networking.self)!)
+            }
+
+            // Registration for the stub network.
+            container.register(Networking.self, name: &quot;stub&quot;) { _ in
+                StubNetwork()
+            }
+            container.register(WeatherFetcher.self, name: &quot;stub&quot;) { r in
+                WeatherFetcher(
+                    networking: r.resolve(Networking.self, name: &quot;stub&quot;)!)
+            }
+        }
+
+        it(&quot;returns cities.&quot;) {
+            var cities: [City]?
+            let fetcher = container.resolve(WeatherFetcher.self)!
+            fetcher.fetch { cities = $0 }
+
+            expect(cities).toEventuallyNot(beNil())
+            expect(cities?.count).toEventually(beGreaterThan(0))
+        }
+        it(&quot;fills weather data.&quot;) {
+            var cities: [City]?
+            let fetcher = container.resolve(WeatherFetcher.self, name: &quot;stub&quot;)!
+            fetcher.fetch { cities = $0 }
+
+            expect(cities?[0].id).toEventually(equal(2643743))
+            expect(cities?[0].name).toEventually(equal(&quot;London&quot;))
+            expect(cities?[0].weather).toEventually(equal(&quot;Rain&quot;))
+            expect(cities?[1].id).toEventually(equal(3451190))
+            expect(cities?[1].name).toEventually(equal(&quot;Rio de Janeiro&quot;))
+            expect(cities?[1].weather).toEventually(equal(&quot;Clear&quot;))
+        }
+    }
+}
+</code></pre>
+
+<p><code>StubNetwork</code> is a stub that conforms <code>Networking</code>. It has a definition of JSON data that has the same structure as the data returned from the server. Its <code>request</code> method returns the identical data any time regardless of the current weather in the real world. In <code>spec</code>, <code>container</code> is configured at the beginning, and it is used later in the two <code>it</code> specifications. Without a registration name, <code>container</code> is configured to use <code>Network</code>. With the registration name &ldquo;stub&rdquo;, it is configured to use <code>StubNetwork</code>.</p>
+
+<p>The first <code>it</code> tests that the real network through Alamofire returns some JSON data<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:4"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:4">4</a></sup> by getting an instance of <code>WeatherFetcher</code> from <code>container</code> without a registration name. We do not test detail of <code>cities</code>. We just confirm that <code>fetch</code> can get some data from the server.</p>
+
+<p>The second <code>it</code> tests that the JSON data are parsed correctly by getting an instance of <code>WeatherFetcher</code> with the registration name &ldquo;stub&rdquo;. Because the stub returns two cities as defined in <code>StubNetwork</code>, we write expectations for the two cities and check whether each expectation asynchronously gets the value specified in the stub definition.</p>
+
+<p>Okay. We are ready to run the tests. Type <code>Command-U</code> to run. This time you got the tests passed regardless of the current weather, didn&rsquo;t you? This is the advantage of the dependency injection pattern to decouple a component from another, in this example decoupling of the parser component from network component.</p>
+
+<h2 id="conclusion:929d1b9e13edd8ae673f74cad40c219d">Conclusion</h2>
+
+<p>The problem of dependencies to write unit tests has been explained and fixed with dependency injection in the scenario to develop the app using the network service and JSON parser. By decoupling these two parts, the unit tests have become reproducible under any circumstances. In the next blog post, we will develop the UI part of the example app to learn how to use Swinject in a product app.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:929d1b9e13edd8ae673f74cad40c219d:1">UI tests are excluded because still Xcode 7 is beta (just caring NDA). This blog post will be updated to include them after Xcode 7 is officially released.
+ <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:1"><sup>[return]</sup></a></li>
+<li id="fn:929d1b9e13edd8ae673f74cad40c219d:2"><code>Podfile</code> in this blog post will be updated after Xcode 7 is officially released.
+ <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:2"><sup>[return]</sup></a></li>
+<li id="fn:929d1b9e13edd8ae673f74cad40c219d:3">Actually this setting is not preferable if you develop an app to release. In this blog post, I used the setting just because the free API only supports HTTP.
+ <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:3"><sup>[return]</sup></a></li>
+<li id="fn:929d1b9e13edd8ae673f74cad40c219d:4">This test may fail if the network is disconnected or has a problem, but these cases can be practically ignored in our unit tests.
+ <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:4"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+    </article>
+    
+ <aside><div id="disqus_thread"></div></aside> 
+
+<script type="text/javascript">
+     
+    var disqus_shortname = 'yoichitgy';
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+  </main>
+
+
+  
+  <footer role="contentinfo">
+    <div style="text-align:center;">
+      
+      © 2015 Yoichi Tagaya. All rights reserved.
+    </div>
+  </footer>
+
+
+</div>
+
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-66106661-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+</body>
+</html>
+

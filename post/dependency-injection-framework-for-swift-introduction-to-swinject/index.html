@@ -71,21 +71,21 @@
 
 <p>This blog post introduces <a href="https://github.com/Swinject/Swinject">Swinject</a>, a dependency injection framework for Swift. Swift 2 will come with <a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-ID521">protocol extension</a> and encourage <a href="https://developer.apple.com/videos/wwdc/2015/?id=408">protocol oriented programming</a>. In addition, Xcode 7 will introduce <a href="https://developer.apple.com/videos/wwdc/2015/?id=406">UI testing</a>. In this context, it is getting more important to decouple components of an app by protocols. The typical pattern of the decoupling is called <a href="https://en.wikipedia.org/wiki/Dependency_injection">dependency injection</a>.</p>
 
-<h2 id="dependency-injection:a483802b6eda81edac2f4a17d876e65b">Dependency Injection</h2>
+<h2 id="dependency-injection:144b804cfefadcc68c3843d860fdf9b1">Dependency Injection</h2>
 
-<p>Let&rsquo;s start with an example. You are going to develop an app that lists current weather of some locations like the screenshot image below. The weather information will be received from a server through an API, and the data are used to present in the table view. Of course you will write unit tests. According to the screenshot, the tests will expect that the weather in Montreal<sup class="footnote-ref" id="fnref:a483802b6eda81edac2f4a17d876e65b:1"><a rel="footnote" href="#fn:a483802b6eda81edac2f4a17d876e65b:1">1</a></sup> should be &ldquo;Clouds&rdquo;, in Moscow &ldquo;Clear&rdquo; and in Los Angeles &ldquo;Clouds&rdquo;, but wait, if you write test code like that, will the tests pass tomorrow too? They will rarely pass because the weather changes.</p>
+<p>Let&rsquo;s start with an example. You are going to develop an app that lists current weather of some locations like the screenshot image below. The weather information will be received from a server through an API, and the data are used to present in the table view. Of course you will write unit tests. According to the screenshot, the tests will expect that the weather in Montreal<sup class="footnote-ref" id="fnref:144b804cfefadcc68c3843d860fdf9b1:1"><a rel="footnote" href="#fn:144b804cfefadcc68c3843d860fdf9b1:1">1</a></sup> should be &ldquo;Clouds&rdquo;, in Moscow &ldquo;Clear&rdquo; and in Los Angeles &ldquo;Clouds&rdquo;, but wait, if you write test code like that, will the tests pass tomorrow too? They will rarely pass because the weather changes.</p>
 
-<p>The problem here is that the parts of network access and data processing are coupled. In other words, the data processing depends on the network access. If the dependency is hard-coded, it is difficult to write unit tests around the dependency. To solve the problem, the dependency should be passed from somewhere else. This is the dependency injection (DI) pattern. The external code provides dependencies to the client code. The injector is called DI container or simply container<sup class="footnote-ref" id="fnref:a483802b6eda81edac2f4a17d876e65b:2"><a rel="footnote" href="#fn:a483802b6eda81edac2f4a17d876e65b:2">2</a></sup>.</p>
+<p>The problem here is that the parts of network access and data processing are coupled. In other words, the data processing depends on the network access. If the dependency is hard-coded, it is difficult to write unit tests around the dependency. To solve the problem, the dependency should be passed from somewhere else. This is the dependency injection (DI) pattern. The external code provides dependencies to the client code. The injector is called DI container or simply container<sup class="footnote-ref" id="fnref:144b804cfefadcc68c3843d860fdf9b1:2"><a rel="footnote" href="#fn:144b804cfefadcc68c3843d860fdf9b1:2">2</a></sup>.</p>
 
 <p><img src="/images/SwinjectSimpleExampleScreenshot.png" alt="SwinjectSimpleExample Screenshot" /></p>
 
-<h2 id="swinject:a483802b6eda81edac2f4a17d876e65b">Swinject</h2>
+<h2 id="swinject:144b804cfefadcc68c3843d860fdf9b1">Swinject</h2>
 
 <p><a href="https://github.com/Swinject/Swinject">Swinject</a> is a lightweight dependency injection framework written in Swift to use with Swift. The framework APIs are easy to learn and use because of the generic type and first class function features of Swift. Swinject is available through <a href="https://cocoapods.org/">CocoaPods</a> or <a href="https://github.com/Carthage/Carthage">Carthage</a>.</p>
 
-<h3 id="installation-with-cocoapods:a483802b6eda81edac2f4a17d876e65b">Installation with CocoaPods</h3>
+<h3 id="installation-with-cocoapods:144b804cfefadcc68c3843d860fdf9b1">Installation with CocoaPods</h3>
 
-<p>To install Swinject with CocoaPods, add the following lines to your <code>Podfile</code><sup class="footnote-ref" id="fnref:a483802b6eda81edac2f4a17d876e65b:3"><a rel="footnote" href="#fn:a483802b6eda81edac2f4a17d876e65b:3">3</a></sup>.</p>
+<p>To install Swinject with CocoaPods, add the following lines to your <code>Podfile</code><sup class="footnote-ref" id="fnref:144b804cfefadcc68c3843d860fdf9b1:3"><a rel="footnote" href="#fn:144b804cfefadcc68c3843d860fdf9b1:3">3</a></sup>.</p>
 
 <pre><code>source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
@@ -98,20 +98,20 @@ pod 'Swinject', '~&gt; 0.2.0'
 
 <p>Later in the example app, we will use CocoaPods to install Swinject.</p>
 
-<h3 id="installation-with-carthage:a483802b6eda81edac2f4a17d876e65b">Installation with Carthage</h3>
+<h3 id="installation-with-carthage:144b804cfefadcc68c3843d860fdf9b1">Installation with Carthage</h3>
 
-<p>To install Swinject with Carthage, add the following line to your <code>Cartfile</code><sup class="footnote-ref" id="fnref:a483802b6eda81edac2f4a17d876e65b:4"><a rel="footnote" href="#fn:a483802b6eda81edac2f4a17d876e65b:4">4</a></sup>.</p>
+<p>To install Swinject with Carthage, add the following line to your <code>Cartfile</code><sup class="footnote-ref" id="fnref:144b804cfefadcc68c3843d860fdf9b1:4"><a rel="footnote" href="#fn:144b804cfefadcc68c3843d860fdf9b1:4">4</a></sup>.</p>
 
 <pre><code>github &quot;Swinject/Swinject&quot; ~&gt; 0.2
 </code></pre>
 
 <p>Then run <code>carthage update</code> command. For details of the installation and usage of Carthage, visit <a href="https://github.com/Carthage/Carthage">its project page</a>.</p>
 
-<h2 id="basics:a483802b6eda81edac2f4a17d876e65b">Basics</h2>
+<h2 id="basics:144b804cfefadcc68c3843d860fdf9b1">Basics</h2>
 
 <p>Before continuing to details of the example app, let me introduce the basics of dependency injection with Swinject. Its project has a playground and it is easy to try dependency injection with Swinject. Download <a href="https://github.com/Swinject/Swinject/releases">the source code</a> or clone <a href="https://github.com/Swinject/Swinject">the project</a>, and open the project file to use the playground.</p>
 
-<h3 id="without-dependency-injection:a483802b6eda81edac2f4a17d876e65b">Without Dependency Injection</h3>
+<h3 id="without-dependency-injection:144b804cfefadcc68c3843d860fdf9b1">Without Dependency Injection</h3>
 
 <p>Let&rsquo;s say we are writing a game to play with animals. First we will write the program without dependency injection. Here is <code>Cat</code> class to represent an animal,</p>
 
@@ -147,7 +147,7 @@ print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
 
 <p>This is great if everyone is a cat person, but in reality some are dog persons. Because the instantiation of a <code>Cat</code> is hard-coded, <code>PetOwner</code> class depends on <code>Cat</code> class. The dependency must be decoupled to support <code>Dog</code> or other classes.</p>
 
-<h3 id="with-dependency-injection:a483802b6eda81edac2f4a17d876e65b">With Dependency Injection</h3>
+<h3 id="with-dependency-injection:144b804cfefadcc68c3843d860fdf9b1">With Dependency Injection</h3>
 
 <p>Now is the time to start taking advantage of dependency injection. Here we are going to introduce <code>AnimalType</code> protocol to get rid of the dependency.</p>
 
@@ -240,7 +240,7 @@ print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
 
 <p>It is so simple to configure a <code>Container</code> and to retrieve a resolved instance with its dependencies injected.</p>
 
-<h2 id="conclusion:a483802b6eda81edac2f4a17d876e65b">Conclusion</h2>
+<h2 id="conclusion:144b804cfefadcc68c3843d860fdf9b1">Conclusion</h2>
 
 <p>The concept of dependency injection has been introduced with the scenario to write unit tests for the weather app, and its basic use case has been demonstrated. With Swinject, it is easy to configure the dependencies and to get instances with the dependencies resolved. In the next blog post, we will see how to use Swinject with unit tests in the example weather app.</p>
 <div class="footnotes">
@@ -248,14 +248,14 @@ print(petOwner.play()) // prints &quot;I'm plaing with Mimi. Meow!&quot;
 <hr />
 
 <ol>
-<li id="fn:a483802b6eda81edac2f4a17d876e65b:1">The cities listed in the example app are the summer Olympic host cities since 1976.
- <a class="footnote-return" href="#fnref:a483802b6eda81edac2f4a17d876e65b:1"><sup>[return]</sup></a></li>
-<li id="fn:a483802b6eda81edac2f4a17d876e65b:2">DI container is also called assembler, provider, builder, spring or injector.
- <a class="footnote-return" href="#fnref:a483802b6eda81edac2f4a17d876e65b:2"><sup>[return]</sup></a></li>
-<li id="fn:a483802b6eda81edac2f4a17d876e65b:3">Specify version 0.1.0 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
- <a class="footnote-return" href="#fnref:a483802b6eda81edac2f4a17d876e65b:3"><sup>[return]</sup></a></li>
-<li id="fn:a483802b6eda81edac2f4a17d876e65b:4">Specify version 0.1 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
- <a class="footnote-return" href="#fnref:a483802b6eda81edac2f4a17d876e65b:4"><sup>[return]</sup></a></li>
+<li id="fn:144b804cfefadcc68c3843d860fdf9b1:1">The cities listed in the example app are the summer Olympic host cities since 1976.
+ <a class="footnote-return" href="#fnref:144b804cfefadcc68c3843d860fdf9b1:1"><sup>[return]</sup></a></li>
+<li id="fn:144b804cfefadcc68c3843d860fdf9b1:2">DI container is also called assembler, provider, builder, spring or injector.
+ <a class="footnote-return" href="#fnref:144b804cfefadcc68c3843d860fdf9b1:2"><sup>[return]</sup></a></li>
+<li id="fn:144b804cfefadcc68c3843d860fdf9b1:3">Specify version 0.1.0 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ <a class="footnote-return" href="#fnref:144b804cfefadcc68c3843d860fdf9b1:3"><sup>[return]</sup></a></li>
+<li id="fn:144b804cfefadcc68c3843d860fdf9b1:4">Specify version 0.1 if you use Xcode 6.4. Version 0.2 is required for Xcode 7 beta.
+ <a class="footnote-return" href="#fnref:144b804cfefadcc68c3843d860fdf9b1:4"><sup>[return]</sup></a></li>
 </ol>
 </div>
 
