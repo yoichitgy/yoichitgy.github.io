@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  
+  <meta charset="UTF-8">
+  <title>
+    Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 2/2 | Swift Injection
+  </title>
+
+
+  
+  <meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1,initial-scale=1">
+
+  
+  <link rel="canonical" href="https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-2/"/>
+
+  
+  <link rel="stylesheet" href="/css/sanitize.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/highlight_monokai.css">
+  <link rel="stylesheet/less" href="/css/theme.less">
+  <link rel="stylesheet" href="/css/custom.css">
+
+
+  
+  <script src="/js/less.js" type="text/javascript"></script>
+
+
+  
+  <script type="text/javascript">var switchTo5x=true;</script>
+  <script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
+  <script type="text/javascript">stLight.options({publisher: "2b9fffc6-b3fe-4988-a0ef-4f9dcce98eaa", doNotHash: true, doNotCopy: true, hashAddressBar: false});</script>
+</head>
+
+
+
+<body>
+<div class="container">
+
+  
+  <header role="banner">
+    <div class="row gutters">
+      <div id="site-title" class="col span_6">
+        <h1><a href="https://yoichitgy.github.io/">Swift Injection</a></h1>
+        <h2>Swift patterns and practices</h2>
+      </div>
+      <div id="social" class="col span_6">
+        <ul>
+          <li><a href="https://twitter.com/yoichitgy" target="_blank">Twitter</a></li>
+          
+          <li><a href="https://github.com/yoichitgy" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+
+  
+  <main id="single" role="main">
+    <div class="article-header">
+      <h1>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 2/2</h1>
+      <div class="meta">
+        Aug 14, 2015 &nbsp;
+        
+          #<a href="/tags/swinject">swinject</a>&nbsp;
+        
+          #<a href="/tags/dependency-injection">dependency-injection</a>&nbsp;
+        
+          #<a href="/tags/swift">swift</a>&nbsp;
+        
+      </div>
+    </div>
+    <article>
+      
+
+<p>In <a href="/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/">the last blog post</a>, we developed the model part of the simple weather app, and learnt how to remove tightly coupled dependencies by using dependency injection and <a href="https://github.com/Swinject/Swinject">Swinject</a>. We found the decoupling made unit testing easier. In this blog post, we are going to develop the UI part of the app, and will learn how to wire up the decoupled components with Swinject.</p>
+
+<h2 id="basic-ui-structure:524204bd8810b54f3a02dbb14a1eb96e">Basic UI Structure</h2>
+
+<p>First, we are going to make a basic UI structure to show the weather information in a table view. The UI components will be instantiated from a storyboard, but instantiation of the storyboard itself will be written by hand to use <code>SwinjectStoryboard</code> inheriting <code>UIStoryboard</code>.</p>
+
+<p>Open <code>Info.plist</code> and remove <code>&quot;Main storyboard file base name&quot;</code> key, which might be displayed as <code>&quot;UIMainStoryboardFile&quot;</code> if you are showing raw keys.</p>
+
+<p>Remove <code>ViewController.swift</code> and add <code>WeatherTablerViewController.swift</code>, which has an empty definition of <code>WeatherTablerViewController</code>. We will implement the class later with the dependency injection pattern.</p>
+
+<p><strong>WeatherTablerViewController.swift</strong></p>
+
+<pre><code>import UIKit
+
+class WeatherTablerViewController: UITableViewController {
+}
+</code></pre>
+
+<p>Open <code>Main.storyboard</code> and remove the existing view controller. Then add a new navigation controller to the storyboard from the object library pane.</p>
+
+<p>Select the navigation controller and check <code>&quot;Is Initial View Controller&quot;</code> in the attribute inspector.</p>
+
+<p>Select the table view controller, which is the root view controller of the navigation controller, and set its custom class to <code>WeatherTablerViewController</code>. Select the prototype cell on the table view, and set its style to <code>Right Detail</code> and identifier to <code>&quot;Cell&quot;</code>. Select the navigation item on the table view controller, and set its title to <code>&quot;Weather Now&quot;</code>.</p>
+
+<p><img src="/images/post/2015-08/SwinjectSimpleExampleStoryboardScreenshot.png" alt="SwinjectSimpleExample Storyboard Screenshot" /></p>
+
+<p>Modify <code>AppDelegate.swift</code> to instantiate the initial view controller from the storyboard by hand. Here, we use <code>SwinjectStoryboard</code> instead of <code>UIStoryboard</code> to add dependency injection later. The instantiation of <code>SwinjectStoryboard</code> is not performed with a initializer but <code>create</code>  function<sup class="footnote-ref" id="fnref:524204bd8810b54f3a02dbb14a1eb96e:1"><a rel="footnote" href="#fn:524204bd8810b54f3a02dbb14a1eb96e:1">1</a></sup>.</p>
+
+<p><strong>AppDelegate.swift</strong></p>
+
+<pre><code>import UIKit
+import Swinject
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+
+    func application(
+        application: UIApplication,
+        didFinishLaunchingWithOptions
+        launchOptions: [NSObject: AnyObject]?) -&gt; Bool
+    {
+        let window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        window.backgroundColor = UIColor.whiteColor()
+        window.makeKeyAndVisible()
+        self.window = window
+
+        let storyboard = SwinjectStoryboard.create(name: &quot;Main&quot;, bundle: nil)
+        window.rootViewController = storyboard.instantiateInitialViewController()
+
+        return true
+    }
+
+    ...
+}
+</code></pre>
+
+<p>Now we are ready to run the app. Type <code>Command-R</code> to run. You will see an empty table view like the following image.</p>
+
+<p><img src="/images/post/2015-08/SwinjectSimpleExampleEmptyScreenshot.png" alt="SwinjectSimpleExample Empty Screenshot" /></p>
+
+<h2 id="dependency-injection-to-view-controller:524204bd8810b54f3a02dbb14a1eb96e">Dependency Injection to View Controller</h2>
+
+<p>Let&rsquo;s implement the empty table view controller and add dependency injection to it.</p>
+
+<p>Add <code>weatherFetcher</code> property to <code>WeatherTablerViewController</code>.</p>
+
+<p><strong>WeatherTablerViewController.swift</strong></p>
+
+<pre><code>class WeatherTablerViewController: UITableViewController {
+    var weatherFetcher: WeatherFetcher?
+}
+</code></pre>
+
+<p>Modify <code>AppDelegate</code> to instantiate <code>SwinjectStoryboard</code> with a configured <code>Container</code>.</p>
+
+<p><strong>AppDelegate.swift</strong></p>
+
+<pre><code>@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+
+    func application(
+        application: UIApplication,
+        didFinishLaunchingWithOptions
+        launchOptions: [NSObject: AnyObject]?) -&gt; Bool
+    {
+        let window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        window.backgroundColor = UIColor.whiteColor()
+        window.makeKeyAndVisible()
+        self.window = window
+
+        let container = createContainer()
+        let storyboard = SwinjectStoryboard.create(
+            name: &quot;Main&quot;,
+            bundle: nil,
+            container: container)
+        window.rootViewController = storyboard.instantiateInitialViewController()
+
+        return true
+    }
+
+    private func createContainer() -&gt; Container {
+        let container = Container()
+        container.registerForStoryboard(WeatherTablerViewController.self) { r, c in
+            c.weatherFetcher = r.resolve(WeatherFetcher.self)
+        }
+        container.register(Networking.self) { _ in Network() }
+        container.register(WeatherFetcher.self) { r in
+            WeatherFetcher(networking: r.resolve(Networking.self)!)
+        }
+        return container
+    }
+
+    ...
+}
+</code></pre>
+
+<p>In <code>createContainer</code> method, first, a <code>Container</code> instance is created, then configured. <code>registerForStoryboard</code> is used to configure dependencies of a view controller. Here <code>WeatherTablerViewController</code> is configured to get <code>weatherFetcher</code> property set to a resolved instance of <code>WeatherFetcher</code>. This is called &ldquo;property injection&rdquo;. <code>Networking</code> protocol, which was defined in <a href="/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/">the last blog post</a>, is configured to be <code>Network</code> encapsulating Alamofire. <code>WeatherFetcher</code> is configured to be initialized with a resolved <code>Networking</code> instance. This is called &ldquo;initializer injection&rdquo;. At the end, the method returns the configured <code>container</code>.</p>
+
+<p>In <code>application:didFinishLaunchingWithOptions:</code> method, the configured <code>container</code> is passed to <code>SwinjectStoryboard</code>. That&rsquo;s all. Simple, isn&rsquo;t it? Just configured and passed it.</p>
+
+<p>Let&rsquo;s move on to the implementation of <code>WeatherTablerViewController</code>.</p>
+
+<p><strong>WeatherTablerViewController.swift</strong></p>
+
+<pre><code>class WeatherTablerViewController: UITableViewController {
+    var weatherFetcher: WeatherFetcher?
+
+    private var cities = [City]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
+
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+
+        weatherFetcher?.fetch {
+            if let cities = $0 {
+                self.cities = cities
+            }
+            else {
+                // Show an error message.
+            }
+        }
+    }
+
+    // MARK: UITableViewDataSource
+    override func tableView(
+        tableView: UITableView,
+        numberOfRowsInSection section: Int) -&gt; Int
+    {
+        return cities.count
+    }
+
+    override func tableView(
+        tableView: UITableView,
+        cellForRowAtIndexPath indexPath: NSIndexPath) -&gt; UITableViewCell
+    {
+        let cell = tableView.dequeueReusableCellWithIdentifier(
+            &quot;Cell&quot;, forIndexPath: indexPath)
+        let city = cities[indexPath.row]
+        cell.textLabel?.text = city.name
+        cell.detailTextLabel?.text = city.weather
+        return cell
+    }
+}
+</code></pre>
+
+<p>First, <code>cities</code> property is added with an initial empty array of <code>City</code>. Setting the property triggers refreshing the table view.</p>
+
+<p>Second, <code>viewWillAppear</code> is overridden to start fetching weather information<sup class="footnote-ref" id="fnref:524204bd8810b54f3a02dbb14a1eb96e:2"><a rel="footnote" href="#fn:524204bd8810b54f3a02dbb14a1eb96e:2">2</a></sup> by <code>fetch</code> method. It takes a closure, and invokes the closure with an array of <code>City</code> when the weather data are retrieved. In the closure, <code>self.cities</code> is set and the table view is refreshed consequently. If <code>fetch</code> fails, it passes <code>nil</code> to the closure. In this blog post, the error handling is omitted, but the source code in <a href="https://github.com/Swinject/SwinjectSimpleExample">the GitHub repository</a> has an implementation to show an error message.</p>
+
+<p>At last, <code>tableView:numberOfRowsInSection:</code> and <code>tableView:cellForRowAtIndexPath:</code> are implemented to tell the number of rows and to set city name and weather labels of a cell.</p>
+
+<p>We have finished implementing the UI. Let&rsquo;s run the app. You will see the table view filled with current weather information.</p>
+
+<p><img src="/images/post/2015-08/SwinjectSimpleExampleScreenshot.png" alt="SwinjectSimpleExample Screenshot" /></p>
+
+<p>We have already seen the app works, but let me add a unit test for <code>WeatherTablerViewController</code>. We are going to check the view controller starts fetching weather data when the view appears. In this test, we will see the concept of <a href="https://en.wikipedia.org/wiki/Mock_object">mocking</a>.</p>
+
+<p>Add <code>WeatherTablerViewControllerSpec.swift</code> to <code>SwinjectSimpleExampleTests</code> with the following content.</p>
+
+<p><strong>WeatherTablerViewControllerSpec.swift</strong></p>
+
+<pre><code>import Quick
+import Nimble
+import Swinject
+@testable import SwinjectSimpleExample
+
+class WeatherTablerViewControllerSpec: QuickSpec {
+    class MockNetwork: Networking {
+        var requestCount = 0
+
+        func request(response: NSData? -&gt; ()) {
+            requestCount++
+        }
+    }
+
+    override func spec() {
+        var container: Container!
+        beforeEach {
+            container = Container()
+            container.register(Networking.self) { _ in MockNetwork() }
+                .inObjectScope(.Container)
+            container.register(WeatherFetcher.self) { r in
+                WeatherFetcher(networking: r.resolve(Networking.self)!)
+            }
+            container.register(WeatherTablerViewController.self) { r in
+                let controller = WeatherTablerViewController()
+                controller.weatherFetcher = r.resolve(WeatherFetcher.self)
+                return controller
+            }
+        }
+
+        it(&quot;starts fetching weather information when the view is about appearing.&quot;) {
+            let network = container.resolve(Networking.self) as! MockNetwork
+            let controller = container.resolve(WeatherTablerViewController.self)!
+
+            expect(network.requestCount) == 0
+            controller.viewWillAppear(true)
+            expect(network.requestCount).toEventually(equal(1))
+        }
+    }
+}
+</code></pre>
+
+<p>At the beginning, a mock of <code>Networking</code> is defined as <code>MockNetwork</code>. It has <code>request</code> method, but never returns a response. Instead, it increments a counter named <code>requestCount</code>. A mock is used to check whether methods or properties of an instance are called as intended. Although it may return dummy values like a stub does, the ability to check method or property calls differentiates a mock from a stub.</p>
+
+<p>In <code>spec</code>, we skip to <code>it</code> for now. First, instances of <code>MockNetwork</code> and <code>WeatherTablerViewController</code> are retrieved from the configured <code>container</code>. Because we know <code>Networking</code> is resolved to <code>MockNetwork</code>, we cast the returned instance to <code>MockNetwork</code>. Then, it is checked, by the <code>requestCount</code> counter, that <code>request</code> method of the mock is called once after <code>viewWillAppear</code> of the view controller is called. Although <code>WeatherTablerViewController</code> does not directly own <code>Networking</code> instance, we can ensure related instances are connected correctly by checking the call of the mocked method.</p>
+
+<p>Let&rsquo;s go back to the configuration of the <code>container</code>. First, <code>Networking</code> is registered to be resolved to <code>MockNetwork</code>, and configured to be shared within the <code>container</code>. By setting the object scope, it is ensured that the instance of <code>MockNetwork</code> to check the counter is identical to the instance indirectly owned by <code>WeatherTablerViewController</code>. Second, initializer injection of <code>WeatherFetcher</code> dependency is registered. Third, property injection of <code>WeatherTablerViewController</code> dependency is registered.</p>
+
+<p>Let&rsquo;s run the unit test. Passed, right? Assume you keep developing the weather app to add more features. The unit test gives you confidence that you will never break the connection of the UI and model.</p>
+
+<h2 id="conclusion:524204bd8810b54f3a02dbb14a1eb96e">Conclusion</h2>
+
+<p>We have developed the UI part of the simple weather app, and learnt how to wire the components with a dependency injection container. <code>SwinjectStoryboard</code> makes it easy to inject dependencies to view controllers defined in a storyboard. We have learnt, at last, a mock can be used to ensure that the components are wired as intended by checking a method call to the instance located at the terminal of the chain of dependencies.</p>
+
+<p>In the next blog post, we will develop a larger example app in <a href="https://en.wikipedia.org/wiki/Model_View_ViewModel">MVVM</a> architecture with the popular and elegant Swift <a href="https://en.wikipedia.org/wiki/Reactive_programming">reactive programming</a> framework, <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCococa</a>. Of course, we will take advantage of dependency injection with Swinject to wire up the MVVM components.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:524204bd8810b54f3a02dbb14a1eb96e:1">The instantiation of <code>SwinjectStoryboard</code> is a bit tricky because <code>UIStoryboard</code> does not have a normal designated initializer to override by its child classes. To workaround this problem, <code>SwinjectStoryboard</code> is instantiated with <code>create</code> function instead of an initializer.
+ <a class="footnote-return" href="#fnref:524204bd8810b54f3a02dbb14a1eb96e:1"><sup>[return]</sup></a></li>
+<li id="fn:524204bd8810b54f3a02dbb14a1eb96e:2">In the example app, <code>fetch</code> is called only in <code>viewWillAppear</code>, but a product app should have a button or something else to refresh the weather information.
+ <a class="footnote-return" href="#fnref:524204bd8810b54f3a02dbb14a1eb96e:2"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+      
+      
+      <div id="share-this" class="col span_10">
+        <span class='st_twitter_large' displayText='Tweet'></span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_googleplus_large' displayText='Google +'></span>
+        <span class='st_pocket_large' displayText='Pocket'></span>
+        <span class='st_sharethis_large' displayText='ShareThis'></span>
+        <span class='st_email_large' displayText='Email'></span>  
+      </div>
+    </article>
+    
+ <aside><div id="disqus_thread"></div></aside> 
+
+<script type="text/javascript">
+     
+    var disqus_shortname = 'yoichitgy';
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+  </main>
+
+
+  
+  <footer role="contentinfo">
+    <div style="text-align:center;">
+      
+      © 2015 Yoichi Tagaya. All rights reserved.
+    </div>
+  </footer>
+
+
+</div>
+
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-66106661-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+</body>
+</html>
+
