@@ -4,7 +4,7 @@
 }
 
 /* Pagination */
-nav {
+nav.pagination {
   padding: 40px 0 40px 0;
 }
 nav.pagination span.previous {
