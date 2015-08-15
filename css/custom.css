@@ -2,3 +2,19 @@
 #share-this {
   margin: 40px 0 40px 0;
 }
+
+/* Pagination */
+nav {
+  padding: 40px 0 40px 0;
+}
+nav.pagination span.previous {
+  float:left;
+  max-width:300px;
+}
+nav.pagination span.next {
+  float:right;
+  max-width:300px;
+}
+nav.pagination a {
+  color: #29abe2;
+}
