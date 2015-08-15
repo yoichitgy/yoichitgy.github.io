@@ -5,18 +5,21 @@
 
 /* Pagination */
 nav.pagination {
-  padding: 30px 0 50px 0;
-  display: block;
-  clear: both;
+  padding: 20px 0 20px 0;
+}
+nav.pagination:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 nav.pagination span.previous {
   float:left;
-  padding: 20px 0 20px 0;
+  padding: 10px 0 10px 0;
   max-width: 300px;
 }
 nav.pagination span.next {
   float:right;
-  padding: 20px 0 20px 0;
+  padding: 10px 0 10px 0;
   max-width: 300px;
 }
 nav.pagination a {
