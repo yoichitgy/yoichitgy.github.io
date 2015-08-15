@@ -5,17 +5,17 @@
 
 /* Pagination */
 nav.pagination {
-  padding: 20pt 0 30pt 0;
+  padding: 40px 0 40px 0;
 }
 nav.pagination span.previous {
   float:left;
-  padding: 10pt 0 10pt 0;
-  max-width:300pt;
+  padding: 20px 0 20px 0;
+  max-width:300px;
 }
 nav.pagination span.next {
   float:right;
-  padding: 10pt 0 10pt 0;
-  max-width:300pt;
+  padding: 20px 0 20px 0;
+  max-width:300px;
 }
 nav.pagination a {
   color: #29abe2;
