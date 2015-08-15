@@ -6,6 +6,7 @@
 /* Pagination */
 nav.pagination {
   padding: 20px 0 20px 0;
+  overflow: hidden;
 }
 nav.pagination span.previous {
   float:left;
