@@ -27,13 +27,13 @@
 
 &lt;p&gt;Open &lt;code&gt;Info.plist&lt;/code&gt; and remove &lt;code&gt;&amp;quot;Main storyboard file base name&amp;quot;&lt;/code&gt; key, which might be displayed as &lt;code&gt;&amp;quot;UIMainStoryboardFile&amp;quot;&lt;/code&gt; if you are showing raw keys.&lt;/p&gt;
 
-&lt;p&gt;Remove &lt;code&gt;ViewController.swift&lt;/code&gt; and add &lt;code&gt;WeatherTablerViewController.swift&lt;/code&gt;, which has an empty definition of &lt;code&gt;WeatherTablerViewController&lt;/code&gt;. We will implement the class later with the dependency injection pattern.&lt;/p&gt;
+&lt;p&gt;Remove &lt;code&gt;ViewController.swift&lt;/code&gt; and add &lt;code&gt;WeatherTableViewController.swift&lt;/code&gt;, which has an empty definition of &lt;code&gt;WeatherTableViewController&lt;/code&gt;. We will implement the class later with the dependency injection pattern.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;WeatherTablerViewController.swift&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;WeatherTableViewController.swift&lt;/strong&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;import UIKit
 
-class WeatherTablerViewController: UITableViewController {
+class WeatherTableViewController: UITableViewController {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -41,7 +41,7 @@ class WeatherTablerViewController: UITableViewController {
 
 &lt;p&gt;Select the navigation controller and check &lt;code&gt;&amp;quot;Is Initial View Controller&amp;quot;&lt;/code&gt; in the attribute inspector.&lt;/p&gt;
 
-&lt;p&gt;Select the table view controller, which is the root view controller of the navigation controller, and set its custom class to &lt;code&gt;WeatherTablerViewController&lt;/code&gt;. Select the prototype cell on the table view, and set its style to &lt;code&gt;Right Detail&lt;/code&gt; and identifier to &lt;code&gt;&amp;quot;Cell&amp;quot;&lt;/code&gt;. Select the navigation item on the table view controller, and set its title to &lt;code&gt;&amp;quot;Weather Now&amp;quot;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Select the table view controller, which is the root view controller of the navigation controller, and set its custom class to &lt;code&gt;WeatherTableViewController&lt;/code&gt;. Select the prototype cell on the table view, and set its style to &lt;code&gt;Right Detail&lt;/code&gt; and identifier to &lt;code&gt;&amp;quot;Cell&amp;quot;&lt;/code&gt;. Select the navigation item on the table view controller, and set its title to &lt;code&gt;&amp;quot;Weather Now&amp;quot;&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectSimpleExampleStoryboardScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Storyboard Screenshot&#34; /&gt;&lt;/p&gt;
 
@@ -84,11 +84,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 &lt;p&gt;Let&amp;rsquo;s implement the empty table view controller and add dependency injection to it.&lt;/p&gt;
 
-&lt;p&gt;Add &lt;code&gt;weatherFetcher&lt;/code&gt; property to &lt;code&gt;WeatherTablerViewController&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Add &lt;code&gt;weatherFetcher&lt;/code&gt; property to &lt;code&gt;WeatherTableViewController&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;WeatherTablerViewController.swift&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;WeatherTableViewController.swift&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;class WeatherTablerViewController: UITableViewController {
+&lt;pre&gt;&lt;code&gt;class WeatherTableViewController: UITableViewController {
     var weatherFetcher: WeatherFetcher?
 }
 &lt;/code&gt;&lt;/pre&gt;
@@ -123,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func createContainer() -&amp;gt; Container {
         let container = Container()
-        container.registerForStoryboard(WeatherTablerViewController.self) { r, c in
+        container.registerForStoryboard(WeatherTableViewController.self) { r, c in
             c.weatherFetcher = r.resolve(WeatherFetcher.self)
         }
         container.register(Networking.self) { _ in Network() }
@@ -137,15 +137,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;In &lt;code&gt;createContainer&lt;/code&gt; method, first, a &lt;code&gt;Container&lt;/code&gt; instance is created, then configured. &lt;code&gt;registerForStoryboard&lt;/code&gt; is used to configure dependencies of a view controller. Here &lt;code&gt;WeatherTablerViewController&lt;/code&gt; is configured to get &lt;code&gt;weatherFetcher&lt;/code&gt; property set to a resolved instance of &lt;code&gt;WeatherFetcher&lt;/code&gt;. This is called &amp;ldquo;property injection&amp;rdquo;. &lt;code&gt;Networking&lt;/code&gt; protocol, which was defined in &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the last blog post&lt;/a&gt;, is configured to be &lt;code&gt;Network&lt;/code&gt; encapsulating Alamofire. &lt;code&gt;WeatherFetcher&lt;/code&gt; is configured to be initialized with a resolved &lt;code&gt;Networking&lt;/code&gt; instance. This is called &amp;ldquo;initializer injection&amp;rdquo;. At the end, the method returns the configured &lt;code&gt;container&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;createContainer&lt;/code&gt; method, first, a &lt;code&gt;Container&lt;/code&gt; instance is created, then configured. &lt;code&gt;registerForStoryboard&lt;/code&gt; is used to configure dependencies of a view controller. Here &lt;code&gt;WeatherTableViewController&lt;/code&gt; is configured to get &lt;code&gt;weatherFetcher&lt;/code&gt; property set to a resolved instance of &lt;code&gt;WeatherFetcher&lt;/code&gt;. This is called &amp;ldquo;property injection&amp;rdquo;. &lt;code&gt;Networking&lt;/code&gt; protocol, which was defined in &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the last blog post&lt;/a&gt;, is configured to be &lt;code&gt;Network&lt;/code&gt; encapsulating Alamofire. &lt;code&gt;WeatherFetcher&lt;/code&gt; is configured to be initialized with a resolved &lt;code&gt;Networking&lt;/code&gt; instance. This is called &amp;ldquo;initializer injection&amp;rdquo;. At the end, the method returns the configured &lt;code&gt;container&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;In &lt;code&gt;application:didFinishLaunchingWithOptions:&lt;/code&gt; method, the configured &lt;code&gt;container&lt;/code&gt; is passed to &lt;code&gt;SwinjectStoryboard&lt;/code&gt;. That&amp;rsquo;s all. Simple, isn&amp;rsquo;t it? Just configured and passed it.&lt;/p&gt;
 
-&lt;p&gt;Let&amp;rsquo;s move on to the implementation of &lt;code&gt;WeatherTablerViewController&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s move on to the implementation of &lt;code&gt;WeatherTableViewController&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;WeatherTablerViewController.swift&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;WeatherTableViewController.swift&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;class WeatherTablerViewController: UITableViewController {
+&lt;pre&gt;&lt;code&gt;class WeatherTableViewController: UITableViewController {
     var weatherFetcher: WeatherFetcher?
 
     private var cities = [City]() {
@@ -201,18 +201,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 &lt;h2 id=&#34;testing-view-controller:524204bd8810b54f3a02dbb14a1eb96e&#34;&gt;Testing View Controller&lt;/h2&gt;
 
-&lt;p&gt;We have already seen the app works, but let me add a unit test for &lt;code&gt;WeatherTablerViewController&lt;/code&gt;. We are going to check the view controller starts fetching weather data when the view appears. In this test, we will see the concept of &lt;a href=&#34;https://en.wikipedia.org/wiki/Mock_object&#34;&gt;mocking&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;We have already seen the app works, but let me add a unit test for &lt;code&gt;WeatherTableViewController&lt;/code&gt;. We are going to check the view controller starts fetching weather data when the view appears. In this test, we will see the concept of &lt;a href=&#34;https://en.wikipedia.org/wiki/Mock_object&#34;&gt;mocking&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;Add &lt;code&gt;WeatherTablerViewControllerSpec.swift&lt;/code&gt; to &lt;code&gt;SwinjectSimpleExampleTests&lt;/code&gt; with the following content.&lt;/p&gt;
+&lt;p&gt;Add &lt;code&gt;WeatherTableViewControllerSpec.swift&lt;/code&gt; to &lt;code&gt;SwinjectSimpleExampleTests&lt;/code&gt; with the following content.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;WeatherTablerViewControllerSpec.swift&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;WeatherTableViewControllerSpec.swift&lt;/strong&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;import Quick
 import Nimble
 import Swinject
 @testable import SwinjectSimpleExample
 
-class WeatherTablerViewControllerSpec: QuickSpec {
+class WeatherTableViewControllerSpec: QuickSpec {
     class MockNetwork: Networking {
         var requestCount = 0
 
@@ -230,8 +230,8 @@ class WeatherTablerViewControllerSpec: QuickSpec {
             container.register(WeatherFetcher.self) { r in
                 WeatherFetcher(networking: r.resolve(Networking.self)!)
             }
-            container.register(WeatherTablerViewController.self) { r in
-                let controller = WeatherTablerViewController()
+            container.register(WeatherTableViewController.self) { r in
+                let controller = WeatherTableViewController()
                 controller.weatherFetcher = r.resolve(WeatherFetcher.self)
                 return controller
             }
@@ -239,7 +239,7 @@ class WeatherTablerViewControllerSpec: QuickSpec {
 
         it(&amp;quot;starts fetching weather information when the view is about appearing.&amp;quot;) {
             let network = container.resolve(Networking.self) as! MockNetwork
-            let controller = container.resolve(WeatherTablerViewController.self)!
+            let controller = container.resolve(WeatherTableViewController.self)!
 
             expect(network.requestCount) == 0
             controller.viewWillAppear(true)
@@ -251,9 +251,9 @@ class WeatherTablerViewControllerSpec: QuickSpec {
 
 &lt;p&gt;At the beginning, a mock of &lt;code&gt;Networking&lt;/code&gt; is defined as &lt;code&gt;MockNetwork&lt;/code&gt;. It has &lt;code&gt;request&lt;/code&gt; method, but never returns a response. Instead, it increments a counter named &lt;code&gt;requestCount&lt;/code&gt;. A mock is used to check whether methods or properties of an instance are called as intended. Although it may return dummy values like a stub does, the ability to check method or property calls differentiates a mock from a stub.&lt;/p&gt;
 
-&lt;p&gt;In &lt;code&gt;spec&lt;/code&gt;, we skip to &lt;code&gt;it&lt;/code&gt; for now. First, instances of &lt;code&gt;MockNetwork&lt;/code&gt; and &lt;code&gt;WeatherTablerViewController&lt;/code&gt; are retrieved from the configured &lt;code&gt;container&lt;/code&gt;. Because we know &lt;code&gt;Networking&lt;/code&gt; is resolved to &lt;code&gt;MockNetwork&lt;/code&gt;, we cast the returned instance to &lt;code&gt;MockNetwork&lt;/code&gt;. Then, it is checked, by the &lt;code&gt;requestCount&lt;/code&gt; counter, that &lt;code&gt;request&lt;/code&gt; method of the mock is called once after &lt;code&gt;viewWillAppear&lt;/code&gt; of the view controller is called. Although &lt;code&gt;WeatherTablerViewController&lt;/code&gt; does not directly own &lt;code&gt;Networking&lt;/code&gt; instance, we can ensure related instances are connected correctly by checking the call of the mocked method.&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;spec&lt;/code&gt;, we skip to &lt;code&gt;it&lt;/code&gt; for now. First, instances of &lt;code&gt;MockNetwork&lt;/code&gt; and &lt;code&gt;WeatherTableViewController&lt;/code&gt; are retrieved from the configured &lt;code&gt;container&lt;/code&gt;. Because we know &lt;code&gt;Networking&lt;/code&gt; is resolved to &lt;code&gt;MockNetwork&lt;/code&gt;, we cast the returned instance to &lt;code&gt;MockNetwork&lt;/code&gt;. Then, it is checked, by the &lt;code&gt;requestCount&lt;/code&gt; counter, that &lt;code&gt;request&lt;/code&gt; method of the mock is called once after &lt;code&gt;viewWillAppear&lt;/code&gt; of the view controller is called. Although &lt;code&gt;WeatherTableViewController&lt;/code&gt; does not directly own &lt;code&gt;Networking&lt;/code&gt; instance, we can ensure related instances are connected correctly by checking the call of the mocked method.&lt;/p&gt;
 
-&lt;p&gt;Let&amp;rsquo;s go back to the configuration of the &lt;code&gt;container&lt;/code&gt;. First, &lt;code&gt;Networking&lt;/code&gt; is registered to be resolved to &lt;code&gt;MockNetwork&lt;/code&gt;, and its instance is configured to be shared within the &lt;code&gt;container&lt;/code&gt;. By setting the object scope, it is ensured that the instance of &lt;code&gt;MockNetwork&lt;/code&gt; to check the counter is identical to the instance indirectly owned by &lt;code&gt;WeatherTablerViewController&lt;/code&gt;. Second, initializer injection of &lt;code&gt;WeatherFetcher&lt;/code&gt; dependency is registered. Third, property injection of &lt;code&gt;WeatherTablerViewController&lt;/code&gt; dependency is registered.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s go back to the configuration of the &lt;code&gt;container&lt;/code&gt;. First, &lt;code&gt;Networking&lt;/code&gt; is registered to be resolved to &lt;code&gt;MockNetwork&lt;/code&gt;, and its instance is configured to be shared within the &lt;code&gt;container&lt;/code&gt;. By setting the object scope, it is ensured that the instance of &lt;code&gt;MockNetwork&lt;/code&gt; to check the counter is identical to the instance indirectly owned by &lt;code&gt;WeatherTableViewController&lt;/code&gt;. Second, initializer injection of &lt;code&gt;WeatherFetcher&lt;/code&gt; dependency is registered. Third, property injection of &lt;code&gt;WeatherTableViewController&lt;/code&gt; dependency is registered.&lt;/p&gt;
 
 &lt;p&gt;Let&amp;rsquo;s run the unit test. Passed, right? Assume you keep developing the weather app to add more features. The unit test gives you confidence that you will never break the connection of the UI and model.&lt;/p&gt;
 
