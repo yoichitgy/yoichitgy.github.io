@@ -79,6 +79,8 @@
 
 <p>In <a href="/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/">the last blog post</a>, we developed the model part of the simple weather app, and learnt how to remove tightly coupled dependencies by using dependency injection and <a href="https://github.com/Swinject/Swinject">Swinject</a>. We found the decoupling made unit testing easier. In this blog post, we are going to develop the UI part of the app, and will learn how to wire up the decoupled components with Swinject.</p>
 
+<p>The source code used in this blog post is available at <a href="https://github.com/Swinject/SwinjectSimpleExample">a repository on GitHub</a>.</p>
+
 <h2 id="basic-ui-structure:524204bd8810b54f3a02dbb14a1eb96e">Basic UI Structure</h2>
 
 <p>First, we are going to make a basic UI structure to show the weather information in a table view. The UI components will be instantiated from a storyboard, but instantiation of the storyboard itself will be written by hand to use <code>SwinjectStoryboard</code> inheriting <code>UIStoryboard</code>.</p>
