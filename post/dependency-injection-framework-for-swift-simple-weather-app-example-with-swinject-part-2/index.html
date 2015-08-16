@@ -249,13 +249,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 <p>First, <code>cities</code> property is added with an initial empty array of <code>City</code>. Setting the property triggers refreshing the table view.</p>
 
-<p>Second, <code>viewWillAppear</code> is overridden to start fetching weather information<sup class="footnote-ref" id="fnref:524204bd8810b54f3a02dbb14a1eb96e:2"><a rel="footnote" href="#fn:524204bd8810b54f3a02dbb14a1eb96e:2">2</a></sup> by <code>fetch</code> method. It takes a closure, and invokes the closure with an array of <code>City</code> when the weather data are retrieved. In the closure, <code>self.cities</code> is set and the table view is refreshed consequently. If <code>fetch</code> fails, it passes <code>nil</code> to the closure. In this blog post, the error handling is omitted, but the source code in <a href="https://github.com/Swinject/SwinjectSimpleExample">the GitHub repository</a> has an implementation to show an error message.</p>
+<p>Second, <code>viewWillAppear</code> is overridden to start fetching weather information by <code>fetch</code> method<sup class="footnote-ref" id="fnref:524204bd8810b54f3a02dbb14a1eb96e:2"><a rel="footnote" href="#fn:524204bd8810b54f3a02dbb14a1eb96e:2">2</a></sup>. It takes a closure, and invokes the closure with an array of <code>City</code> when the weather data are retrieved. In the closure, <code>self.cities</code> is set and the table view is refreshed consequently. If <code>fetch</code> fails, it passes <code>nil</code> to the closure. In this blog post, the error handling is omitted, but the source code in <a href="https://github.com/Swinject/SwinjectSimpleExample">the GitHub repository</a> has an implementation to show an error message.</p>
 
 <p>At last, <code>tableView:numberOfRowsInSection:</code> and <code>tableView:cellForRowAtIndexPath:</code> are implemented to tell the number of rows and to set city name and weather labels of a cell.</p>
 
 <p>We have finished implementing the UI. Let&rsquo;s run the app. You will see the table view filled with current weather information.</p>
 
 <p><img src="/images/post/2015-08/SwinjectSimpleExampleScreenshot.png" alt="SwinjectSimpleExample Screenshot" /></p>
+
+<h2 id="testing-view-controller:524204bd8810b54f3a02dbb14a1eb96e">Testing View Controller</h2>
 
 <p>We have already seen the app works, but let me add a unit test for <code>WeatherTablerViewController</code>. We are going to check the view controller starts fetching weather data when the view appears. In this test, we will see the concept of <a href="https://en.wikipedia.org/wiki/Mock_object">mocking</a>.</p>
 
@@ -309,7 +311,7 @@ class WeatherTablerViewControllerSpec: QuickSpec {
 
 <p>In <code>spec</code>, we skip to <code>it</code> for now. First, instances of <code>MockNetwork</code> and <code>WeatherTablerViewController</code> are retrieved from the configured <code>container</code>. Because we know <code>Networking</code> is resolved to <code>MockNetwork</code>, we cast the returned instance to <code>MockNetwork</code>. Then, it is checked, by the <code>requestCount</code> counter, that <code>request</code> method of the mock is called once after <code>viewWillAppear</code> of the view controller is called. Although <code>WeatherTablerViewController</code> does not directly own <code>Networking</code> instance, we can ensure related instances are connected correctly by checking the call of the mocked method.</p>
 
-<p>Let&rsquo;s go back to the configuration of the <code>container</code>. First, <code>Networking</code> is registered to be resolved to <code>MockNetwork</code>, and configured to be shared within the <code>container</code>. By setting the object scope, it is ensured that the instance of <code>MockNetwork</code> to check the counter is identical to the instance indirectly owned by <code>WeatherTablerViewController</code>. Second, initializer injection of <code>WeatherFetcher</code> dependency is registered. Third, property injection of <code>WeatherTablerViewController</code> dependency is registered.</p>
+<p>Let&rsquo;s go back to the configuration of the <code>container</code>. First, <code>Networking</code> is registered to be resolved to <code>MockNetwork</code>, and its instance is configured to be shared within the <code>container</code>. By setting the object scope, it is ensured that the instance of <code>MockNetwork</code> to check the counter is identical to the instance indirectly owned by <code>WeatherTablerViewController</code>. Second, initializer injection of <code>WeatherFetcher</code> dependency is registered. Third, property injection of <code>WeatherTablerViewController</code> dependency is registered.</p>
 
 <p>Let&rsquo;s run the unit test. Passed, right? Assume you keep developing the weather app to add more features. The unit test gives you confidence that you will never break the connection of the UI and model.</p>
 
