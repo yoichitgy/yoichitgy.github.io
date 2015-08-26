@@ -298,7 +298,7 @@ class WeatherTableViewControllerSpec: QuickSpec {
 &lt;li&gt;CocoaPods 0.38 or later&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;We are going to use Xcode 7 although it is still beta. It is beta 5 at the timing of writing this blog post. Xcode 7 supports &lt;code&gt;@testable import&lt;/code&gt; to access &lt;code&gt;internal&lt;/code&gt; types, functions or properties in unit test targets.&lt;/p&gt;
+&lt;p&gt;We are going to use Xcode 7 although it is still beta. It is beta 6 at the timing of writing this blog post. Xcode 7 supports &lt;code&gt;@testable import&lt;/code&gt; to access &lt;code&gt;internal&lt;/code&gt; types, functions or properties in unit test targets.&lt;/p&gt;
 
 &lt;p&gt;Also, we will use &lt;a href=&#34;http://openweathermap.org&#34;&gt;OpenWeatherMap&lt;/a&gt; for a free API to get weather information. &lt;a href=&#34;http://home.openweathermap.org/users/sign_up&#34;&gt;Sign up&lt;/a&gt; and get a free API key.&lt;/p&gt;
 
