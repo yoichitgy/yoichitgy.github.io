@@ -153,7 +153,7 @@ end
     static var parameters: [String: String] {
         return [
             &quot;APPID&quot;: apiKey,
-            &quot;id&quot;: &quot;,&quot;.join(cityIds.map { String($0) })
+            &quot;id&quot;: cityIds.map { String($0) }.joinWithSeparator(&quot;,&quot;)
         ]
     }
 }
