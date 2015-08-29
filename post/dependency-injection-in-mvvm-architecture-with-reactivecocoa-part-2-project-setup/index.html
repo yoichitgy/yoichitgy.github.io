@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  
+  <meta charset="UTF-8">
+  <title>
+    Dependency Injection in MVVM Architecture with ReactiveCocoa Part 2: Project Setup | Swift Injection
+  </title>
+
+
+  
+  <meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1,initial-scale=1">
+
+  
+  <link rel="canonical" href="https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/"/>
+
+  
+  <link rel="stylesheet" href="/css/sanitize.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/highlight_monokai.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/custom.css">
+  
+  
+  <link href="https://yoichitgy.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Swift Injection" />
+  <link href="https://yoichitgy.github.io/index.xml" rel="feed" type="application/rss+xml" title="Swift Injection" />
+
+  
+  <script type="text/javascript">var switchTo5x=true;</script>
+  <script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
+  <script type="text/javascript">stLight.options({publisher: "2b9fffc6-b3fe-4988-a0ef-4f9dcce98eaa", doNotHash: true, doNotCopy: true, hashAddressBar: false});</script>
+
+
+</head>
+
+
+
+<body>
+<div class="container">
+
+  
+  <header role="banner">
+    <div class="row gutters">
+      <div id="site-title" class="col span_6">
+        <h1><a href="https://yoichitgy.github.io/">Swift Injection</a></h1>
+        <h2>Swift patterns and practices</h2>
+      </div>
+      <div id="social" class="col span_6">
+        <ul>
+          <li><a href="https://twitter.com/yoichitgy" target="_blank">Twitter</a></li>
+          
+          <li><a href="https://github.com/yoichitgy" target="_blank">GitHub</a></li>
+          <li><a href="https://yoichitgy.github.io/index.xml" type="application/rss+xml" target="_blank">RSS</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+
+  
+  <main id="single" role="main">
+    <div class="article-header">
+      <h1>Dependency Injection in MVVM Architecture with ReactiveCocoa Part 2: Project Setup</h1>
+      <div class="meta">
+        Aug 29, 2015 &nbsp;
+        
+          #<a href="/tags/swinject">swinject</a>&nbsp;
+        
+          #<a href="/tags/dependency-injection">dependency-injection</a>&nbsp;
+        
+          #<a href="/tags/mvvm">mvvm</a>&nbsp;
+        
+          #<a href="/tags/reactivecocoa">reactivecocoa</a>&nbsp;
+        
+          #<a href="/tags/swift">swift</a>&nbsp;
+        
+      </div>
+    </div>
+    <article>
+      
+
+<p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/">the last blog post</a>, the basic concepts of MVVM (Model-View-ViewModel) and <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a> were introduced. From this blog post, we are going to develop an example app to demonstrate dependency injection with <a href="https://github.com/Swinject/Swinject">Swinject</a> in MVVM architecture. We will use ReactiveCococa to handle events passed between MVVM components. In this blog post, you will learn how to setup an Xcode project composing Molel, View and ViewModel as  frameworks.</p>
+
+<p>The example app asynchronously searches, downloads and displays images obtained from <a href="https://pixabay.com">Pixabay</a> via <a href="https://pixabay.com/api/docs/">its API</a>, as shown in the GIF animation below. The source code used in the blog posts is available at <a href="https://github.com/Swinject/SwinjectMVVMExample">a repository on GitHub</a>.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif" alt="SwinjectMVVMExample ScreenRecord" /></p>
+
+<h2 id="requirements:11d7c6379da90efdd5e0a41c688871dd">Requirements</h2>
+
+<ul>
+<li>Swift 2.0</li>
+<li>Xcode 7 beta 6</li>
+<li><a href="https://github.com/Carthage/Carthage">Carthage</a> 0.8 or later</li>
+<li><a href="https://pixabay.com/api/docs/">Pixabay</a> API username and key</li>
+</ul>
+
+<p>We are going to use Swift 2.0 with Xcode 7 though they are still in beta versions. To use with Swift 2, a development version of ReactiveCocoa in <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2">swift2 branch</a> will be used. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but APIs in swift2 branch are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>. Since swift2 branch is still in development, the APIs might be changed in the future.</p>
+
+<p>Carthage can be installed by <a href="https://github.com/Carthage/Carthage/releases">its installer (Carthage.pkg)</a>, or <a href="http://brew.sh/">Homebrew</a> with the following commands.</p>
+
+<pre><code>brew update
+brew install carthage
+</code></pre>
+
+<p>You can get a free API username and key at <a href="https://pixabay.com/">Pixabay</a>. First, sign up and log in there. Then, access its <a href="https://pixabay.com/api/docs/">API documentation page</a>. Your API username and key will be displayed in &ldquo;Request parameters&rdquo; section.</p>
+
+<h2 id="project-setup-overview:11d7c6379da90efdd5e0a41c688871dd">Project Setup Overview</h2>
+
+<p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/">the last blog post</a>, we learned View depended on ViewModel and ViewModel on Model in MVVM architecture. How can we force the direction of dependencies when we write protocols, classes or structs representing Models, Views or ViewModels? It is easy to get chaotic if all the types are placed in a directory, or even in an application target.</p>
+
+<p>Java or .NET applications are often composed of several <a href="https://en.wikipedia.org/wiki/JAR_%28file_format%29">JAR</a>s or <a href="https://en.wikipedia.org/wiki/Dynamic-link_library">DLL</a>s to make the responsibilities of the components explicit. Since iOS 8 has introduced dynamic frameworks, it is easy to setup an iOS app composed of several dynamic frameworks. The architecture of an iOS app containing Model, View and ViewModel frameworks, as diagrammed in the image below, ensures that the direction of the dependencies is from View to ViewModel and ViewModel to Model with the dependencies injected by the application. For example, if you make a type in ViewModel framework, it can reference types in Model framework but cannot those in View framework.</p>
+
+<p>The architecture keeps the consistency of the direction of the dependencies, and makes the app easy to develop, test and maintain.</p>
+
+<p><img src="/images/post/2015-08/Diagram-MVVMAppStructure.png" alt="App Structure Diagram" /></p>
+
+<h2 id="project-setup-composing-mvvm-frameworks:11d7c6379da90efdd5e0a41c688871dd">Project Setup Composing MVVM Frameworks</h2>
+
+<p>Let&rsquo;s start creating our Xcode project composing the MVVM frameworks. Select <code>File &gt; New &gt; Project...</code> menu and <code>iOS &gt; Application &gt; Single View Application</code> item. Set  its product name to <code>SwinjectMVVMExample</code>, add <code>.SwinjectMVVMExample</code> to the end of the bundle identifier, set language to Swift and devices to iPhone, and check <code>Include Unit Tests</code> only<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:1"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:1">1</a></sup>. Save it anywhere in your local storage.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotNewProject.png" alt="Screenshot New Project" /></p>
+
+<p>Next we are going to add Model, View and ViewModel frameworks. They will be named <code>ExampleModel</code>, <code>ExampleView</code> and <code>ExampleViewModel</code>, respectively, in our example app. When you create your own app, it is recommended to name the frameworks as <code>YourAppName</code> + <code>Model</code>, <code>View</code>, and <code>ViewModel</code>. For exampe, if your app name is <code>Foobook</code>, your framework names may be <code>FoobookModel</code>, <code>FoobookView</code> and <code>FoobookViewModel</code>.</p>
+
+<p>Select <code>File &gt; New &gt; Target...</code> menu and <code>iOS &gt; Framework &amp; Library &gt; Cocoa Touch Framework</code>. Click <code>Next</code> button. In the next page, set product name to <code>ExampleModel</code>, language to Swift. Keep <code>Include Unit Test</code> checked and click <code>Finish</code>. In the same way, add <code>ExampleViewModel</code> and <code>ExampleView</code> framework targets.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotNewTarget.png" alt="Screenshot New Target" /></p>
+
+<p>Right click on <code>SwinjectMVVMExample</code> in Project Navigator (the left pane in Xcode), and select <code>New Group</code>. Set the group name to <code>Tests</code>. Drag <code>ExampleModel</code>, <code>ExampleViewModel</code>, <code>ExampleView</code>, <code>ExampleModelTests</code>, <code>ExampleViewModelTests</code>, <code>ExampleViewTests</code> and <code>SwinjectMVVMExampleTests</code> in Project Navigator, and place them as shown in the image below. Select <code>SwinjectMVVMExample</code> in Project Navigator, and order the targets by dragging as shown in the image.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotProjectHierarchy.png" alt="Screenshot Project Hierarchy" /></p>
+
+<p>We are going to configure dependency and link settings of the targets. Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>ExampleViewModel</code> in Targets area. In Build Phases tab, click <code>+</code> button in Target Dependencies section, and add <code>ExampleModel</code>. Click <code>+</code> button in Link Binary with Libraries section, and add <code>ExampleModel.framework</code>. In the same way, add <code>ExampleViewModel</code> and <code>ExampleViewModel.framework</code> to those of <code>ExampleView</code> target. Target settings of <code>ExampleModel</code> and <code>SwinjectMVVMExample</code> can be left because <code>ExampleModel</code> has no dependencies and <code>SwinjectMVVMExample</code> has those settings by default.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleModel.png" alt="Screenshot Target Settings ExampleModel" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleViewModel.png" alt="Screenshot Target Settings ExampleViewModel" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleView.png" alt="Screenshot Target Settings ExampleView" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsSwinjectMVVMExample.png" alt="Screenshot Target Settings SwinjectMVVMExample" /></p>
+
+<p>We are going to configure unit test targets too. Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>ExampleModelTests</code> in Targets area. In General tab, set Host Application to <code>None</code>. In the same way, set Host Application of <code>ExampleViewModelTests</code> and <code>ExampleViewTests</code> to <code>None</code>.</p>
+
+<p>Again select <code>ExampleModelTests</code> in Targets area. In Build Phases tab, remove <code>SwinjectMVVMExample</code> in Target Dependencies section by selecting it and click <code>-</code> button. In the same remove target dependency on <code>SwinjectMVVMExample</code> from <code>ExampleViewModelTests</code> and <code>ExampleViewTests</code>.</p>
+
+<p>Select <code>ExampleViewModelTests</code> in Targets area. In Build Phases tab, add <code>ExampleModel.framework</code> to Link Binary with Libraries section. In the same way, add <code>ExampleViewModel.framework</code> to that of <code>ExampleViewTests</code>. We need those links to stub or mock types in the linked frameworks.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleModelTests.png" alt="Screenshot Target Settings ExampleModelTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleViewModelTests.png" alt="Screenshot Target Settings ExampleViewModelTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsExampleViewTests.png" alt="Screenshot Target Settings ExampleViewTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTargetSettingsSwinjectMVVMExampleTests.png" alt="Screenshot Target Settings SwinjectMVVMExampleTests" /></p>
+
+<p>We are going to setup a build scheme. Click scheme button on the Xcode toolbar, and select <code>Manage Schemes...</code> If you see <code>ExampleModel</code>, <code>ExampleViewModel</code> and <code>ExampleView</code> schemes, select them and click <code>-</code> button to delete them. Then select <code>SwinjectMVVMExample</code> scheme and click <code>Edit</code> button. Make sure that <code>ExampleModelTests</code>, <code>ExampleViewModelTests</code>, <code>ExampleViewTests</code> and <code>SwinjectMVVMExampleTests</code> are checked in Build and Test settings.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotBuildScheme.png" alt="Screenshot Build Scheme" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotTestScheme.png" alt="Screenshot Test Scheme" /></p>
+
+<p>Okay, we have finished setting up the project. Run the app (<code>Command-R</code>), then  unit tests (<code>Command-U</code>) to check whether the project is configured correctly. If you see an error for an umbrella header, set the target membership of the header file to the target with <code>Public</code> accessibility as shown in the image below. Xcode sometimes creates umbrella headers with wrong target memberships.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotUmbrellaHeader.png" alt="Screenshot Umbrella Header" /></p>
+
+<h2 id="installation-of-external-frameworks-with-carthage:11d7c6379da90efdd5e0a41c688871dd">Installation of External Frameworks with Carthage</h2>
+
+<p>We are going to install <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a>, <a href="https://github.com/ikesyo/Himotoki">Himotoki</a>, <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a>. We used Alamofire, Quick and Nimble in <a href="/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/">the previous example project</a>. This time, we are going to use Himotoki, which is a type-safe JSON decoding library, in place of <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>. The details of Himotoki will be mentioned in the next blog post when we use it.</p>
+
+<p>To install them with <a href="https://github.com/Carthage/Carthage">Carthage</a>, add a text file named <code>Cartfile</code> with the following contents. Notice that specific commit versions of some frameworks are specified because they are still in development to support Swift 2 and Xcode 7 (beta).</p>
+
+<p><strong>Cartfile</strong></p>
+
+<pre><code>github &quot;ReactiveCocoa/ReactiveCocoa&quot; &quot;be3d9f5a2ba0fd902c13373e320a4b86f214c1d3&quot;
+github &quot;ikesyo/Himotoki&quot; &quot;9f6717c4cca558377fe4d1223d443883be401530&quot;
+github &quot;Alamofire/Alamofire&quot; ~&gt; 2.0.0
+github &quot;Swinject/Swinject&quot; ~&gt; 0.2.1
+
+github &quot;Quick/Quick&quot; &quot;1fbcd8a05f6e896e2db66a2e82527b7f24766ef8&quot;
+github &quot;Quick/Nimble&quot; &quot;e3e3978ef610927d70eafd333e162855ad7b6f77&quot;
+</code></pre>
+
+<p>Run <code>carthage update --no-build</code> and <code>carthage build</code> in Terminal<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:2"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:2">2</a></sup>. Wait for a couple of minutes (or more) until Carthage finishes building the frameworks. If you use <a href="https://git-scm.com">Git</a>, here is a <a href="https://github.com/github/gitignore/blob/master/Swift.gitignore"><code>.gitignore</code> for Swift</a> excluding frameworks built by Carthage<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:3"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:3">3</a></sup>.</p>
+
+<p>After the build completes, right click on <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>New Group</code>. Name the group <code>Frameworks</code>. Drag and drop the frameworks built in <code>Carthage/Build/iOS</code> directory in Finder to the group in Xcode. When you drop them, an action sheet asks you wether they should be added to targets. Uncheck all targets and click <code>Finish</code> button.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotUmbrellaHeaderFrameworksGroup.png" alt="Screenshot Umbrella Header" /></p>
+
+<p>Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>ExampleModel</code> in Target section with Build Phases tab open. Drag <code>Alamofire.framework</code>, <code>Himotoki.framework</code>, <code>ReactiveCocoa.framework</code> and <code>Result.framework</code><sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:4"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:4">4</a></sup> in the <code>Frameworks</code> group to Link Binary with Libraries section in Build Phases tab. In the same way, add <code>ReactiveCocoa.framework</code> and <code>Result.framework</code> to those of <code>ExampleViewModel</code> and <code>ExampleView</code>. Add <code>Swinject.framework</code> to that of <code>SwinjectMVVMExample</code>. Add <code>ReactiveCocoa.framework</code>, <code>Result.framework</code>, <code>Quick.framework</code> and <code>Nimble.framework</code> to those of <code>ExampleModelTests</code>, <code>ExampleViewModelTests</code> and <code>ExampleViewTests</code>. Add <code>Swinject.framework</code>, <code>Quick.framework</code> and <code>Nimble.framework</code> to that of <code>SwinjectMVVMExampleTests</code>. Alamofire and Himotoki are used only in our Model, Swinject only in our application and its test, and Quick and Nimble only in unit tests.</p>
+
+<p>Select <code>ExampleModelTests</code> in Target section, click <code>+</code> button under Build Phases tab, select <code>New Copy Files Phase</code>, and name the new phase <code>Copy Frameworks</code>. Within the phase, set Destination to <code>Frameworks</code>. Drag <code>Alamofire.framework</code>, <code>Himotoki.framework</code>, <code>ReactiveCocoa.framework</code>, <code>Result.framework</code>, <code>Quick.framework</code> and <code>Nimble.framework</code> in <code>Frameworks</code> group on Project Navigator to <code>Copy Frameworks</code> phase. In the same way, add <code>Copy Frameworks</code> phases to <code>ExampleViewModelTests</code> and <code>ExampleViewTests</code>, and drag the 6 frameworks to the phases. Add <code>Copy Frameworks</code> phase to <code>SwinjectMVVMExampleTests</code> in the same way, and add <code>Quick.framework</code> and <code>Nimble.framework</code> to the phase. Because <code>SwinjectMVVMExampleTests</code> is hosted in the app, only Quick and Nimble, which are not used in the app, are added to the phase.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleModel.png" alt="Screenshot Link Settings ExampleModel" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleViewModel.png" alt="Screenshot Link Settings ExampleViewModel" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleView.png" alt="Screenshot Link Settings ExampleView" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsSwinjectMVVMExample.png" alt="Screenshot Link Settings SwinjectMVVMExample" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleModelTests.png" alt="Screenshot Link Settings ExampleModelTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleViewModelTests.png" alt="Screenshot Link Settings ExampleViewModelTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsExampleViewTests.png" alt="Screenshot Link Settings ExampleViewTests" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsSwinjectMVVMExampleTests.png" alt="Screenshot Link Settings SwinjectMVVMExample" /></p>
+
+<p>The last settings are as specified in the README of <a href="https://github.com/Carthage/Carthage">Carthage</a>. Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>SwinjectMVVMExample</code> in Targets section with Build Phases tab open. Click <code>+</code> button under the tab, and select <code>New Run Script Phase</code>. Rename the phase to <code>Run Script for Frameworks by Carthage</code> and add the following line to the script text field.</p>
+
+<pre><code>/usr/local/bin/carthage copy-frameworks
+</code></pre>
+
+<p>Then add the following paths to Input Files section by clicking <code>+</code> button.</p>
+
+<pre><code>$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework
+$(SRCROOT)/Carthage/Build/iOS/Himotoki.framework
+$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework
+$(SRCROOT)/Carthage/Build/iOS/Result.framework
+$(SRCROOT)/Carthage/Build/iOS/Swinject.framework
+</code></pre>
+
+<p>Again click the <code>+</code> button under Build Phases tab, select <code>New Copy Files Phase</code> and name the phase <code>Copy dSYMs</code>. Set its destination to <code>Products Directory</code>, and drag <code>Alamofire.framework.dSYM</code>, <code>Himotoki.framework.dSYM</code>, <code>ReactiveCocoa.framework.dSYM</code>, <code>Result.framework.dSYM</code>, <code>Swinject.framework.dSYM</code> from <code>Carthage/Build/iOS/</code> directory in Finder to the <code>Copy dSYMs</code> phase in Xcode. Right click on <code>SwinjectMVVMExample</code> in Project Navigator and select <code>New Group</code>. Name the new group <code>dSYMs</code> and put the dSYM files that were added to Project Navigator automatically into the group to tidy up.</p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotCarthageScriptAnddSYMs.png" alt="Screenshot dSYMs Group" /></p>
+
+<p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotdSYMsGroup.png" alt="Screenshot dSYMs Group" /></p>
+
+<p>Configurations! You got the project set up. Try running the app and unit tests by <code>Command-R</code> and <code>Command-U</code> to confirm the project is setup as intended. If you get an error, download <a href="https://github.com/Swinject/SwinjectMVVMExample">the project on GitHub</a> and compare your project with it to investigate what is wrong.</p>
+
+<h2 id="conclusion:11d7c6379da90efdd5e0a41c688871dd">Conclusion</h2>
+
+<p>We found that the architecture of the app composed of Model, View and ViewModel frameworks ensured the direction of dependencies was consistent from View to ViewModel and ViewModel to Model. We setup the Xcode project in the MVVM architecture, and installed some external frameworks with Carthage. In the next blog post, we will start developing the app with ReactiveCocoa and Swinject to take advantage of the MVVM architecture.</p>
+
+<p>If you have questions, suggestions or problems, feel free to leave comments.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:11d7c6379da90efdd5e0a41c688871dd:1">UI tests are excluded because still Xcode 7 is beta. This blog post will be updated to include them after Xcode 7 is officially released.
+ <a class="footnote-return" href="#fnref:11d7c6379da90efdd5e0a41c688871dd:1"><sup>[return]</sup></a></li>
+<li id="fn:11d7c6379da90efdd5e0a41c688871dd:2"><code>carthage update --no-build</code> and <code>carthage build</code> commands are separately used to avoid downloading zipped frameworks built with an older beta version of Xcode. If you install official release versions of the frameworks for an official release version of Xcode, you can just run <code>carthage update</code>.
+ <a class="footnote-return" href="#fnref:11d7c6379da90efdd5e0a41c688871dd:2"><sup>[return]</sup></a></li>
+<li id="fn:11d7c6379da90efdd5e0a41c688871dd:3">If you get an error on <code>carthage build</code> command, run it again with <code>--verbose</code> as <code>carthage build --verbose</code> to investigate the problem.
+ <a class="footnote-return" href="#fnref:11d7c6379da90efdd5e0a41c688871dd:3"><sup>[return]</sup></a></li>
+<li id="fn:11d7c6379da90efdd5e0a41c688871dd:4"><code>Result.framework</code> is used by ReactiveCocoa.
+ <a class="footnote-return" href="#fnref:11d7c6379da90efdd5e0a41c688871dd:4"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+      
+      
+      <div id="share-this" class="col span_10">
+        <span class='st_twitter_large' displayText='Tweet'></span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_googleplus_large' displayText='Google +'></span>
+        <span class='st_pocket_large' displayText='Pocket'></span>
+        <span class='st_sharethis_large' displayText='ShareThis'></span>
+        <span class='st_email_large' displayText='Email'></span>  
+      </div>
+    </article>
+    
+ <aside><div id="disqus_thread"></div></aside> 
+
+<script type="text/javascript">
+     
+    var disqus_shortname = 'yoichitgy';
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+  </main>
+  
+  <nav class="pagination">
+    
+      <span class="previous">&larr; <a href="https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/" rel="prev">Dependency Injection in MVVM Architecture with ReactiveCocoa Part 1: Introduction</a></span>
+    
+    
+  </nav>
+
+
+  
+  <footer role="contentinfo">
+    <div style="text-align:center;">
+      
+      © 2015 Yoichi Tagaya. All rights reserved.
+    </div>
+  </footer>
+
+
+</div>
+
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-66106661-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+</body>
+</html>
+
