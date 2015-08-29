@@ -10,7 +10,7 @@
     <atom:link href="https://yoichitgy.github.io/tags/swift/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Dependency Injection in MVVM Architecture with ReactiveCocoa part 1: Introduction</title>
+      <title>Dependency Injection in MVVM Architecture with ReactiveCocoa Part 1: Introduction</title>
       <link>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/</link>
       <pubDate>Thu, 27 Aug 2015 13:45:30 +0900</pubDate>
       
@@ -45,9 +45,9 @@
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/Diagram-MVC.png&#34; alt=&#34;MVC Diagram&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The problem of MVC is that Controller tends to get large and complex as a project evolves because it has to care of both Model and View, which mean everything. Actually MVC is a good pattern in web applications with the support of frameworks such as &lt;a href=&#34;http://rubyonrails.org&#34;&gt;Rails&lt;/a&gt; or &lt;a href=&#34;http://www.asp.net/mvc&#34;&gt;ASP.NET MVC&lt;/a&gt;, but in iOS apps MVC often makes monolithic and hard-to-maintain code.&lt;/p&gt;
+&lt;p&gt;The problem of MVC is that Controller tends to get large and complex as a project evolves because it has to care of both Model and View, which mean everything. Actually MVC is a good pattern in web applications with the support of frameworks such as &lt;a href=&#34;http://rubyonrails.org&#34;&gt;Ruby on Rails&lt;/a&gt; or &lt;a href=&#34;http://www.asp.net/mvc&#34;&gt;ASP.NET MVC&lt;/a&gt;, but in iOS apps MVC often makes monolithic and hard-to-maintain code.&lt;/p&gt;
 
-&lt;p&gt;For the disadvantage of MVC, MVVM is getting popular to develop mobile apps or desktop apps. In iOS apps, the &amp;ldquo;View&amp;rdquo; of MVVM is composed of &amp;ldquo;View&amp;rdquo; (UIView) and &amp;ldquo;ViewController&amp;rdquo; (UIViewController). View logic, e.g. a value &lt;code&gt;1000&lt;/code&gt; should be displayed as &lt;code&gt;&amp;quot;1,000&amp;quot;&lt;/code&gt;, is implemented in ViewModel. View simply uses values provided by ViewModel to display. Model is responsible for business logic. Because of the separation of responsibilities, an iOS app in MVVM architecture is easier to test.&lt;/p&gt;
+&lt;p&gt;For the disadvantage of MVC, MVVM is getting popular to develop mobile apps or desktop apps. In iOS apps, the &amp;ldquo;View&amp;rdquo; of MVVM is composed of &amp;ldquo;View&amp;rdquo; (UIView) and &amp;ldquo;ViewController&amp;rdquo; (UIViewController). View logic, e.g. a value &lt;code&gt;1000&lt;/code&gt; should be displayed as &lt;code&gt;&amp;quot;1,000&amp;quot;&lt;/code&gt;, is implemented in ViewModel. View simply uses values provided by ViewModel to display. Model is responsible for business logic. Because of the separation of the responsibilities, an iOS app in MVVM architecture is easier to test.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/Diagram-MVVM-iOS.png&#34; alt=&#34;iOS MVVM Diagram&#34; /&gt;&lt;/p&gt;
 
@@ -61,7 +61,7 @@
 
 &lt;h2 id=&#34;reactivecocoa:90b51da2b75144dcb148da08a7b03a1a&#34;&gt;ReactiveCocoa&lt;/h2&gt;
 
-&lt;p&gt;MVVM propagates events from Model to ViewModel and ViewModel to View. We are going to use ReactiveCocoa to handle the events. The framework provides APIs for composing and transforming event streams. Without ReactiveCocoa, events are represented by delegate methods, callback closures, &lt;code&gt;UIControl&lt;/code&gt; actions, or KVO (Key-Value Observation). We had to write a different way of handling to each type of events. With ReactiveCocoa, an event is represented by &lt;code&gt;Event&lt;/code&gt; and event streams are represented by &lt;code&gt;Signal&lt;/code&gt; or &lt;code&gt;SignalProducer&lt;/code&gt;. We can handle the events in the same abstracted way regardless of the original source of events. We will take advantage of the simplicity of the events with ReactiveCocoa. If you are new to ReactiveCocoa, it is recommended to read the following articles before proceeding to the next section of this blog post.&lt;/p&gt;
+&lt;p&gt;MVVM propagates events from Model to ViewModel and ViewModel to View. We are going to use ReactiveCocoa to handle the events. The framework provides APIs for composing and transforming event streams. Without ReactiveCocoa, events are represented by delegate methods, callback closures, &lt;code&gt;UIControl&lt;/code&gt; actions, or KVO (Key-Value Observation). We had to write a different way of handling to each type of events. With ReactiveCocoa, an event is represented by &lt;code&gt;Event&lt;/code&gt; and event streams are represented by &lt;code&gt;Signal&lt;/code&gt; or &lt;code&gt;SignalProducer&lt;/code&gt;. We can handle the events in the same abstracted way regardless of the original source of events. We will take advantage of the simplicity of the events with ReactiveCocoa. If you are new to ReactiveCocoa, it is recommended to read the following articles before proceeding to the next blog post.&lt;/p&gt;
 
 &lt;h3 id=&#34;references-1:90b51da2b75144dcb148da08a7b03a1a&#34;&gt;References&lt;/h3&gt;
 
@@ -71,21 +71,9 @@
 &lt;li&gt;&lt;a href=&#34;http://blog.scottlogic.com/2015/04/24/first-look-reactive-cocoa-3.html&#34;&gt;A First Look at ReactiveCocoa 3.0&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;requirements:90b51da2b75144dcb148da08a7b03a1a&#34;&gt;Requirements&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Xcode 7 beta 6&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt; 0.7.5 or later&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;Pixabay&lt;/a&gt; API username and key&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;We are going to develop the example program in Swift 2 with Xcode 7 although they are still beta versions. To use with Swift 2, we are going to use development version of ReactiveCocoa in &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2&#34;&gt;swift2 branch of its repository&lt;/a&gt;. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but APIs in swift2 branch are in protocol oriented style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;. Since swift2 branch is still in development, the APIs might be changed in the future.&lt;/p&gt;
-
-&lt;p&gt;You can get a free API username and key at &lt;a href=&#34;https://pixabay.com/&#34;&gt;Pixabay&lt;/a&gt;. First, sign up and log in there. Then, access its &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;API documentation page&lt;/a&gt;. Your API username and key will be displayed in &amp;ldquo;Request parameters&amp;rdquo; section.&lt;/p&gt;
-
 &lt;h2 id=&#34;conclusion:90b51da2b75144dcb148da08a7b03a1a&#34;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;MVVM has the simple and linear dependencies of View on ViewModel and ViewModel on Model, and event flows from Model to ViewModel and ViewModel to View. ReactiveCocoa turns various kind of events, such as delegate methods or callback closures, into a single type &lt;code&gt;Event&lt;/code&gt; of events. For the simplicity, an iOS app in MVVM architecture with ReactiveCocoa is easier to maintain and test. From the next blog post, step-by-step development with MVVM, ReactiveCocoa, dependency injection and Swinject will be demonstrated.&lt;/p&gt;
+&lt;p&gt;MVVM has the simple and linear dependencies of View on ViewModel and ViewModel on Model, and event flows from Model to ViewModel and ViewModel to View. ReactiveCocoa turns various kind of events, such as delegate methods or callback closures, into a single type &lt;code&gt;Event&lt;/code&gt; of events. For the simplicity, an iOS app in MVVM architecture with ReactiveCocoa is easier to maintain and test. From &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the next blog post&lt;/a&gt;, step-by-step development with MVVM, ReactiveCocoa, dependency injection and Swinject will be demonstrated.&lt;/p&gt;
 </description>
     </item>
     
