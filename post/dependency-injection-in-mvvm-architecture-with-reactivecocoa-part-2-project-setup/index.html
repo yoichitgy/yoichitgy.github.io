@@ -183,7 +183,7 @@ github &quot;Quick/Quick&quot; &quot;1fbcd8a05f6e896e2db66a2e82527b7f24766ef8&qu
 github &quot;Quick/Nimble&quot; &quot;e3e3978ef610927d70eafd333e162855ad7b6f77&quot;
 </code></pre>
 
-<p>Run <code>carthage update --no-build</code> and <code>carthage build</code> in Terminal<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:2"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:2">2</a></sup>. Wait for a couple of minutes (or more) until Carthage finishes building the frameworks. If you use <a href="https://git-scm.com">Git</a>, here is a <a href="https://github.com/github/gitignore/blob/master/Swift.gitignore"><code>.gitignore</code> for Swift</a> excluding frameworks built by Carthage<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:3"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:3">3</a></sup>.</p>
+<p>Run <code>carthage update --no-build</code> and <code>carthage build</code> in Terminal<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:2"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:2">2</a></sup>. Wait for a couple of minutes (or more) until Carthage finishes building the frameworks<sup class="footnote-ref" id="fnref:11d7c6379da90efdd5e0a41c688871dd:3"><a rel="footnote" href="#fn:11d7c6379da90efdd5e0a41c688871dd:3">3</a></sup>. If you use <a href="https://git-scm.com">Git</a>, <a href="https://github.com/github/gitignore/blob/master/Swift.gitignore">here is a <code>.gitignore</code> for Swift</a> excluding frameworks built by Carthage.</p>
 
 <p>After the build completes, right click on <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>New Group</code>. Name the group <code>Frameworks</code>. Drag and drop the frameworks built in <code>Carthage/Build/iOS</code> directory in Finder to the group in Xcode. When you drop them, an action sheet asks you wether they should be added to targets. Uncheck all targets and click <code>Finish</code> button.</p>
 
@@ -209,7 +209,7 @@ github &quot;Quick/Nimble&quot; &quot;e3e3978ef610927d70eafd333e162855ad7b6f77&q
 
 <p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotLinkSettingsSwinjectMVVMExampleTests.png" alt="Screenshot Link Settings SwinjectMVVMExample" /></p>
 
-<p>The last settings are as specified in the README of <a href="https://github.com/Carthage/Carthage">Carthage</a>. Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>SwinjectMVVMExample</code> in Targets section with Build Phases tab open. Click <code>+</code> button under the tab, and select <code>New Run Script Phase</code>. Rename the phase to <code>Run Script for Frameworks by Carthage</code> and add the following line to the script text field.</p>
+<p>The last settings are as specified in <a href="https://github.com/Carthage/Carthage">the README of Carthage</a>. Select <code>SwinjectMVVMExample</code> in Project Navigator, and select <code>SwinjectMVVMExample</code> in Targets section with Build Phases tab open. Click <code>+</code> button under the tab, and select <code>New Run Script Phase</code>. Rename the phase to <code>Run Script for Frameworks by Carthage</code> and add the following line to the script text field.</p>
 
 <pre><code>/usr/local/bin/carthage copy-frameworks
 </code></pre>
@@ -223,7 +223,7 @@ $(SRCROOT)/Carthage/Build/iOS/Result.framework
 $(SRCROOT)/Carthage/Build/iOS/Swinject.framework
 </code></pre>
 
-<p>Again click the <code>+</code> button under Build Phases tab, select <code>New Copy Files Phase</code> and name the phase <code>Copy dSYMs</code>. Set its destination to <code>Products Directory</code>, and drag <code>Alamofire.framework.dSYM</code>, <code>Himotoki.framework.dSYM</code>, <code>ReactiveCocoa.framework.dSYM</code>, <code>Result.framework.dSYM</code>, <code>Swinject.framework.dSYM</code> from <code>Carthage/Build/iOS/</code> directory in Finder to the <code>Copy dSYMs</code> phase in Xcode. Right click on <code>SwinjectMVVMExample</code> in Project Navigator and select <code>New Group</code>. Name the new group <code>dSYMs</code> and put the dSYM files that were added to Project Navigator automatically into the group to tidy up.</p>
+<p>Again click the <code>+</code> button under Build Phases tab, select <code>New Copy Files Phase</code> and name the phase <code>Copy dSYMs</code>. Set its destination to <code>Products Directory</code>, and drag <code>Alamofire.framework.dSYM</code>, <code>Himotoki.framework.dSYM</code>, <code>ReactiveCocoa.framework.dSYM</code>, <code>Result.framework.dSYM</code> and <code>Swinject.framework.dSYM</code> from <code>Carthage/Build/iOS/</code> directory in Finder to the <code>Copy dSYMs</code> phase in Xcode. Right click on <code>SwinjectMVVMExample</code> in Project Navigator and select <code>New Group</code>. Name the new group <code>dSYMs</code> and put the dSYM files that were added to Project Navigator automatically into the group to tidy up.</p>
 
 <p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenshotCarthageScriptAnddSYMs.png" alt="Screenshot dSYMs Group" /></p>
 
