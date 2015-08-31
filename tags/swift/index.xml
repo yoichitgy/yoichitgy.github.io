@@ -6,8 +6,721 @@
     <description>Recent content in Swift on Swift Injection</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 29 Aug 2015 10:00:28 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 31 Aug 2015 01:10:55 +0900</lastBuildDate>
     <atom:link href="https://yoichitgy.github.io/tags/swift/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Dependency Injection in MVVM Architecture with ReactiveCocoa Part 3: Designing the Model</title>
+      <link>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/</link>
+      <pubDate>Mon, 31 Aug 2015 01:10:55 +0900</pubDate>
+      
+      <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/</guid>
+      <description>
+
+&lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the last blog post&lt;/a&gt;, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; to define mappings from JSON data to Swift types.&lt;/p&gt;
+
+&lt;p&gt;The source code used in the blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;notice:10506297541d45beaf70d97ca007d866&#34;&gt;Notice&lt;/h2&gt;
+
+&lt;p&gt;We are going to use Swift 2.0 with Xcode 7 though they are still in beta versions. To use with Swift 2.0, a development version of ReactiveCocoa in &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2&#34;&gt;swift2 branch&lt;/a&gt; will be used. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but APIs in swift2 branch are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;. Since swift2 branch is still in development, the APIs might be changed in the future.&lt;/p&gt;
+
+&lt;h2 id=&#34;himotoki:10506297541d45beaf70d97ca007d866&#34;&gt;Himotoki&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; is a type-safe JSON decoding library for Swift. It maps JSON elements to properties of a type with a simple definition of the mappings as &lt;code&gt;Decodable&lt;/code&gt; protocol. The advantage of Himotoki is the support of mappings to read-only (&lt;code&gt;let&lt;/code&gt;) properties.&lt;/p&gt;
+
+&lt;p&gt;Its usage is simple. Assume that you want to map JSON like &lt;code&gt;{ &amp;quot;some_name&amp;quot;: &amp;quot;Himotoki&amp;quot;, &amp;quot;some_value&amp;quot;: 1 }&lt;/code&gt; to &lt;code&gt;SomeValue&lt;/code&gt; type. To define the mappings, make &lt;code&gt;SomeValue&lt;/code&gt; type conform &lt;code&gt;Decodable&lt;/code&gt; protocol.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct SomeValue {
+    let name: String
+    let value: Int
+}
+
+extension SomeValue: Decodable {
+    static func decode(e: Extractor) -&amp;gt; Group? {
+        return build(SomeValue.init)(
+            e &amp;lt;| &amp;quot;some_name&amp;quot;,
+            e &amp;lt;| &amp;quot;some_value&amp;quot;
+        )
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;code&gt;decode&lt;/code&gt; function, the mappings are defined as the parameters to &lt;code&gt;build&lt;/code&gt; function. Here &lt;code&gt;some_name&lt;/code&gt; is mapped to &lt;code&gt;name&lt;/code&gt; property of &lt;code&gt;SomeValue&lt;/code&gt;, and &lt;code&gt;some_value&lt;/code&gt; to &lt;code&gt;value&lt;/code&gt; property. The mappings are defined in the order as the properties of &lt;code&gt;SomeValue&lt;/code&gt; type are defined.&lt;/p&gt;
+
+&lt;p&gt;To get an instance mapped from JSON data, call &lt;code&gt;decode&lt;/code&gt; function with JSON data as &lt;code&gt;[String: AnyObject]&lt;/code&gt; returned from Alamofire or NSJSONSerialization.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;func testSomeValue() {
+    // JSON data returned from Alamofire or NSJSONSerialization.
+    let json: [String: AnyObject] = [&amp;quot;some_name&amp;quot;: &amp;quot;Himotoki&amp;quot;, &amp;quot;some_value&amp;quot;: 1]
+
+    let v: SomeValue? = decode(json)
+    XCTAssert(v != nil)
+    XCTAssert(v?.name == &amp;quot;Himotoki&amp;quot;)
+    XCTAssert(v?.value == 1)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With Himotoki, you can reduce the code to handle JSON data&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. It also supports nested data, optional parameters and more. Refer to &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;the project page&lt;/a&gt; for the details.&lt;/p&gt;
+
+&lt;h2 id=&#34;pixabay-api-spec:10506297541d45beaf70d97ca007d866&#34;&gt;Pixabay API Spec&lt;/h2&gt;
+
+&lt;p&gt;According to &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;the API documentation of Pixabay&lt;/a&gt;, a JSON response from Pixabay server is in the following format. It contains an array of image information (&lt;code&gt;hits&lt;/code&gt;), and the numbers of total images (&lt;code&gt;total&lt;/code&gt;) and available images (&lt;code&gt;totalHits&lt;/code&gt;).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;total&amp;quot;: 12274,
+    &amp;quot;totalHits&amp;quot;: 240,
+    &amp;quot;hits&amp;quot;: [
+        {
+            &amp;quot;id&amp;quot;: 11574,
+            &amp;quot;pageURL&amp;quot;: &amp;quot;https://pixabay.com/en/sonnenblumen-sonnenblumenfeld-flora-11574/&amp;quot;,
+            &amp;quot;type&amp;quot;: &amp;quot;photo&amp;quot;,
+            &amp;quot;tags&amp;quot;: &amp;quot;sunflower, sunflower field, flora&amp;quot;,
+            &amp;quot;previewURL&amp;quot;: &amp;quot;https://pixabay.com/static/uploads/photo/2012/01/07/21/56/sunflower-11574_150.jpg&amp;quot;,
+            &amp;quot;previewWidth&amp;quot;: 150,
+            &amp;quot;previewHeight&amp;quot;: 92,
+            &amp;quot;webformatURL&amp;quot;: &amp;quot;https://pixabay.com/get/3b4f5d71752e6ce9cbcf/1356479243/aca42219d23fd9fe0cc6f1cc_640.jpg&amp;quot;,
+            &amp;quot;webformatWidth&amp;quot;: 640,
+            &amp;quot;webformatHeight&amp;quot;: 396,
+            &amp;quot;imageWidth&amp;quot;: 1280,
+            &amp;quot;imageHeight&amp;quot;: 792,
+            &amp;quot;views&amp;quot;: 10928,
+            &amp;quot;downloads&amp;quot;: 1649,
+            &amp;quot;likes&amp;quot;: 70,
+            &amp;quot;user&amp;quot;: &amp;quot;WikiImages&amp;quot;
+        },
+        {
+            &amp;quot;id&amp;quot;: &amp;quot;256&amp;quot;,
+            &amp;quot;pageURL&amp;quot;: &amp;quot;https://pixabay.com/en/example-image-256/&amp;quot;,
+            &amp;quot;type&amp;quot;: &amp;quot;photo&amp;quot;,
+            // ... etc.
+        },
+        //... 18 more hits for page number 1
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;model-design-overview:10506297541d45beaf70d97ca007d866&#34;&gt;Model Design Overview&lt;/h2&gt;
+
+&lt;p&gt;We are going to design our Model to be composed of entities and services. In short, an entity is a concept or object that exists in a model&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. A service is a stateless operation that does not fit in an entity.&lt;/p&gt;
+
+&lt;p&gt;To decouple ViewModel and Model, and Model and external system, the interfaces are defined by protocols. In the diagram below, &lt;code&gt;ImageSearching&lt;/code&gt; and &lt;code&gt;Networking&lt;/code&gt; are protocols. &lt;code&gt;ImageSearch&lt;/code&gt; and &lt;code&gt;Network&lt;/code&gt; are their implementations conforming the protocols. &lt;code&gt;ViewModel&lt;/code&gt; accesses &lt;code&gt;Model&lt;/code&gt; through &lt;code&gt;ImageSearching&lt;/code&gt; protocol, and its implementation &lt;code&gt;ImageSearch&lt;/code&gt; accesses the external system through &lt;code&gt;Networking&lt;/code&gt; protocol. The external system raises events with JSON data. The data are converted to &lt;code&gt;ResponseEntity&lt;/code&gt; and &lt;code&gt;ImageEntity&lt;/code&gt; by &lt;code&gt;ImageSearch&lt;/code&gt; when the events are propagated to &lt;code&gt;ViewModel&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleModelDesign.png&#34; alt=&#34;Model Design&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;entities:10506297541d45beaf70d97ca007d866&#34;&gt;Entities&lt;/h2&gt;
+
+&lt;p&gt;In this section, we are going to define the entities representing an image and response obtained from Pixabay. Add &lt;code&gt;ImageEntity.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. To make sure the file is added to the target, right click on &lt;code&gt;ExampleModel&lt;/code&gt; group (folder icon) in Project Navigator, and choose &lt;code&gt;New File...&lt;/code&gt; then &lt;code&gt;Swift File&lt;/code&gt;. When Xcode asks targets to add the file to, check only &lt;code&gt;ExampleModel&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ImageEntity.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Himotoki
+
+public struct ImageEntity {
+    public let id: UInt64
+
+    public let pageURL: String
+    public let pageImageWidth: Int
+    public let pageImageHeight: Int
+
+    public let previewURL: String
+    public let previewWidth: Int
+    public let previewHeight: Int
+
+    public let imageURL: String
+    public let imageWidth: Int
+    public let imageHeight: Int
+
+    public let viewCount: Int64
+    public let downloadCount: Int64
+    public let likeCount: Int64
+    public let tags: [String]
+    public let username: String
+}
+
+// MARK: Decodable
+extension ImageEntity: Decodable {
+    public static func decode(e: Extractor) -&amp;gt; ImageEntity? {
+        let splitCSV: String -&amp;gt; [String] = { csv in
+            csv.characters
+                .split { $0 == &amp;quot;,&amp;quot; }
+                .map {
+                    String($0).stringByTrimmingCharactersInSet(
+                        NSCharacterSet.whitespaceCharacterSet())
+                }
+        }
+
+        return build(ImageEntity.init)(
+            e &amp;lt;| &amp;quot;id&amp;quot;,
+
+            e &amp;lt;| &amp;quot;pageURL&amp;quot;,
+            e &amp;lt;| &amp;quot;imageWidth&amp;quot;,
+            e &amp;lt;| &amp;quot;imageHeight&amp;quot;,
+
+            e &amp;lt;| &amp;quot;previewURL&amp;quot;,
+            e &amp;lt;| &amp;quot;previewWidth&amp;quot;,
+            e &amp;lt;| &amp;quot;previewHeight&amp;quot;,
+
+            e &amp;lt;| &amp;quot;webformatURL&amp;quot;,
+            e &amp;lt;| &amp;quot;webformatWidth&amp;quot;,
+            e &amp;lt;| &amp;quot;webformatHeight&amp;quot;,
+
+            e &amp;lt;| &amp;quot;views&amp;quot;,
+            e &amp;lt;| &amp;quot;downloads&amp;quot;,
+            e &amp;lt;| &amp;quot;likes&amp;quot;,
+            (e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV) ?? [],
+            e &amp;lt;| &amp;quot;user&amp;quot;
+        )
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice that &lt;code&gt;ImageEntity&lt;/code&gt; is defined as a &lt;code&gt;struct&lt;/code&gt; with its properties immutable. The immutability keeps the users of the entity safe&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;. Accessibility of the type is &lt;code&gt;public&lt;/code&gt; because it is referenced from &lt;code&gt;ExampleViewModel&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;Some properties of &lt;code&gt;ImageEntity&lt;/code&gt; are named differently from the JSON elements to match Swift naming convention and our app. The properties &lt;code&gt;id&lt;/code&gt;, &lt;code&gt;viewCount&lt;/code&gt;, &lt;code&gt;downloadCount&lt;/code&gt; and &lt;code&gt;likeCount&lt;/code&gt; are declared as &lt;code&gt;UInt64&lt;/code&gt; or &lt;code&gt;Int64&lt;/code&gt; to ensure they accept large values even in 32-bit system. JSON element &lt;code&gt;tags&lt;/code&gt; as a &lt;a href=&#34;https://en.wikipedia.org/wiki/Comma-separated_values&#34;&gt;CSV&lt;/a&gt; format string is mapped to an array of split strings by &lt;code&gt;(e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV)&lt;/code&gt;. By applying &lt;code&gt;?? []&lt;/code&gt; to the returned value, an empty array is used if the &lt;code&gt;tags&lt;/code&gt; is nil.&lt;/p&gt;
+
+&lt;p&gt;Add &lt;code&gt;ResponseEntity.swift&lt;/code&gt; to &lt;code&gt;ExampleModel&lt;/code&gt; target with the following text contents. Here &lt;code&gt;&amp;lt;||&lt;/code&gt; operator is used to map an array. The &lt;code&gt;total&lt;/code&gt; element in the JSON is ignored. If we find it is necessary, we can add it later.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ResponseEntity.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Himotoki
+
+public struct ResponseEntity {
+    public let totalCount: Int64
+    public let images: [ImageEntity]
+}
+
+// MARK: Decodable
+extension ResponseEntity: Decodable {
+    public static func decode(e: Extractor) -&amp;gt; ResponseEntity? {
+        return build(ResponseEntity.init)(
+            e &amp;lt;| &amp;quot;totalHits&amp;quot;,
+            e &amp;lt;|| &amp;quot;hits&amp;quot;
+        )
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To test &lt;code&gt;ImageEntity&lt;/code&gt;, add &lt;code&gt;Dummy.swift&lt;/code&gt; and &lt;code&gt;ImageEntitySpec.swift&lt;/code&gt; with the following contents to &lt;code&gt;ExampleModelTests&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Dummy.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;let imageJSON: [String: AnyObject] = [
+    &amp;quot;id&amp;quot;: 12345,
+    &amp;quot;pageURL&amp;quot;: &amp;quot;https://somewhere.com/page/&amp;quot;,
+    &amp;quot;imageWidth&amp;quot;: 2000,
+    &amp;quot;imageHeight&amp;quot;: 1000,
+    &amp;quot;previewURL&amp;quot;: &amp;quot;https://somewhere.com/preview.jpg&amp;quot;,
+    &amp;quot;previewWidth&amp;quot;: 200,
+    &amp;quot;previewHeight&amp;quot;: 100,
+    &amp;quot;webformatURL&amp;quot;: &amp;quot;https://somewhere.com/image.jpg&amp;quot;,
+    &amp;quot;webformatWidth&amp;quot;: 600,
+    &amp;quot;webformatHeight&amp;quot;: 300,
+    &amp;quot;views&amp;quot;: 54321,
+    &amp;quot;downloads&amp;quot;: 4321,
+    &amp;quot;likes&amp;quot;: 321,
+    &amp;quot;tags&amp;quot;: &amp;quot;a, b c, d &amp;quot;,
+    &amp;quot;user&amp;quot;: &amp;quot;Swinject&amp;quot;
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;ImageEntitySpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+import Himotoki
+@testable import ExampleModel
+
+class ImageEntitySpec: QuickSpec {
+    override func spec() {
+        it(&amp;quot;parses JSON data to create a new instance.&amp;quot;) {
+            let image: ImageEntity? = decode(imageJSON)
+
+            expect(image).notTo(beNil())
+            expect(image?.id) == 12345
+            expect(image?.pageURL) == &amp;quot;https://somewhere.com/page/&amp;quot;
+            expect(image?.pageImageWidth) == 2000
+            expect(image?.pageImageHeight) == 1000
+            expect(image?.previewURL) == &amp;quot;https://somewhere.com/preview.jpg&amp;quot;
+            expect(image?.previewWidth) == 200
+            expect(image?.previewHeight) == 100
+            expect(image?.imageURL) == &amp;quot;https://somewhere.com/image.jpg&amp;quot;
+            expect(image?.imageWidth) == 600
+            expect(image?.imageHeight) == 300
+            expect(image?.viewCount) == 54321
+            expect(image?.downloadCount) == 4321
+            expect(image?.likeCount) == 321
+            expect(image?.tags) == [&amp;quot;a&amp;quot;, &amp;quot;b c&amp;quot;, &amp;quot;d&amp;quot;]
+            expect(image?.username) == &amp;quot;Swinject&amp;quot;
+        }
+        it(&amp;quot;gets an empty array if tags element is nil.&amp;quot;) {
+            var missingJSON = imageJSON
+            missingJSON[&amp;quot;tags&amp;quot;] = nil
+            let image: ImageEntity? = decode(missingJSON)
+
+            expect(image).notTo(beNil())
+            expect(image?.tags.isEmpty).to(beTrue())
+        }
+        it(&amp;quot;gets nil if any of JSON elements except tags is missing.&amp;quot;) {
+            for key in imageJSON.keys where key != &amp;quot;tags&amp;quot; {
+                var missingJSON = imageJSON
+                missingJSON[key] = nil
+                let image: ImageEntity? = decode(missingJSON)
+
+                expect(image).to(beNil())
+            }
+        }
+        it(&amp;quot;ignores an extra JOSN element.&amp;quot;) {
+            var extraJSON = imageJSON
+            extraJSON[&amp;quot;extraKey&amp;quot;] = &amp;quot;extra element&amp;quot;
+            let image: ImageEntity? = decode(extraJSON)
+
+            expect(image).notTo(beNil())
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;code&gt;Dummy.swift&lt;/code&gt;, a dummy instance of JSON data is defined as &lt;code&gt;imageJSON&lt;/code&gt;. Since Himotoki handles JSON data as &lt;code&gt;[String: AnyObject]&lt;/code&gt; type returned from Alamofire or NSJSONSerialization, &lt;code&gt;imageJSON&lt;/code&gt; is defined as &lt;code&gt;[String: AnyObject]&lt;/code&gt;, not as &lt;code&gt;String&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;it(&amp;quot;parses JSON data to create a new instance.&amp;quot;)&lt;/code&gt; checks that all the properties of &lt;code&gt;ImageEntity&lt;/code&gt; are mapped from the JSON data.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;it(&amp;quot;gets an empty array if tags element is nil.&amp;quot;)&lt;/code&gt; checks that &lt;code&gt;tags&lt;/code&gt; property is set to an empty array if &lt;code&gt;tags&lt;/code&gt; element is missing in the JSON data.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;it(&amp;quot;gets nil if any of JSON elements except tags is missing.&amp;quot;)&lt;/code&gt; checks that &lt;code&gt;decode&lt;/code&gt; function returns &lt;code&gt;nil&lt;/code&gt; if any of the JSON elements except &lt;code&gt;tags&lt;/code&gt; is missing. Incorrect or broken JSON data can be detected to see whether the returned value is &lt;code&gt;nil&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;it(&amp;quot;ignores an extra JOSN element.&amp;quot;)&lt;/code&gt; checks that &lt;code&gt;decode&lt;/code&gt; function returns an &lt;code&gt;ImageEntity&lt;/code&gt; instance even if an extra JSON element exists. Ignoring extra elements, our JSON mapping is stable for future changes on the Pixabay API.&lt;/p&gt;
+
+&lt;p&gt;Next add &lt;code&gt;ResponseEntitySpec.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModelTests&lt;/code&gt; target. The test is simple as you see.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ResponseEntitySpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+import Himotoki
+@testable import ExampleModel
+
+class ResponseEntitySpec: QuickSpec {
+    override func spec() {
+        let json: [String: AnyObject] = [
+            &amp;quot;totalHits&amp;quot;: 123,
+            &amp;quot;hits&amp;quot;: [imageJSON, imageJSON]
+        ]
+
+        it(&amp;quot;parses JSON data to create a new instance.&amp;quot;) {
+            let response: ResponseEntity? = decode(json)
+
+            expect(response).notTo(beNil())
+            expect(response?.totalCount) == 123
+            expect(response?.images.count) == 2
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Type &lt;code&gt;Command-U&lt;/code&gt; to run the unit tests. Passed. The tests passed without any problems, but, in actual development, we iterate fixing the entities and tests until the tests pass.&lt;/p&gt;
+
+&lt;h2 id=&#34;network-service:10506297541d45beaf70d97ca007d866&#34;&gt;Network Service&lt;/h2&gt;
+
+&lt;p&gt;As we did in &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the simple weather app example&lt;/a&gt;, we are going to encapsulate Alamofire within &lt;code&gt;Network&lt;/code&gt; type conforming &lt;code&gt;Networking&lt;/code&gt; protocol. This time, we use ReactiveCocoa to handle the network event. Add &lt;code&gt;Networking.swift&lt;/code&gt; and &lt;code&gt;Network.swift&lt;/code&gt; with the following contents to &lt;code&gt;ExampleModel&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Networking.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import ReactiveCocoa
+
+public protocol Networking {
+    func requestJSON(url: String, parameters: [String : AnyObject]?)
+        -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Network.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import ReactiveCocoa
+import Alamofire
+
+public final class Network: Networking {
+    private let queue = dispatch_queue_create(
+        &amp;quot;SwinjectMMVMExample.ExampleModel.Network.Queue&amp;quot;,
+        DISPATCH_QUEUE_SERIAL)
+
+    public init() { }
+
+    public func requestJSON(url: String, parameters: [String : AnyObject]?)
+        -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
+    {
+        return SignalProducer { observer, disposable in
+            let serializer = Alamofire.Request.JSONResponseSerializer()
+            Alamofire.request(.GET, url, parameters: parameters)
+                .response(queue: self.queue, responseSerializer: serializer) {
+                    _, _, result in
+                    switch result {
+                    case .Success(let value):
+                        sendNext(observer, value)
+                        sendCompleted(observer)
+                    case .Failure(_, let error):
+                        sendError(observer, NetworkError(error: error))
+                    }
+                }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the previous example&lt;/a&gt;, the network service took a callback to pass a response. This time, &lt;code&gt;requestJSON&lt;/code&gt; method returns &lt;code&gt;SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;&lt;/code&gt; to deliver network events to its observer. The &lt;code&gt;SignalProducer&lt;/code&gt; takes a generic argument as &lt;code&gt;AnyObject&lt;/code&gt; because Alamofire (or NSJSONSerialization) returns JSON data as &lt;code&gt;AnyObject&lt;/code&gt; that is actually an array or dictionary.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;requestJSON&lt;/code&gt; method creates &lt;code&gt;SignalProducer&lt;/code&gt; instance with its trailing closure, and returns the instance. Within the closure, a response event of Alamofire is converted to a ReactiveCocoa event by calling &lt;code&gt;sendNext&lt;/code&gt;, &lt;code&gt;sendCompleted&lt;/code&gt; and &lt;code&gt;sendError&lt;/code&gt;. Notice that the closure passed to &lt;code&gt;SignalProducer&lt;/code&gt; is not actually invoked until &lt;code&gt;start&lt;/code&gt; method is called on the &lt;code&gt;SignalProducer&lt;/code&gt; instance.&lt;/p&gt;
+
+&lt;p&gt;A dispatch queue is passed to Alamofire to run the response in a background thread because Alamofire by default runs the response in the main thread (main queue).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sendError&lt;/code&gt; function takes an instance of &lt;code&gt;NetworkError&lt;/code&gt; type. Add &lt;code&gt;NetworkError.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It converts an &lt;code&gt;NSError&lt;/code&gt; passed from Alamofire to our own error type&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;NetworkError.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Foundation
+
+public enum NetworkError: ErrorType {
+    /// Unknown or not supported error.
+    case Unknown
+
+    /// Not connected to the internet.
+    case NotConnectedToInternet
+
+    /// International data roaming turned off.
+    case InternationalRoamingOff
+
+    /// Cannot reach the server.
+    case NotReachedServer
+
+    /// Connection is lost.
+    case ConnectionLost
+
+    /// Incorrect data returned from the server.
+    case IncorrectDataReturned
+
+    internal init(error: ErrorType) {
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain {
+            switch nsError.code {
+            case NSURLErrorUnknown:
+                self = .Unknown
+            case NSURLErrorCancelled:
+                self = .Unknown // Cancellation is not used in this project.
+            case NSURLErrorBadURL:
+                self = .IncorrectDataReturned // Because it is caused by a bad URL returned in a JSON response from the server.
+            case NSURLErrorTimedOut:
+                self = .NotReachedServer
+            case NSURLErrorUnsupportedURL:
+                self = .IncorrectDataReturned
+            case NSURLErrorCannotFindHost, NSURLErrorCannotConnectToHost:
+                self = .NotReachedServer
+            case NSURLErrorDataLengthExceedsMaximum:
+                self = .IncorrectDataReturned
+            case NSURLErrorNetworkConnectionLost:
+                self = .ConnectionLost
+            case NSURLErrorDNSLookupFailed:
+                self = .NotReachedServer
+            case NSURLErrorHTTPTooManyRedirects:
+                self = .Unknown
+            case NSURLErrorResourceUnavailable:
+                self = .IncorrectDataReturned
+            case NSURLErrorNotConnectedToInternet:
+                self = .NotConnectedToInternet
+            case NSURLErrorRedirectToNonExistentLocation, NSURLErrorBadServerResponse:
+                self = .IncorrectDataReturned
+            case NSURLErrorUserCancelledAuthentication, NSURLErrorUserAuthenticationRequired:
+                self = .Unknown
+            case NSURLErrorZeroByteResource, NSURLErrorCannotDecodeRawData, NSURLErrorCannotDecodeContentData:
+                self = .IncorrectDataReturned
+            case NSURLErrorCannotParseResponse:
+                self = .IncorrectDataReturned
+            case NSURLErrorInternationalRoamingOff:
+                self = .InternationalRoamingOff
+            case NSURLErrorCallIsActive, NSURLErrorDataNotAllowed, NSURLErrorRequestBodyStreamExhausted:
+                self = .Unknown
+            case NSURLErrorFileDoesNotExist, NSURLErrorFileIsDirectory:
+                self = .IncorrectDataReturned
+            case
+            NSURLErrorNoPermissionsToReadFile,
+            NSURLErrorSecureConnectionFailed,
+            NSURLErrorServerCertificateHasBadDate,
+            NSURLErrorServerCertificateUntrusted,
+            NSURLErrorServerCertificateHasUnknownRoot,
+            NSURLErrorServerCertificateNotYetValid,
+            NSURLErrorClientCertificateRejected,
+            NSURLErrorClientCertificateRequired,
+            NSURLErrorCannotLoadFromNetwork,
+            NSURLErrorCannotCreateFile,
+            NSURLErrorCannotOpenFile,
+            NSURLErrorCannotCloseFile,
+            NSURLErrorCannotWriteToFile,
+            NSURLErrorCannotRemoveFile,
+            NSURLErrorCannotMoveFile,
+            NSURLErrorDownloadDecodingFailedMidStream,
+            NSURLErrorDownloadDecodingFailedToComplete:
+                self = .Unknown
+            default:
+                self = .Unknown
+            }
+        }
+        else {
+            self = .Unknown
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let&amp;rsquo;s add unit tests for the &lt;code&gt;Network&lt;/code&gt; type. Add &lt;code&gt;NetworkSpec.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModelTests&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;NetworkSpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+@testable import ExampleModel
+
+class NetworkSpec: QuickSpec {
+    override func spec() {
+        var network: Network!
+        beforeEach {
+            network = Network()
+        }
+
+        describe(&amp;quot;JSON&amp;quot;) {
+            it(&amp;quot;eventually gets JSON data as specified with parameters.&amp;quot;) {
+                var json: [String: AnyObject]? = nil
+                let url = &amp;quot;https://httpbin.org/get&amp;quot;
+                network.requestJSON(url, parameters: [&amp;quot;a&amp;quot;: &amp;quot;b&amp;quot;, &amp;quot;x&amp;quot;: &amp;quot;y&amp;quot;])
+                    .on(next: { json = $0 as? [String: AnyObject] })
+                    .start()
+
+                expect(json).toEventuallyNot(beNil(), timeout: 5)
+                expect((json?[&amp;quot;args&amp;quot;] as? [String: AnyObject])?[&amp;quot;a&amp;quot;] as? String)
+                    .toEventually(equal(&amp;quot;b&amp;quot;), timeout: 5)
+                expect((json?[&amp;quot;args&amp;quot;] as? [String: AnyObject])?[&amp;quot;x&amp;quot;] as? String)
+                    .toEventually(equal(&amp;quot;y&amp;quot;), timeout: 5)
+            }
+            it(&amp;quot;eventually gets an error if the network has a problem.&amp;quot;) {
+                var error: NetworkError? = nil
+                let url = &amp;quot;https://not.existing.server.comm/get&amp;quot;
+                network.requestJSON(url, parameters: [&amp;quot;a&amp;quot;: &amp;quot;b&amp;quot;, &amp;quot;x&amp;quot;: &amp;quot;y&amp;quot;])
+                    .on(error: { error = $0 })
+                    .start()
+
+                expect(error)
+                    .toEventually(equal(NetworkError.NotReachedServer), timeout: 5)
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here &lt;a href=&#34;https://httpbin.org/&#34;&gt;httpbin.org&lt;/a&gt; is used as a stable and simple server to test the network. It is used by &lt;a href=&#34;https://github.com/Alamofire/Alamofire/blob/1978c2c926b0eabedc858d4cde0533e00686ccd6/Tests/ResponseTests.swift&#34;&gt;the unit tests of Alamofire&lt;/a&gt; too. Access &lt;a href=&#34;https://httpbin.org/get?a=b&amp;amp;x=y&#34;&gt;https://httpbin.org/get?a=b&amp;amp;x=y&lt;/a&gt; with a browser, and you will see how it works.&lt;/p&gt;
+
+&lt;p&gt;The first test checks the JSON response has &lt;code&gt;&amp;quot;a&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;x&amp;quot;&lt;/code&gt; elements with &lt;code&gt;&amp;quot;b&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;y&amp;quot;&lt;/code&gt; values as specified in the request parameters. &lt;code&gt;json&lt;/code&gt; parameter is used to store the response from the server asynchronously. To add an observer (namely an event handler) to the &lt;code&gt;SignalProducer&lt;/code&gt; returned from &lt;code&gt;requestJSON&lt;/code&gt;, &lt;code&gt;on&lt;/code&gt; method is used with a closure to set the &lt;code&gt;json&lt;/code&gt; response. Then &lt;code&gt;start&lt;/code&gt; is called to get the &lt;code&gt;SignalProducer&lt;/code&gt; initiating its signal. The response is checked asynchronously with &lt;code&gt;toEventually&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;The second test checks &lt;code&gt;NetworkError&lt;/code&gt; is sent in case of an error. To emulate an error, a URL that does not exist is passed to &lt;code&gt;requestJSON&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Run the unit tests, and let&amp;rsquo;s move on to the next section.&lt;/p&gt;
+
+&lt;h2 id=&#34;image-search-service:10506297541d45beaf70d97ca007d866&#34;&gt;Image Search Service&lt;/h2&gt;
+
+&lt;p&gt;In this section, we are going to define the service to search images through Pixabay API. This is the main part of &lt;code&gt;ExampleModel&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;First, add &lt;code&gt;Pixabay.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It defines the URL and parameters for the API. Please fill &lt;code&gt;apiUsername&lt;/code&gt; and &lt;code&gt;apiKey&lt;/code&gt; with &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;your own username and API key obtained from Pixabay&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Pixabay.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;internal struct Pixabay {
+    internal static let apiURL = &amp;quot;https://pixabay.com/api/&amp;quot;
+
+    internal static var requestParameters: [String: AnyObject] {
+        return [
+            &amp;quot;username&amp;quot;: Config.apiUsername,
+            &amp;quot;key&amp;quot;: Config.apiKey,
+            &amp;quot;image_type&amp;quot;: &amp;quot;photo&amp;quot;,
+            &amp;quot;safesearch&amp;quot;: true,
+            &amp;quot;per_page&amp;quot;: 50,
+        ]
+    }
+}
+
+extension Pixabay {
+    private struct Config {
+        private static let apiUsername = &amp;quot;&amp;quot; // Fill with your own username.
+        private static let apiKey = &amp;quot;&amp;quot; // Fill with your own API key.
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Second, add &lt;code&gt;ImageSearching.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. The protocol has &lt;code&gt;searchImages&lt;/code&gt; method returning &lt;code&gt;SignalProducer&lt;/code&gt; of &lt;code&gt;ResponseEntity&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ImageSearching.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import ReactiveCocoa
+
+public protocol ImageSearching {
+    func searchImages() -&amp;gt; SignalProducer&amp;lt;ResponseEntity, NetworkError&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Third, add &lt;code&gt;ImageSearch.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ImageSearch.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import ReactiveCocoa
+import Result
+import Himotoki
+
+public final class ImageSearch: ImageSearching {
+    private let network: Networking
+
+    public init(network: Networking) {
+        self.network = network
+    }
+
+    public func searchImages() -&amp;gt; SignalProducer&amp;lt;ResponseEntity, NetworkError&amp;gt; {
+        let url = Pixabay.apiURL
+        let parameters = Pixabay.requestParameters
+        return network.requestJSON(url, parameters: parameters)
+            .attemptMap { json in
+                if let response = decode(json) as ResponseEntity? {
+                    return Result(value: response)
+                }
+                else {
+                    return Result(error: .IncorrectDataReturned)
+                }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ImageSearch&lt;/code&gt; has dependency on &lt;code&gt;Networking&lt;/code&gt; injected through the initializer as &lt;a href=&#34;https://github.com/Swinject/Swinject/blob/master/Documentation/InjectionPatterns.md&#34;&gt;initializer injection pattern&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;searchImages&lt;/code&gt; method converts &lt;code&gt;SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;&lt;/code&gt; returned from &lt;code&gt;network.requestJSON&lt;/code&gt; to &lt;code&gt;SignalProducer&amp;lt;ResponseEntity, NetworkError&amp;gt;&lt;/code&gt;. To convert the &lt;code&gt;SignalProducer&lt;/code&gt;, &lt;code&gt;attemptMap&lt;/code&gt; is used. The closure passed to &lt;code&gt;attemptMap&lt;/code&gt; calls &lt;code&gt;decode&lt;/code&gt; to map the JSON data to a &lt;code&gt;ResponseEntity&lt;/code&gt; instance. If the mapping succeeds, the mapped response is returned as &lt;code&gt;Result(value: response)&lt;/code&gt;. Otherwise, an error is returned as &lt;code&gt;Result(error: .IncorrectDataReturned)&lt;/code&gt;. If you convert a value not to an error but to another value only, you can just use &lt;code&gt;map&lt;/code&gt; method on &lt;code&gt;SignalProducer&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The cast of &lt;code&gt;decode(json) as ResponseEntity?&lt;/code&gt; looks irregular, but it helps Swift compiler infer that &lt;code&gt;decode&lt;/code&gt; function on &lt;code&gt;ResponseEntity&lt;/code&gt; type should be used. If the cast is &lt;code&gt;decode(json) as? ResponseEntity&lt;/code&gt;, the source code cannot be compiled.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s write unit tests. Add &lt;code&gt;ImageSearchSpec.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModelTests&lt;/code&gt; target.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ImageSearchSpec.swift&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Quick
+import Nimble
+import ReactiveCocoa
+@testable import ExampleModel
+
+class ImageSearchSpec: QuickSpec {
+    // MARK: Stub
+    class GoodStubNetwork: Networking {
+        func requestJSON(url: String, parameters: [String : AnyObject]?)
+            -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
+        {
+            var imageJSON0 = imageJSON
+            imageJSON0[&amp;quot;id&amp;quot;] = 0
+            var imageJSON1 = imageJSON
+            imageJSON1[&amp;quot;id&amp;quot;] = 1
+            let json: [String: AnyObject] = [
+                &amp;quot;totalHits&amp;quot;: 123,
+                &amp;quot;hits&amp;quot;: [imageJSON0, imageJSON1]
+            ]
+
+            return SignalProducer { observer, disposable in
+                sendNext(observer, json)
+                sendCompleted(observer)
+            }.observeOn(QueueScheduler())
+        }
+    }
+
+    class BadStubNetwork: Networking {
+        func requestJSON(url: String, parameters: [String : AnyObject]?)
+            -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
+        {
+            let json = [String: AnyObject]()
+
+            return SignalProducer { observer, disposable in
+                sendNext(observer, json)
+                sendCompleted(observer)
+            }.observeOn(QueueScheduler())
+        }
+    }
+
+    class ErrorStubNetwork: Networking {
+        func requestJSON(url: String, parameters: [String : AnyObject]?)
+            -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
+        {
+            return SignalProducer { observer, disposable in
+                sendError(observer, .NotConnectedToInternet)
+            }.observeOn(QueueScheduler())
+        }
+    }
+
+    // MARK: - Spec
+    override func spec() {
+        it(&amp;quot;returns images if the network works correctly.&amp;quot;) {
+            var response: ResponseEntity? = nil
+            let search = ImageSearch(network: GoodStubNetwork())
+            search.searchImages()
+                .on(next: { response = $0 })
+                .start()
+
+            expect(response).toEventuallyNot(beNil())
+            expect(response?.totalCount).toEventually(equal(123))
+            expect(response?.images.count).toEventually(equal(2))
+            expect(response?.images[0].id).toEventually(equal(0))
+            expect(response?.images[1].id).toEventually(equal(1))
+        }
+        it(&amp;quot;sends an error if the network returns incorrect data.&amp;quot;) {
+            var error: NetworkError? = nil
+            let search = ImageSearch(network: BadStubNetwork())
+            search.searchImages()
+                .on(error: { error = $0 })
+                .start()
+
+            expect(error).toEventually(equal(NetworkError.IncorrectDataReturned))
+        }
+        it(&amp;quot;passes the error sent by the network.&amp;quot;) {
+            var error: NetworkError? = nil
+            let search = ImageSearch(network: ErrorStubNetwork())
+            search.searchImages()
+                .on(error: { error = $0 })
+                .start()
+
+            expect(error).toEventually(equal(NetworkError.NotConnectedToInternet))
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At the beginning, three stubs are defined. &lt;code&gt;GoodStubNetwork&lt;/code&gt; returns a &lt;code&gt;SignalProducer&lt;/code&gt; that sends correct JSON data. &lt;code&gt;BadStubNetwork&lt;/code&gt; returns a &lt;code&gt;SignalProducer&lt;/code&gt; that sends incorrect JSON data as an empty dictionary. &lt;code&gt;ErrorStubNetwork&lt;/code&gt; returns a &lt;code&gt;SignalProducer&lt;/code&gt; that does not send JSON data but an error. All the &lt;code&gt;SignalProducer&lt;/code&gt;s send the events in a background thread emulating an asynchronous network response by specifying &lt;code&gt;.observeOn(QueueScheduler())&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;spec()&lt;/code&gt;, three unit tests (or specs) are defined. The first one checks the case that &lt;code&gt;attemptMap&lt;/code&gt; successfully converts JSON data to a &lt;code&gt;ResponseEntity&lt;/code&gt;. The second one checks the case that &lt;code&gt;attemptMap&lt;/code&gt; converts JSON data to an error. The third one checks the case that the error sent from &lt;code&gt;ErrorStubNetwork&lt;/code&gt; is passed through &lt;code&gt;ImageSearch&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Type &lt;code&gt;Command-U&lt;/code&gt; to run the tests. Passed! We finished implementing the main part of our model in MVVM architecture.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion:10506297541d45beaf70d97ca007d866&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Through the development of the Model part of the example app in MVVM architecture, we learned how to design the Model to decouple from ViewModel and the external system. Protocols were used to remove the direct dependencies on the implementations. ReactiveCocoa was used to handle events between the decoupled components. Also we found Himotoki was helpful to map JSON data to our entities. In the next blog post, we will design and implement View and ViewModel parts.&lt;/p&gt;
+
+&lt;p&gt;If you have questions, suggestions or problems, feel free to leave comments.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:10506297541d45beaf70d97ca007d866:1&#34;&gt;If you are familiar with &lt;a href=&#34;https://en.wikipedia.org/wiki/Functional_programming&#34;&gt;functional programming&lt;/a&gt;, &lt;a href=&#34;https://github.com/thoughtbot/Argo&#34;&gt;Argo&lt;/a&gt; is also a good choice for a JSON parser.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:10506297541d45beaf70d97ca007d866:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:10506297541d45beaf70d97ca007d866:2&#34;&gt;In &lt;a href=&#34;https://en.wikipedia.org/wiki/Domain-driven_design&#34;&gt;DDD (Domain-Driven Design)&lt;/a&gt;, an entity is a concept of a domain model and is defined by its identity. In our project, the term is used to mean just a concept or object regardless of its identity.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:10506297541d45beaf70d97ca007d866:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:10506297541d45beaf70d97ca007d866:3&#34;&gt;Refer to &lt;a href=&#34;http://programmers.stackexchange.com/questions/151733/if-immutable-objects-are-good-why-do-people-keep-creating-mutable-objects&#34;&gt;this page&lt;/a&gt; to know more about immutability and mutability.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:10506297541d45beaf70d97ca007d866:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:10506297541d45beaf70d97ca007d866:4&#34;&gt;&amp;ldquo;&lt;a href=&#34;https://realm.io/news/testing-swift-error-type/&#34;&gt;How to Implement the ErrorType Protocol&lt;/a&gt;&amp;rdquo; is worth reading about &lt;code&gt;ErrorType&lt;/code&gt;.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:10506297541d45beaf70d97ca007d866:4&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Dependency Injection in MVVM Architecture with ReactiveCocoa Part 2: Project Setup</title>
@@ -111,7 +824,7 @@ brew install carthage
 &lt;p&gt;&lt;strong&gt;Cartfile&lt;/strong&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;github &amp;quot;ReactiveCocoa/ReactiveCocoa&amp;quot; &amp;quot;be3d9f5a2ba0fd902c13373e320a4b86f214c1d3&amp;quot;
-github &amp;quot;ikesyo/Himotoki&amp;quot; &amp;quot;9f6717c4cca558377fe4d1223d443883be401530&amp;quot;
+github &amp;quot;ikesyo/Himotoki&amp;quot; &amp;quot;a40a9df31ffa2e81daf872e9637170e3708e5478&amp;quot;
 github &amp;quot;Alamofire/Alamofire&amp;quot; ~&amp;gt; 2.0.0
 github &amp;quot;Swinject/Swinject&amp;quot; ~&amp;gt; 0.2.1
 
@@ -169,7 +882,7 @@ $(SRCROOT)/Carthage/Build/iOS/Swinject.framework
 
 &lt;h2 id=&#34;conclusion:11d7c6379da90efdd5e0a41c688871dd&#34;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We found that the architecture of the app composed of Model, View and ViewModel frameworks ensured the direction of dependencies was consistent from View to ViewModel and ViewModel to Model. We setup the Xcode project in the MVVM architecture, and installed some external frameworks with Carthage. In the next blog post, we will start developing the app with ReactiveCocoa and Swinject to take advantage of the MVVM architecture.&lt;/p&gt;
+&lt;p&gt;We found that the architecture of the app composed of Model, View and ViewModel frameworks ensured the direction of dependencies was consistent from View to ViewModel and ViewModel to Model. We setup the Xcode project in the MVVM architecture, and installed some external frameworks with Carthage. In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/&#34;&gt;the next blog post&lt;/a&gt;, we will start developing the app with ReactiveCocoa and Swinject to take advantage of the MVVM architecture.&lt;/p&gt;
 
 &lt;p&gt;If you have questions, suggestions or problems, feel free to leave comments.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
