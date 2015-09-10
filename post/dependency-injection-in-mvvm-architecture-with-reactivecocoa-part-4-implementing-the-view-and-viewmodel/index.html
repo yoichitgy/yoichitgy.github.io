@@ -28,9 +28,11 @@
   <link href="https://yoichitgy.github.io/index.xml" rel="feed" type="application/rss+xml" title="Swift Injection" />
 
   
-  <script type="text/javascript">var switchTo5x=true;</script>
-  <script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
-  <script type="text/javascript">stLight.options({publisher: "2b9fffc6-b3fe-4988-a0ef-4f9dcce98eaa", doNotHash: true, doNotCopy: true, hashAddressBar: false});</script>
+  
+    <script type="text/javascript">var switchTo5x=true;</script>
+    <script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
+    <script type="text/javascript">stLight.options({publisher: '2b9fffc6-b3fe-4988-a0ef-4f9dcce98eaa', doNotHash: true, doNotCopy: true, hashAddressBar: false});</script>
+  
 
 
 </head>
@@ -82,6 +84,8 @@
       
 
 <p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/">the last blog post</a>, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use <code>PropertyOf</code> and <code>MutableProperty</code> types, which are observable properties provided by <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/">ReactiveCocoa</a>.</p>
+
+<p>The source code used in the blog post is available at <a href="https://github.com/Swinject/SwinjectMVVMExample">a repository on GitHub</a>.</p>
 
 <h2 id="notice:8877ce3a4a69e6ded4cb59057183d3db">Notice</h2>
 
@@ -718,14 +722,16 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
       
       
-      <div id="share-this" class="col span_10">
-        <span class='st_twitter_large' displayText='Tweet'></span>
-        <span class='st_facebook_large' displayText='Facebook'></span>
-        <span class='st_googleplus_large' displayText='Google +'></span>
-        <span class='st_pocket_large' displayText='Pocket'></span>
-        <span class='st_sharethis_large' displayText='ShareThis'></span>
-        <span class='st_email_large' displayText='Email'></span>  
-      </div>
+      
+        <div id="share-this" class="col span_10">
+          <span class='st_twitter_large' displayText='Tweet'></span>
+          <span class='st_facebook_large' displayText='Facebook'></span>
+          <span class='st_googleplus_large' displayText='Google +'></span>
+          <span class='st_pocket_large' displayText='Pocket'></span>
+          <span class='st_sharethis_large' displayText='ShareThis'></span>
+          <span class='st_email_large' displayText='Email'></span>  
+        </div>
+      
     </article>
     
  <aside><div id="disqus_thread"></div></aside> 
@@ -745,10 +751,12 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
   </main>
   
-  <nav class="pagination">
+  <nav class="pagination-single">
     
       <span class="previous">&larr; <a href="https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/" rel="prev">Dependency Injection in MVVM Architecture with ReactiveCocoa Part 3: Designing the Model</a></span>
     
+    
+      <span class="next"><a href="https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-5-asynchronous-image-load/" rel="next">Dependency Injection in MVVM Architecture with ReactiveCocoa Part 5: Asynchronous Image Load</a> &rarr;</span>
     
   </nav>
 
