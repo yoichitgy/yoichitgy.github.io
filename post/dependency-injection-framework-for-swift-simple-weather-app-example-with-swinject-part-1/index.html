@@ -6,7 +6,7 @@
   
   <meta charset="UTF-8">
   <title>
-    Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2 | Swift Injection
+    Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1 | Swift Injection
   </title>
 
 
@@ -64,7 +64,7 @@
   
   <main id="single" role="main">
     <div class="article-header">
-      <h1>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2</h1>
+      <h1>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1</h1>
       <div class="meta">
         Aug 13, 2015 &nbsp;
         
@@ -81,6 +81,8 @@
     <article>
       
 
+<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+
 <p>In <a href="/post/dependency-injection-framework-for-swift-introduction-to-swinject/">the last blog post</a>, we walked through the concept of dependency injection and basic usage of <a href="https://github.com/Swinject/Swinject">Swinject</a>, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.</p>
 
 <p>The source code used in this blog post is available at <a href="https://github.com/Swinject/SwinjectSimpleExample">a repository on GitHub</a>.</p>
@@ -90,14 +92,12 @@
 <h2 id="requirements:929d1b9e13edd8ae673f74cad40c219d">Requirements</h2>
 
 <ul>
-<li>Xcode 7 (beta)</li>
+<li>Xcode 7</li>
 <li>OpenWeatherMap API key</li>
 <li>CocoaPods 0.38 or later</li>
 </ul>
 
-<p>We are going to use Xcode 7 although it is still beta. It is beta 6 at the timing of writing this blog post. Xcode 7 supports <code>@testable import</code> to access <code>internal</code> types, functions or properties in unit test targets.</p>
-
-<p>Also, we will use <a href="http://openweathermap.org">OpenWeatherMap</a> for a free API to get weather information. <a href="http://home.openweathermap.org/users/sign_up">Sign up</a> and get a free API key.</p>
+<p>We will use <a href="http://openweathermap.org">OpenWeatherMap</a> for a free API to get weather information. <a href="http://home.openweathermap.org/users/sign_up">Sign up</a> and get a free API key.</p>
 
 <p>To install Swinject and some frameworks, we will use <a href="https://cocoapods.org">CocoaPods</a>.</p>
 
@@ -105,25 +105,25 @@
 
 <p>Let&rsquo;s start with a new Xcode project. Select <code>File &gt; New &gt; Project...</code> menu and <code>iOS &gt; Application &gt; Single View Application</code> item. Set  its product name to <code>SwinjectSimpleExample</code>, language to Swift and devices to iPhone. Check <code>Include Unit Tests</code> only<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:1"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:1">1</a></sup>, then save it anywhere in your local storage.</p>
 
-<p>Then, we are going to install <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a> with <a href="https://cocoapods.org">CocoaPods</a>. Create <code>Podfile</code> with the following text content in the project root directory. Then run <code>pod install</code> command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:2"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:2">2</a></sup>.</p>
+<p>Then, we are going to install <a href="https://github.com/Alamofire/Alamofire">Alamofire</a>, <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>, <a href="https://github.com/Swinject/Swinject">Swinject</a>, <a href="https://github.com/Quick/Quick">Quick</a> and <a href="https://github.com/Quick/Nimble">Nimble</a> with <a href="https://cocoapods.org">CocoaPods</a>. Create <code>Podfile</code> with the following text content in the project root directory. Then run <code>pod install</code> command to install them.</p>
 
 <pre><code>source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 use_frameworks!
 
-pod 'Alamofire', :git =&gt; 'https://github.com/Alamofire/Alamofire.git', :commit =&gt; '1b7b1f1aa'
-pod 'SwiftyJSON', :git =&gt; 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit =&gt; '45ca854ce'
-pod 'Swinject', '~&gt; 0.2'
+pod 'Alamofire', '~&gt; 2.0.2'
+pod 'SwiftyJSON', '~&gt; 2.3.0'
+pod 'Swinject', '~&gt; 0.2.2'
 
 target 'SwinjectSimpleExampleTests' do
-    pod 'Quick', '~&gt; 0.5.0'
+    pod 'Quick', '0.6.0'
     pod 'Nimble', '2.0.0-rc.2'
 end
 </code></pre>
 
 <p>Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a <a href="https://en.wikipedia.org/wiki/Behavior-driven_development">behavior-driven development</a> framework to write tests as specs in simple structures. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.</p>
 
-<p>To use the free weather API on iOS 9, we have to allow HTTP connections. Open <code>Info.plist</code> and add <code>NSAppTransportSecurity</code> dictionary with <code>NSAllowsArbitraryLoads</code> element set to <code>true</code><sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:3"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:3">3</a></sup>.  <a href="http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9">Here</a> is more information about the setting and its background.</p>
+<p>To use the free weather API on iOS 9, we have to allow HTTP connections. Open <code>Info.plist</code> and add <code>NSAppTransportSecurity</code> dictionary with <code>NSAllowsArbitraryLoads</code> element set to <code>true</code><sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:3"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:3">2</a></sup>.  <a href="http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9">Here</a> is more information about the setting and its background.</p>
 
 <h2 id="without-dependency-injection:929d1b9e13edd8ae673f74cad40c219d">Without Dependency Injection</h2>
 
@@ -384,7 +384,7 @@ class WeatherFetcherSpec: QuickSpec {
 
 <p><code>StubNetwork</code> is a stub that conforms <code>Networking</code>. It has a definition of JSON data that has the same structure as the data returned from the server. Its <code>request</code> method returns the identical data any time regardless of the current weather in the real world. In <code>spec</code>, <code>container</code> is configured at the beginning, and it is used later in the two <code>it</code> specifications. Without a registration name, <code>container</code> is configured to use <code>Network</code>. With the registration name &ldquo;stub&rdquo;, it is configured to use <code>StubNetwork</code>.</p>
 
-<p>The first <code>it</code> tests that the real network through Alamofire returns some JSON data<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:4"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:4">4</a></sup> by getting an instance of <code>WeatherFetcher</code> from <code>container</code> without a registration name. We do not test detail of <code>cities</code>. We just confirm that <code>fetch</code> can get some data from the server.</p>
+<p>The first <code>it</code> tests that the real network through Alamofire returns some JSON data<sup class="footnote-ref" id="fnref:929d1b9e13edd8ae673f74cad40c219d:4"><a rel="footnote" href="#fn:929d1b9e13edd8ae673f74cad40c219d:4">3</a></sup> by getting an instance of <code>WeatherFetcher</code> from <code>container</code> without a registration name. We do not test detail of <code>cities</code>. We just confirm that <code>fetch</code> can get some data from the server.</p>
 
 <p>The second <code>it</code> tests that the JSON data are parsed correctly by getting an instance of <code>WeatherFetcher</code> with the registration name &ldquo;stub&rdquo;. Because the stub returns two cities as defined in <code>StubNetwork</code>, we write expectations for the two cities and check whether each expectation asynchronously gets the value specified in the stub definition.</p>
 
@@ -398,10 +398,8 @@ class WeatherFetcherSpec: QuickSpec {
 <hr />
 
 <ol>
-<li id="fn:929d1b9e13edd8ae673f74cad40c219d:1">UI tests are excluded because still Xcode 7 is beta (just caring NDA). This blog post will be updated to include them after Xcode 7 is officially released.
+<li id="fn:929d1b9e13edd8ae673f74cad40c219d:1">UI tests are excluded because they are out of scope of this blog post.
  <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:1"><sup>[return]</sup></a></li>
-<li id="fn:929d1b9e13edd8ae673f74cad40c219d:2"><code>Podfile</code> in this blog post will be updated after Xcode 7 is officially released.
- <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:2"><sup>[return]</sup></a></li>
 <li id="fn:929d1b9e13edd8ae673f74cad40c219d:3">Actually this setting is not preferable if you develop an app to release. In this blog post, I used the setting just because the free API only supports HTTP.
  <a class="footnote-return" href="#fnref:929d1b9e13edd8ae673f74cad40c219d:3"><sup>[return]</sup></a></li>
 <li id="fn:929d1b9e13edd8ae673f74cad40c219d:4">This test may fail if the network is disconnected or has a problem, but these cases can be practically ignored in our unit tests.
@@ -445,7 +443,7 @@ class WeatherFetcherSpec: QuickSpec {
       <span class="previous">&larr; <a href="https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/" rel="prev">Dependency Injection Framework for Swift - Introduction to Swinject</a></span>
     
     
-      <span class="next"><a href="https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-2/" rel="next">Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 2/2</a> &rarr;</span>
+      <span class="next"><a href="https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-2/" rel="next">Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 2</a> &rarr;</span>
     
   </nav>
 

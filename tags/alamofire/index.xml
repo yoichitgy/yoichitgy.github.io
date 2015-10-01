@@ -1370,12 +1370,14 @@ class ImageSearchSpec: QuickSpec {
     </item>
     
     <item>
-      <title>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1/2</title>
+      <title>Dependency Injection Framework for Swift - Simple Weather App Example with Swinject Part 1</title>
       <link>https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</link>
       <pubDate>Thu, 13 Aug 2015 09:16:58 +0900</pubDate>
       
       <guid>https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</guid>
       <description>
+
+&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/&#34;&gt;the last blog post&lt;/a&gt;, we walked through the concept of dependency injection and basic usage of &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.&lt;/p&gt;
 
@@ -1386,14 +1388,12 @@ class ImageSearchSpec: QuickSpec {
 &lt;h2 id=&#34;requirements:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Requirements&lt;/h2&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Xcode 7 (beta)&lt;/li&gt;
+&lt;li&gt;Xcode 7&lt;/li&gt;
 &lt;li&gt;OpenWeatherMap API key&lt;/li&gt;
 &lt;li&gt;CocoaPods 0.38 or later&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;We are going to use Xcode 7 although it is still beta. It is beta 6 at the timing of writing this blog post. Xcode 7 supports &lt;code&gt;@testable import&lt;/code&gt; to access &lt;code&gt;internal&lt;/code&gt; types, functions or properties in unit test targets.&lt;/p&gt;
-
-&lt;p&gt;Also, we will use &lt;a href=&#34;http://openweathermap.org&#34;&gt;OpenWeatherMap&lt;/a&gt; for a free API to get weather information. &lt;a href=&#34;http://home.openweathermap.org/users/sign_up&#34;&gt;Sign up&lt;/a&gt; and get a free API key.&lt;/p&gt;
+&lt;p&gt;We will use &lt;a href=&#34;http://openweathermap.org&#34;&gt;OpenWeatherMap&lt;/a&gt; for a free API to get weather information. &lt;a href=&#34;http://home.openweathermap.org/users/sign_up&#34;&gt;Sign up&lt;/a&gt; and get a free API key.&lt;/p&gt;
 
 &lt;p&gt;To install Swinject and some frameworks, we will use &lt;a href=&#34;https://cocoapods.org&#34;&gt;CocoaPods&lt;/a&gt;.&lt;/p&gt;
 
@@ -1401,25 +1401,25 @@ class ImageSearchSpec: QuickSpec {
 
 &lt;p&gt;Let&amp;rsquo;s start with a new Xcode project. Select &lt;code&gt;File &amp;gt; New &amp;gt; Project...&lt;/code&gt; menu and &lt;code&gt;iOS &amp;gt; Application &amp;gt; Single View Application&lt;/code&gt; item. Set  its product name to &lt;code&gt;SwinjectSimpleExample&lt;/code&gt;, language to Swift and devices to iPhone. Check &lt;code&gt;Include Unit Tests&lt;/code&gt; only&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;, then save it anywhere in your local storage.&lt;/p&gt;
 
-&lt;p&gt;Then, we are going to install &lt;a href=&#34;https://github.com/Alamofire/Alamofire&#34;&gt;Alamofire&lt;/a&gt;, &lt;a href=&#34;https://github.com/SwiftyJSON/SwiftyJSON&#34;&gt;SwiftyJSON&lt;/a&gt;, &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, &lt;a href=&#34;https://github.com/Quick/Quick&#34;&gt;Quick&lt;/a&gt; and &lt;a href=&#34;https://github.com/Quick/Nimble&#34;&gt;Nimble&lt;/a&gt; with &lt;a href=&#34;https://cocoapods.org&#34;&gt;CocoaPods&lt;/a&gt;. Create &lt;code&gt;Podfile&lt;/code&gt; with the following text content in the project root directory. Then run &lt;code&gt;pod install&lt;/code&gt; command to install them. Since Xcode 7 is still beta, specific commits of Alamofire and SwiftyJSON are specified&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Then, we are going to install &lt;a href=&#34;https://github.com/Alamofire/Alamofire&#34;&gt;Alamofire&lt;/a&gt;, &lt;a href=&#34;https://github.com/SwiftyJSON/SwiftyJSON&#34;&gt;SwiftyJSON&lt;/a&gt;, &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, &lt;a href=&#34;https://github.com/Quick/Quick&#34;&gt;Quick&lt;/a&gt; and &lt;a href=&#34;https://github.com/Quick/Nimble&#34;&gt;Nimble&lt;/a&gt; with &lt;a href=&#34;https://cocoapods.org&#34;&gt;CocoaPods&lt;/a&gt;. Create &lt;code&gt;Podfile&lt;/code&gt; with the following text content in the project root directory. Then run &lt;code&gt;pod install&lt;/code&gt; command to install them.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;source &#39;https://github.com/CocoaPods/Specs.git&#39;
 platform :ios, &#39;8.0&#39;
 use_frameworks!
 
-pod &#39;Alamofire&#39;, :git =&amp;gt; &#39;https://github.com/Alamofire/Alamofire.git&#39;, :commit =&amp;gt; &#39;1b7b1f1aa&#39;
-pod &#39;SwiftyJSON&#39;, :git =&amp;gt; &#39;https://github.com/SwiftyJSON/SwiftyJSON.git&#39;, :commit =&amp;gt; &#39;45ca854ce&#39;
-pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2&#39;
+pod &#39;Alamofire&#39;, &#39;~&amp;gt; 2.0.2&#39;
+pod &#39;SwiftyJSON&#39;, &#39;~&amp;gt; 2.3.0&#39;
+pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.2&#39;
 
 target &#39;SwinjectSimpleExampleTests&#39; do
-    pod &#39;Quick&#39;, &#39;~&amp;gt; 0.5.0&#39;
+    pod &#39;Quick&#39;, &#39;0.6.0&#39;
     pod &#39;Nimble&#39;, &#39;2.0.0-rc.2&#39;
 end
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Alamofire is a networking library to write request and asynchronous response simply. SwiftyJSON is a library to access JSON elements simply. Quick is a &lt;a href=&#34;https://en.wikipedia.org/wiki/Behavior-driven_development&#34;&gt;behavior-driven development&lt;/a&gt; framework to write tests as specs in simple structures. Nimble is a matcher framework that is expressive and supports asynchronous tests. For details, please visit their project pages.&lt;/p&gt;
 
-&lt;p&gt;To use the free weather API on iOS 9, we have to allow HTTP connections. Open &lt;code&gt;Info.plist&lt;/code&gt; and add &lt;code&gt;NSAppTransportSecurity&lt;/code&gt; dictionary with &lt;code&gt;NSAllowsArbitraryLoads&lt;/code&gt; element set to &lt;code&gt;true&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;.  &lt;a href=&#34;http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9&#34;&gt;Here&lt;/a&gt; is more information about the setting and its background.&lt;/p&gt;
+&lt;p&gt;To use the free weather API on iOS 9, we have to allow HTTP connections. Open &lt;code&gt;Info.plist&lt;/code&gt; and add &lt;code&gt;NSAppTransportSecurity&lt;/code&gt; dictionary with &lt;code&gt;NSAllowsArbitraryLoads&lt;/code&gt; element set to &lt;code&gt;true&lt;/code&gt;&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;.  &lt;a href=&#34;http://stackoverflow.com/questions/30720813/cfnetwork-sslhandshake-failed-ios-9&#34;&gt;Here&lt;/a&gt; is more information about the setting and its background.&lt;/p&gt;
 
 &lt;h2 id=&#34;without-dependency-injection:929d1b9e13edd8ae673f74cad40c219d&#34;&gt;Without Dependency Injection&lt;/h2&gt;
 
@@ -1680,7 +1680,7 @@ class WeatherFetcherSpec: QuickSpec {
 
 &lt;p&gt;&lt;code&gt;StubNetwork&lt;/code&gt; is a stub that conforms &lt;code&gt;Networking&lt;/code&gt;. It has a definition of JSON data that has the same structure as the data returned from the server. Its &lt;code&gt;request&lt;/code&gt; method returns the identical data any time regardless of the current weather in the real world. In &lt;code&gt;spec&lt;/code&gt;, &lt;code&gt;container&lt;/code&gt; is configured at the beginning, and it is used later in the two &lt;code&gt;it&lt;/code&gt; specifications. Without a registration name, &lt;code&gt;container&lt;/code&gt; is configured to use &lt;code&gt;Network&lt;/code&gt;. With the registration name &amp;ldquo;stub&amp;rdquo;, it is configured to use &lt;code&gt;StubNetwork&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;The first &lt;code&gt;it&lt;/code&gt; tests that the real network through Alamofire returns some JSON data&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt; by getting an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; from &lt;code&gt;container&lt;/code&gt; without a registration name. We do not test detail of &lt;code&gt;cities&lt;/code&gt;. We just confirm that &lt;code&gt;fetch&lt;/code&gt; can get some data from the server.&lt;/p&gt;
+&lt;p&gt;The first &lt;code&gt;it&lt;/code&gt; tests that the real network through Alamofire returns some JSON data&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;3&lt;/a&gt;&lt;/sup&gt; by getting an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; from &lt;code&gt;container&lt;/code&gt; without a registration name. We do not test detail of &lt;code&gt;cities&lt;/code&gt;. We just confirm that &lt;code&gt;fetch&lt;/code&gt; can get some data from the server.&lt;/p&gt;
 
 &lt;p&gt;The second &lt;code&gt;it&lt;/code&gt; tests that the JSON data are parsed correctly by getting an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; with the registration name &amp;ldquo;stub&amp;rdquo;. Because the stub returns two cities as defined in &lt;code&gt;StubNetwork&lt;/code&gt;, we write expectations for the two cities and check whether each expectation asynchronously gets the value specified in the stub definition.&lt;/p&gt;
 
@@ -1694,10 +1694,8 @@ class WeatherFetcherSpec: QuickSpec {
 &lt;hr /&gt;
 
 &lt;ol&gt;
-&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;UI tests are excluded because still Xcode 7 is beta (just caring NDA). This blog post will be updated to include them after Xcode 7 is officially released.
+&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;UI tests are excluded because they are out of scope of this blog post.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;code&gt;Podfile&lt;/code&gt; in this blog post will be updated after Xcode 7 is officially released.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;Actually this setting is not preferable if you develop an app to release. In this blog post, I used the setting just because the free API only supports HTTP.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:929d1b9e13edd8ae673f74cad40c219d:3&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li id=&#34;fn:929d1b9e13edd8ae673f74cad40c219d:4&#34;&gt;This test may fail if the network is disconnected or has a problem, but these cases can be practically ignored in our unit tests.
