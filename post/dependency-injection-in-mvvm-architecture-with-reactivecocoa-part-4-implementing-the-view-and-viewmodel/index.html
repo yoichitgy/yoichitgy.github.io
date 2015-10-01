@@ -83,13 +83,15 @@
     <article>
       
 
+<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+
 <p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/">the last blog post</a>, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use <code>PropertyOf</code> and <code>MutableProperty</code> types, which are observable properties provided by <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/">ReactiveCocoa</a>.</p>
 
 <p>The source code used in the blog post is available at <a href="https://github.com/Swinject/SwinjectMVVMExample">a repository on GitHub</a>.</p>
 
 <h2 id="notice:8877ce3a4a69e6ded4cb59057183d3db">Notice</h2>
 
-<p>In the example project, Swift 2.0 with Xcode 7 is used though they are still in beta versions. To use with Swift 2.0, a development version of ReactiveCocoa in <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2">swift2 branch</a> is used. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but APIs in swift2 branch are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>. Since swift2 branch is still in development, the APIs might be changed in the future.</p>
+<p>To use with Swift 2 and Xcode 7, ReactiveCocoa <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/releases">version 4.0</a> is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but version 4 APIs are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>.</p>
 
 <h2 id="view-and-viewmodel-design-overview:8877ce3a4a69e6ded4cb59057183d3db">View and ViewModel Design Overview</h2>
 

@@ -87,6 +87,8 @@
     <article>
       
 
+<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+
 <p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/">the last blog post</a>, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a> is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use <a href="https://github.com/ikesyo/Himotoki">Himotoki</a> to define mappings from JSON data to Swift types.</p>
 
 <p>The source code used in the blog post is available at <a href="https://github.com/Swinject/SwinjectMVVMExample">a repository on GitHub</a>.</p>
@@ -95,11 +97,11 @@
 
 <h2 id="notice:10506297541d45beaf70d97ca007d866">Notice</h2>
 
-<p>We are going to use Swift 2.0 with Xcode 7 though they are still in beta versions. To use with Swift 2.0, a development version of ReactiveCocoa in <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2">swift2 branch</a> will be used. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but APIs in swift2 branch are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>. Since swift2 branch is still in development, the APIs might be changed in the future.</p>
+<p>To use with Swift 2 and Xcode 7, ReactiveCocoa <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/releases">version 4.0</a> is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but version 4 APIs are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>.</p>
 
 <h2 id="himotoki:10506297541d45beaf70d97ca007d866">Himotoki</h2>
 
-<p><a href="https://github.com/ikesyo/Himotoki">Himotoki</a> is a type-safe JSON decoding library for Swift. It maps JSON elements to properties of a type with a simple definition of the mappings as <code>Decodable</code> protocol. The advantage of Himotoki is the support of mappings to read-only (<code>let</code>) properties.</p>
+<p><a href="https://github.com/ikesyo/Himotoki">Himotoki</a> is a type-safe JSON decoding library for Swift. It maps JSON elements to properties of a type with a simple definition of the mappings as <code>Decodable</code> protocol. The advantage of Himotoki is the support of mappings to immutable (<code>let</code>) properties.</p>
 
 <p>Its usage is simple. Assume that you want to map JSON like <code>{ &quot;some_name&quot;: &quot;Himotoki&quot;, &quot;some_value&quot;: 1 }</code> to <code>SomeValue</code> type. To define the mappings, make <code>SomeValue</code> type conform <code>Decodable</code> protocol.</p>
 
@@ -109,8 +111,8 @@
 }
 
 extension SomeValue: Decodable {
-    static func decode(e: Extractor) -&gt; Group? {
-        return build(SomeValue.init)(
+    static func decode(e: Extractor) throws -&gt; Group {
+        return try build(SomeValue.init)(
             e &lt;| &quot;some_name&quot;,
             e &lt;| &quot;some_value&quot;
         )
@@ -126,7 +128,7 @@ extension SomeValue: Decodable {
     // JSON data returned from Alamofire or NSJSONSerialization.
     let json: [String: AnyObject] = [&quot;some_name&quot;: &quot;Himotoki&quot;, &quot;some_value&quot;: 1]
 
-    let v: SomeValue? = decode(json)
+    let v: SomeValue? = try? decode(json)
     XCTAssert(v != nil)
     XCTAssert(v?.name == &quot;Himotoki&quot;)
     XCTAssert(v?.value == 1)
@@ -212,7 +214,7 @@ public struct ImageEntity {
 
 // MARK: Decodable
 extension ImageEntity: Decodable {
-    public static func decode(e: Extractor) -&gt; ImageEntity? {
+    public static func decode(e: Extractor) throws -&gt; ImageEntity {
         let splitCSV: String -&gt; [String] = { csv in
             csv.characters
                 .split { $0 == &quot;,&quot; }
@@ -222,7 +224,7 @@ extension ImageEntity: Decodable {
                 }
         }
 
-        return build(ImageEntity.init)(
+        return try build(ImageEntity.init)(
             e &lt;| &quot;id&quot;,
 
             e &lt;| &quot;pageURL&quot;,
@@ -240,7 +242,7 @@ extension ImageEntity: Decodable {
             e &lt;| &quot;views&quot;,
             e &lt;| &quot;downloads&quot;,
             e &lt;| &quot;likes&quot;,
-            (e &lt;| &quot;tags&quot;).map(splitCSV) ?? [],
+            (try? e &lt;| &quot;tags&quot;).map(splitCSV) ?? [],
             e &lt;| &quot;user&quot;
         )
     }
@@ -249,7 +251,7 @@ extension ImageEntity: Decodable {
 
 <p>Notice that <code>ImageEntity</code> is defined as a <code>struct</code> with its properties immutable. The immutability keeps the users of the entity safe<sup class="footnote-ref" id="fnref:10506297541d45beaf70d97ca007d866:3"><a rel="footnote" href="#fn:10506297541d45beaf70d97ca007d866:3">3</a></sup>. Accessibility of the type is <code>public</code> because it is referenced from <code>ExampleViewModel</code> target.</p>
 
-<p>Some properties of <code>ImageEntity</code> are named differently from the JSON elements to match Swift naming convention and our app. The properties <code>id</code>, <code>viewCount</code>, <code>downloadCount</code> and <code>likeCount</code> are declared as <code>UInt64</code> or <code>Int64</code> to ensure they accept large values even in 32-bit system. JSON element <code>tags</code> as a <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format string is mapped to an array of split strings by <code>(e &lt;| &quot;tags&quot;).map(splitCSV)</code>. By applying <code>?? []</code> to the returned value, an empty array is used if the <code>tags</code> is nil.</p>
+<p>Some properties of <code>ImageEntity</code> are named differently from the JSON elements to match Swift naming convention and our app. The properties <code>id</code>, <code>viewCount</code>, <code>downloadCount</code> and <code>likeCount</code> are declared as <code>UInt64</code> or <code>Int64</code> to ensure they accept large values even in 32-bit system. JSON element <code>tags</code> as a <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format string is mapped to an array of split strings by <code>(try? e &lt;| &quot;tags&quot;).map(splitCSV)</code>. By applying <code>?? []</code> to the returned value, an empty array is assigned instead of <code>nil</code> if the <code>tags</code> JSON element is missing.</p>
 
 <p>Add <code>ResponseEntity.swift</code> to <code>ExampleModel</code> target with the following text contents. Here <code>&lt;||</code> operator is used to map an array. The <code>total</code> element in the JSON is ignored. If we find it is necessary, we can add it later.</p>
 
@@ -264,8 +266,8 @@ public struct ResponseEntity {
 
 // MARK: Decodable
 extension ResponseEntity: Decodable {
-    public static func decode(e: Extractor) -&gt; ResponseEntity? {
-        return build(ResponseEntity.init)(
+    public static func decode(e: Extractor) throws -&gt; ResponseEntity {
+        return try build(ResponseEntity.init)(
             e &lt;| &quot;totalHits&quot;,
             e &lt;|| &quot;hits&quot;
         )
@@ -306,7 +308,7 @@ import Himotoki
 class ImageEntitySpec: QuickSpec {
     override func spec() {
         it(&quot;parses JSON data to create a new instance.&quot;) {
-            let image: ImageEntity? = decode(imageJSON)
+            let image: ImageEntity? = try? decode(imageJSON)
 
             expect(image).notTo(beNil())
             expect(image?.id) == 12345
@@ -328,16 +330,16 @@ class ImageEntitySpec: QuickSpec {
         it(&quot;gets an empty array if tags element is nil.&quot;) {
             var missingJSON = imageJSON
             missingJSON[&quot;tags&quot;] = nil
-            let image: ImageEntity? = decode(missingJSON)
+            let image: ImageEntity? = try? decode(missingJSON)
 
             expect(image).notTo(beNil())
             expect(image?.tags.isEmpty).to(beTrue())
         }
-        it(&quot;gets nil if any of JSON elements except tags is missing.&quot;) {
+        it(&quot;throws an error if any of JSON elements except tags is missing.&quot;) {
             for key in imageJSON.keys where key != &quot;tags&quot; {
                 var missingJSON = imageJSON
                 missingJSON[key] = nil
-                let image: ImageEntity? = decode(missingJSON)
+                let image: ImageEntity? = try? decode(missingJSON)
 
                 expect(image).to(beNil())
             }
@@ -345,7 +347,7 @@ class ImageEntitySpec: QuickSpec {
         it(&quot;ignores an extra JOSN element.&quot;) {
             var extraJSON = imageJSON
             extraJSON[&quot;extraKey&quot;] = &quot;extra element&quot;
-            let image: ImageEntity? = decode(extraJSON)
+            let image: ImageEntity? = try? decode(extraJSON)
 
             expect(image).notTo(beNil())
         }
@@ -359,7 +361,7 @@ class ImageEntitySpec: QuickSpec {
 
 <p><code>it(&quot;gets an empty array if tags element is nil.&quot;)</code> checks that <code>tags</code> property is set to an empty array if <code>tags</code> element is missing in the JSON data.</p>
 
-<p><code>it(&quot;gets nil if any of JSON elements except tags is missing.&quot;)</code> checks that <code>decode</code> function returns <code>nil</code> if any of the JSON elements except <code>tags</code> is missing. Incorrect or broken JSON data can be detected to see whether the returned value is <code>nil</code>.</p>
+<p><code>it(&quot;throws an error if any of JSON elements except tags is missing.&quot;)</code> checks that <code>decode</code> function throws an error if any of the JSON elements except <code>tags</code> is missing. Incorrect or broken JSON data can be detected to see whether the returned value from <code>try?</code> is <code>nil</code>.</p>
 
 <p><code>it(&quot;ignores an extra JOSN element.&quot;)</code> checks that <code>decode</code> function returns an <code>ImageEntity</code> instance even if an extra JSON element exists. Ignoring extra elements, our JSON mapping is stable for future changes on the Pixabay API.</p>
 
@@ -380,7 +382,7 @@ class ResponseEntitySpec: QuickSpec {
         ]
 
         it(&quot;parses JSON data to create a new instance.&quot;) {
-            let response: ResponseEntity? = decode(json)
+            let response: ResponseEntity? = try? decode(json)
 
             expect(response).notTo(beNil())
             expect(response?.totalCount) == 123
@@ -655,7 +657,7 @@ public final class ImageSearch: ImageSearching {
         let parameters = Pixabay.requestParameters
         return network.requestJSON(url, parameters: parameters)
             .attemptMap { json in
-                if let response = decode(json) as ResponseEntity? {
+                if let response = (try? decode(json)) as ResponseEntity? {
                     return Result(value: response)
                 }
                 else {
@@ -668,9 +670,9 @@ public final class ImageSearch: ImageSearching {
 
 <p><code>ImageSearch</code> has dependency on <code>Networking</code> injected through the initializer as <a href="https://github.com/Swinject/Swinject/blob/master/Documentation/InjectionPatterns.md">initializer injection pattern</a>.</p>
 
-<p><code>searchImages</code> method converts <code>SignalProducer&lt;AnyObject, NetworkError&gt;</code> returned from <code>network.requestJSON</code> to <code>SignalProducer&lt;ResponseEntity, NetworkError&gt;</code>. To convert the <code>SignalProducer</code>, <code>attemptMap</code> is used. The closure passed to <code>attemptMap</code> calls <code>decode</code> to map the JSON data to a <code>ResponseEntity</code> instance. If the mapping succeeds, the mapped response is returned as <code>Result(value: response)</code>. Otherwise, an error is returned as <code>Result(error: .IncorrectDataReturned)</code>. If you convert a value not to an error but to another value only, you can just use <code>map</code> method on <code>SignalProducer</code>.</p>
+<p><code>searchImages</code> method converts <code>SignalProducer&lt;AnyObject, NetworkError&gt;</code> returned from <code>network.requestJSON</code> to <code>SignalProducer&lt;ResponseEntity, NetworkError&gt;</code>. To convert the <code>SignalProducer</code>, <code>attemptMap</code> is used. The closure passed to <code>attemptMap</code> calls <code>decode</code> to map the JSON data to a <code>ResponseEntity</code> instance. If the mapping succeeds, the mapped response is returned as <code>Result(value: response)</code>. Otherwise<sup class="footnote-ref" id="fnref:10506297541d45beaf70d97ca007d866:5"><a rel="footnote" href="#fn:10506297541d45beaf70d97ca007d866:5">5</a></sup>, an error is returned as <code>Result(error: .IncorrectDataReturned)</code>. If you convert a value not to an error but to another value only, you can just use <code>map</code> method on <code>SignalProducer</code>.</p>
 
-<p>The cast of <code>decode(json) as ResponseEntity?</code> looks irregular, but it helps Swift compiler infer that <code>decode</code> function on <code>ResponseEntity</code> type should be used. If the cast is <code>decode(json) as? ResponseEntity</code>, the source code cannot be compiled.</p>
+<p>The cast of <code>(try? decode(json)) as ResponseEntity?</code> looks irregular, but it helps Swift compiler infer that <code>decode</code> function on <code>ResponseEntity</code> type should be used. If the cast is <code>(try? decode(json)) as? ResponseEntity</code>, the source code cannot be compiled.</p>
 
 <p>Let&rsquo;s write unit tests. Add <code>ImageSearchSpec.swift</code> with the following content to <code>ExampleModelTests</code> target.</p>
 
@@ -787,6 +789,8 @@ class ImageSearchSpec: QuickSpec {
  <a class="footnote-return" href="#fnref:10506297541d45beaf70d97ca007d866:3"><sup>[return]</sup></a></li>
 <li id="fn:10506297541d45beaf70d97ca007d866:4">&ldquo;<a href="https://realm.io/news/testing-swift-error-type/">How to Implement the ErrorType Protocol</a>&rdquo; is worth reading about <code>ErrorType</code>.
  <a class="footnote-return" href="#fnref:10506297541d45beaf70d97ca007d866:4"><sup>[return]</sup></a></li>
+<li id="fn:10506297541d45beaf70d97ca007d866:5"><code>try?</code> is used just to simplify this blog post. <code>do-try-catch</code> should be used to handle an error to get informative.
+ <a class="footnote-return" href="#fnref:10506297541d45beaf70d97ca007d866:5"><sup>[return]</sup></a></li>
 </ol>
 </div>
 

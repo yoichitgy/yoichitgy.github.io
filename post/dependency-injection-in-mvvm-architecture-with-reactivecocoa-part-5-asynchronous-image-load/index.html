@@ -85,13 +85,15 @@
     <article>
       
 
+<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+
 <p>By <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-4-implementing-the-view-and-viewmodel/">the previous blog post</a>, we developed an example app, in MVVM architecture, displaying meta data of images received from <a href="https://pixabay.com/">Pixabay</a> server. In this blog post, we are going add a feature to asynchronously load the images. To handle the asynchronous events, <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a> will be used as we did in the previous posts. Through the development, we will learn how to add a feature in MVVM architecture with unit tests and dependency injection are updated.</p>
 
 <p>The source code used in the blog post is available at <a href="https://github.com/Swinject/SwinjectMVVMExample">a repository on GitHub</a>.</p>
 
 <h2 id="notice:e195b0dcdb12716d5c3e3911b931c7d6">Notice</h2>
 
-<p>To use with Swift 2.0, a development version of ReactiveCocoa in <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/swift2">swift2 branch</a> is used. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but APIs in swift2 branch are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>. Since swift2 branch is still in development, the APIs might be changed in the future.</p>
+<p>To use with Swift 2 and Xcode 7, ReactiveCocoa <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/releases">version 4.0</a> is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like <code>|&gt; map</code> or <code>|&gt; flatMap</code>, but version 4 APIs are in protocol oriented and fluent style like <code>.map()</code> or <code>.flatMap()</code>.</p>
 
 <h2 id="model:e195b0dcdb12716d5c3e3911b931c7d6">Model</h2>
 
@@ -321,7 +323,7 @@ public final class ImageSearchTableViewCellModel
 
 <p><code>getPreviewImage</code> method returns a <code>SignalProducer</code> instance sending <code>UIImage</code>. A cached image, as <code>previewImage</code> property, is wrapped in an <code>SignalProducer</code> instance if the cache exists. Otherwise, another <code>SignalProducer</code> that requests an image to <code>Networking</code> is returned.</p>
 
-<p>The latter <code>SignalProducer</code> consists of two parts concatenated by <code>concat</code> method. The first part is <code>SignalProducer(value: nil)</code>, which sends <code>nil</code> then completes immediately. The second part is <code>imageProducer</code>, which requests the image to <code>Networking</code>. In the second part, an error is mapped to <code>nil</code> by <code>flatMapError</code> to ignore the error because no error message should be displayed for each cell. To terminate the signal producer when the <code>ImageSearchTableViewCellModel</code> instance is deallocated, <code>takeUntil</code> method is called with <code>racutil_willDeallocProducer</code>. To use the <code>NSObject</code> extension, <code>ImageSearchTableViewCellModel</code> inherits <code>NSObject</code>.</p>
+<p>The latter <code>SignalProducer</code> consists of two parts concatenated by <code>concat</code> method. The first part is <code>SignalProducer(value: nil)</code>, which sends <code>nil</code> then completes immediately. The <code>nil</code> is sent at the beginning to clear an old image displayed in the <code>UIImageView</code> on a reused cell. The second part is <code>imageProducer</code>, which requests the image to <code>Networking</code>. In the second part, an error is mapped to <code>nil</code> by <code>flatMapError</code> to ignore the error because no error message should be displayed for each cell. To terminate the signal producer when the <code>ImageSearchTableViewCellModel</code> instance is deallocated, <code>takeUntil</code> method is called with <code>racutil_willDeallocProducer</code>. To use the <code>NSObject</code> extension, <code>ImageSearchTableViewCellModel</code> inherits <code>NSObject</code>.</p>
 
 <p>Modify <code>ImageSearchTableViewModel</code> to pass a <code>Networking</code> instance as below. A parameter is added to its initializer to get <code>Networking</code> instance injected. The instance is passed to the initializer of <code>ImageSearchTableViewCellModel</code> in <code>startSearch</code> method.</p>
 
