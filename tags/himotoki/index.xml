@@ -21,7 +21,12 @@
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the last blog post&lt;/a&gt;, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; to define mappings from JSON data to Swift types.&lt;/p&gt;
 
-&lt;p&gt;The source code used in the blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
 

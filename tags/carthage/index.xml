@@ -21,7 +21,12 @@
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/&#34;&gt;the last blog post&lt;/a&gt;, the basic concepts of MVVM (Model-View-ViewModel) and &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; were introduced. From this blog post, we are going to develop an example app to demonstrate dependency injection with &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt; in MVVM architecture. We will use ReactiveCococa to handle events passed between MVVM components. In this blog post, you will learn how to setup an Xcode project composing Molel, View and ViewModel as  frameworks.&lt;/p&gt;
 
-&lt;p&gt;The example app asynchronously searches, downloads and displays images obtained from &lt;a href=&#34;https://pixabay.com&#34;&gt;Pixabay&lt;/a&gt; via &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;its API&lt;/a&gt;, as shown in the GIF animation below. The source code used in the blog posts is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The example app asynchronously searches, downloads and displays images obtained from &lt;a href=&#34;https://pixabay.com&#34;&gt;Pixabay&lt;/a&gt; via &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;its API&lt;/a&gt;, as shown in the GIF animation below. The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
 

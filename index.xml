@@ -21,7 +21,12 @@
 
 &lt;p&gt;By &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-4-implementing-the-view-and-viewmodel/&#34;&gt;the previous blog post&lt;/a&gt;, we developed an example app, in MVVM architecture, displaying meta data of images received from &lt;a href=&#34;https://pixabay.com/&#34;&gt;Pixabay&lt;/a&gt; server. In this blog post, we are going add a feature to asynchronously load the images. To handle the asynchronous events, &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; will be used as we did in the previous posts. Through the development, we will learn how to add a feature in MVVM architecture with unit tests and dependency injection are updated.&lt;/p&gt;
 
-&lt;p&gt;The source code used in the blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&#34;notice:e195b0dcdb12716d5c3e3911b931c7d6&#34;&gt;Notice&lt;/h2&gt;
 
@@ -654,7 +659,12 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/&#34;&gt;the last blog post&lt;/a&gt;, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use &lt;code&gt;PropertyOf&lt;/code&gt; and &lt;code&gt;MutableProperty&lt;/code&gt; types, which are observable properties provided by &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/&#34;&gt;ReactiveCocoa&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;The source code used in the blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&#34;notice:8877ce3a4a69e6ded4cb59057183d3db&#34;&gt;Notice&lt;/h2&gt;
 
@@ -1303,7 +1313,12 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the last blog post&lt;/a&gt;, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; to define mappings from JSON data to Swift types.&lt;/p&gt;
 
-&lt;p&gt;The source code used in the blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
 
@@ -2020,7 +2035,12 @@ class ImageSearchSpec: QuickSpec {
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/&#34;&gt;the last blog post&lt;/a&gt;, the basic concepts of MVVM (Model-View-ViewModel) and &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; were introduced. From this blog post, we are going to develop an example app to demonstrate dependency injection with &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt; in MVVM architecture. We will use ReactiveCococa to handle events passed between MVVM components. In this blog post, you will learn how to setup an Xcode project composing Molel, View and ViewModel as  frameworks.&lt;/p&gt;
 
-&lt;p&gt;The example app asynchronously searches, downloads and displays images obtained from &lt;a href=&#34;https://pixabay.com&#34;&gt;Pixabay&lt;/a&gt; via &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;its API&lt;/a&gt;, as shown in the GIF animation below. The source code used in the blog posts is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The example app asynchronously searches, downloads and displays images obtained from &lt;a href=&#34;https://pixabay.com&#34;&gt;Pixabay&lt;/a&gt; via &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;its API&lt;/a&gt;, as shown in the GIF animation below. The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
 
@@ -2211,7 +2231,12 @@ $(SRCROOT)/Carthage/Build/iOS/Swinject.framework
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The source code used in the blog posts is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&#34;mvvm:90b51da2b75144dcb148da08a7b03a1a&#34;&gt;MVVM&lt;/h2&gt;
 
