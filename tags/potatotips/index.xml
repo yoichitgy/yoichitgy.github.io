@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Potatotips on Swift Injection</title>
+    <link>https://yoichitgy.github.io/tags/potatotips/</link>
+    <description>Recent content in Potatotips on Swift Injection</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 22 Oct 2015 19:16:58 +0900</lastBuildDate>
+    <atom:link href="https://yoichitgy.github.io/tags/potatotips/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Summary of the 22nd potatotips meetup in Tokyo</title>
+      <link>https://yoichitgy.github.io/post/summary-of-the-22nd-potatotips-meetup-in-tokyo/</link>
+      <pubDate>Thu, 22 Oct 2015 19:16:58 +0900</pubDate>
+      
+      <guid>https://yoichitgy.github.io/post/summary-of-the-22nd-potatotips-meetup-in-tokyo/</guid>
+      <description>
+
+&lt;p&gt;I attended &lt;a href=&#34;https://translate.google.com/translate?sl=ja&amp;amp;tl=en&amp;amp;js=y&amp;amp;prev=_t&amp;amp;hl=ja&amp;amp;ie=UTF-8&amp;amp;u=http%3A%2F%2Fconnpass.com%2Fevent%2F20240%2F&amp;amp;edit-text=&amp;amp;act=url&#34;&gt;the 22nd potatotips meetup for iOS/Android developers in Tokyo&lt;/a&gt; on October 13th, 2015. It was held in an office of &lt;a href=&#34;https://www.mercari.com&#34;&gt;Mercari&lt;/a&gt;. Tips in variety of fields of iOS/Android development were shared in the meetup. The talks were in the local language, but the tips were worth sharing here. I summarized the tips in this blog&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:0b699a3cd6d609650a3fca90a5cd32cc:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:0b699a3cd6d609650a3fca90a5cd32cc:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;I was personally interested in the following talks.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#my-personal-app&#34;&gt;My Personal App Chosen as One of Best New Apps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#reactive-frameworks&#34;&gt;Comparison of RxSwift, ReactKit and ReactiveCocoa on Swift 2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#caffe&#34;&gt;Easy and Practical Deep Learning App with Caffe&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;ios:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;iOS&lt;/h2&gt;
+
+&lt;h3 id=&#34;ibdesignable-x-paintcode:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;IBDesignable x PaintCode&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/86&#34;&gt;86&lt;/a&gt; with &lt;a href=&#34;https://speakerdeck.com/86/ibdesignable-x-paintcode&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter introduced &lt;a href=&#34;http://www.paintcodeapp.com&#34;&gt;PaintCode&lt;/a&gt;, a vector drawing tool that can export design code of UI to Xcode. The exported code works with &lt;code&gt;IBDesignable&lt;/code&gt; to update the rendering of graphics in Interface Builder. The presenter said the scheme is still not used in products of &lt;a href=&#34;https://www.mercari.com&#34;&gt;Mercari&lt;/a&gt;, where he works at, but trying and investigating that kind of tools gives a better collaboration way between designers and engineers.&lt;/p&gt;
+
+&lt;p&gt;The sample Xcode project is available at &lt;a href=&#34;https://github.com/86/starkit&#34;&gt;a repository in GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;introducing-cardio:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Introducing Cardio&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/kitasuke&#34;&gt;kitasuke&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;iframe src=&#34;//www.slideshare.net/slideshow/embed_code/key/JzGiY3DIh6S1y5&#34; width=&#34;425&#34; height=&#34;355&#34; frameborder=&#34;0&#34; marginwidth=&#34;0&#34; marginheight=&#34;0&#34; scrolling=&#34;no&#34; style=&#34;border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;&#34; allowfullscreen&gt; &lt;/iframe&gt; &lt;div style=&#34;margin-bottom:5px&#34;&gt; &lt;strong&gt; &lt;a href=&#34;//www.slideshare.net/kitasuke/introducing-cardio&#34; title=&#34;Introducing Cardio&#34; target=&#34;_blank&#34;&gt;Introducing Cardio&lt;/a&gt; &lt;/strong&gt; from &lt;strong&gt;&lt;a href=&#34;//www.slideshare.net/kitasuke&#34; target=&#34;_blank&#34;&gt;Yusuke Kita&lt;/a&gt;&lt;/strong&gt; &lt;/div&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter also works at Mercari. He developed a HealthKit wrapper framework named &lt;a href=&#34;https://github.com/kitasuke/Cardio&#34;&gt;Cardio&lt;/a&gt; as his personal project. The problem of HealthKit is that it has too many classes to handle. He wrote Cardio to simplify the HealthKit usage specialized to workout apps.&lt;/p&gt;
+
+&lt;p&gt;Cardio has an API that takes advantage of protocol extension in Swift 2. You extend &lt;code&gt;Context&lt;/code&gt; protocol of Cardio to configure HealthKit features as shown in 16th page of the slide above. Reading the code gave me good insight to design APIs in Swift 2.&lt;/p&gt;
+
+&lt;h3 id=&#34;my-first-tvos:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;My First tvOS&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/toyship&#34;&gt;TachibanaKaoru&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/toyship/my-first-tvos&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Apple TV and its development were introduced. Only a few developers in the meetup had/saw Apple TV, and the introduction by the talker who actually has one was interesting for the audience.&lt;/p&gt;
+
+&lt;p&gt;What you have to care to develop an tvOS app are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;So called 10 feet UI&lt;/li&gt;
+&lt;li&gt;Difficult text input&lt;/li&gt;
+&lt;li&gt;Limited resource&lt;/li&gt;
+&lt;li&gt;Shared device within a family or members unlike iPhone, a personal device&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;a-name-my-personal-app-a-my-personal-app-chosen-as-one-of-best-new-apps:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;&lt;a name=&#34;my-personal-app&#34;&gt;&lt;/a&gt;My Personal App Chosen as One of Best New Apps&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/mnat44&#34;&gt;mnat44&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/motokinarita7/ss-53871895&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter talked his experience that his personally-developed app was chosen as one of Best New Apps in the App Store. He developed his idea and prototype of the app, &lt;a href=&#34;https://itunes.apple.com/app/ribokame-revolver-camera/id1039880433?mt=8&#34;&gt;Revolver Camera&lt;/a&gt; since February 2013. Then he paused the development and restarted in the middle of August, 2015 to release with watchOS 2 feature. He is smart taking the strategy to adopt watchOS 2.&lt;/p&gt;
+
+&lt;p&gt;He talked his workflow to motivate himself to finish developing it within a month.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Ticket management with GitHub and Evernote&lt;/li&gt;
+&lt;li&gt;Paper prototyping, Illustrator design and implementation&lt;/li&gt;
+&lt;li&gt;Limit what the app should do&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;objective-c-generics:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Objective-C Generics&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/gooichi&#34;&gt;gooichi&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/GoichiHirakawa/objectivec-generics&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter, who has deep knowledge about Objective-C since NextStep, talked about Generics in Objective-C. Xcode 7 added the following new features to Objective-C.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Generics&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Nullability&lt;/li&gt;
+&lt;li&gt;KindOf Types&lt;/li&gt;
+&lt;li&gt;New macros&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Objective-C generics has the following characteristics, and it is worth adding generics to your framework written in Objective-C if it is too big to rewrite in Swift.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Lightweight implementation of generics compared with the other languages&lt;/li&gt;
+&lt;li&gt;Strongly-typed collection&lt;/li&gt;
+&lt;li&gt;Importable to Swift&lt;/li&gt;
+&lt;li&gt;Static type checking (compiler warnings)&lt;/li&gt;
+&lt;li&gt;Backward compatibility&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;a-name-reactive-frameworks-a-comparison-of-rxswift-reactkit-and-reactivecocoa-on-swift-2:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;&lt;a name=&#34;reactive-frameworks&#34;&gt;&lt;/a&gt;Comparison of RxSwift, ReactKit and ReactiveCocoa on Swift 2&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/bricklife&#34;&gt;ooba&lt;/a&gt; with &lt;a href=&#34;http://yoneapp.hatenablog.com/entry/2015/10/14/014258&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The three major reactive programming frameworks in Swift are &lt;a href=&#34;https://github.com/ReactiveX/RxSwift&#34;&gt;RxSwift&lt;/a&gt;, &lt;a href=&#34;https://github.com/ReactKit/ReactKit&#34;&gt;ReactKit&lt;/a&gt; and &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt;. The presenter compared the three to pick up one to use in a project.&lt;/p&gt;
+
+&lt;p&gt;Sample code&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;RxSwift: Official sample code is in the repo&lt;/li&gt;
+&lt;li&gt;ReactKit: Official sample code is in ReactKitCatalog repo&lt;/li&gt;
+&lt;li&gt;ReactiveCocoa: No official sample code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Databinding (replacing KVO)&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;RxSwift: &lt;code&gt;Variable&lt;/code&gt; type&lt;/li&gt;
+&lt;li&gt;ReactKit: Use NSObject KVO with &lt;code&gt;dynamic&lt;/code&gt; keyword&lt;/li&gt;
+&lt;li&gt;ReactiveCocoa: &lt;code&gt;MutableProperty&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I chose ReactiveCocoa to write &lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;an example project&lt;/a&gt; of &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, but the others also have their own advantages to use in your projects.&lt;/p&gt;
+
+&lt;h3 id=&#34;tips-for-ios-hackathon-beginners:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Tips for iOS Hackathon Beginners&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/satoshi0212&#34;&gt;satoshi0212&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter talked about tips to join a hackathon for beginners. It was fun to listen to his talk.&lt;/p&gt;
+
+&lt;p&gt;Required skills as an iOS engineer:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;API call to a server (e.g. &lt;a href=&#34;https://github.com/Alamofire/Alamofire&#34;&gt;Alamofire&lt;/a&gt; or &lt;a href=&#34;https://github.com/ishkawa/APIKit&#34;&gt;APIKit&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;JSON response handling (e.g. &lt;a href=&#34;https://github.com/SwiftyJSON/SwiftyJSON&#34;&gt;SwiftyJSON&lt;/a&gt; or &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;UI implementation to display the response&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Advances skills:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Machine learning&lt;/li&gt;
+&lt;li&gt;Device hacking&lt;/li&gt;
+&lt;li&gt;Unity&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Before a hackathon:
+- Prepare your idea
+- Check the idea or its implementation do not exist already&lt;/p&gt;
+
+&lt;p&gt;At a hackathon:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Be confident (iOS engineer is popular)&lt;/li&gt;
+&lt;li&gt;Keep your output simple&lt;/li&gt;
+&lt;li&gt;Get advice from reviewers and mention about it at a presentation (&lt;strong&gt;like hackathonhack&lt;/strong&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;What you achieve through a hackathon&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Connection with people in other fields (like musician)&lt;/li&gt;
+&lt;li&gt;Connection with corporate recruiters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;a-name-caffe-a-easy-and-practical-deep-learning-app-with-caffe:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;&lt;a name=&#34;caffe&#34;&gt;&lt;/a&gt;Easy and Practical Deep Learning App with Caffe&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/noradaiko&#34;&gt;noradaiko&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/takuyamatsuyama/caffe-potatotips&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter talked about deep learning using &lt;a href=&#34;http://caffe.berkeleyvision.org&#34;&gt;Caffe framework&lt;/a&gt; with &lt;a href=&#34;https://github.com/noradaiko/caffe-ios-sample&#34;&gt;his sample project&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Some features of Caffe introduced in the presentations are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;GPU calculation&lt;/li&gt;
+&lt;li&gt;Only 1-2 sec to run single recognition on iPhone5s with his example&lt;/li&gt;
+&lt;li&gt;Working locally (without a server)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It was interesting to see that deep learning calculation works on a mobile device within a reasonable period on a mobile device. It looks expanding idea to develop an app handling images.&lt;/p&gt;
+
+&lt;h3 id=&#34;type-safe-resource-handling-in-swift:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Type Safe Resource Handling in Swift&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/tasanobu&#34;&gt;tasanobu&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/tasanobu/type-safe-assets-handling-in-swift&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter introduced &lt;a href=&#34;https://github.com/AliSoftware/SwiftGen&#34;&gt;SwiftGen&lt;/a&gt; to avoid using strings to specify resources like assets or storyboards.&lt;/p&gt;
+
+&lt;p&gt;The problem with those strings is that a typo in the strings cannot be detected by compiler but just causes a failure in run time. SwiftGen generates code to retrieve resources with enums in a type-safe manner.&lt;/p&gt;
+
+&lt;p&gt;SwiftGen currently supports:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Asset catalog&lt;/li&gt;
+&lt;li&gt;UIStoryboard&lt;/li&gt;
+&lt;li&gt;Localizable.strings&lt;/li&gt;
+&lt;li&gt;UIColor&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;tinderui-and-scroll:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;TinderUI and Scroll&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/ipacho&#34;&gt;takahito_morinaga_5&lt;/a&gt; with &lt;a href=&#34;http://www.slideshare.net/takahitomorinaga5/tinderui&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter shared his experience to implement &lt;a href=&#34;https://www.gotinder.com&#34;&gt;Tinder&lt;/a&gt; swipe UI with vertical scroll. He thought the implementation was not so difficult at the beginning, but actually struggled with some implementation barriers with limitations of touch events.&lt;/p&gt;
+
+&lt;p&gt;The slide contains tips or workarounds to the collisions of UIPanGestureRecognizer and UIScrollView events. If you have the same problem, try checking &lt;a href=&#34;http://www.slideshare.net/takahitomorinaga5/tinderui&#34;&gt;the slide&lt;/a&gt; with &lt;a href=&#34;https://translate.google.com&#34;&gt;Google Translate&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;android:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Android&lt;/h2&gt;
+
+&lt;p&gt;Let me excuse to only simply summarize the talks about Android. Some presentations have English slides, so please refer to them if you are interested.&lt;/p&gt;
+
+&lt;h3 id=&#34;tips-for-better-ci-on-android:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Tips for better CI on Android&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/tomoima525&#34;&gt;tomoima525&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;iframe src=&#34;//www.slideshare.net/slideshow/embed_code/key/pGq00XEVHGIPHf&#34; width=&#34;425&#34; height=&#34;355&#34; frameborder=&#34;0&#34; marginwidth=&#34;0&#34; marginheight=&#34;0&#34; scrolling=&#34;no&#34; style=&#34;border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;&#34; allowfullscreen&gt; &lt;/iframe&gt; &lt;div style=&#34;margin-bottom:5px&#34;&gt; &lt;strong&gt; &lt;a href=&#34;//www.slideshare.net/tomoakiimai2/tips-for-better-ci-on-android&#34; title=&#34;Tips for better CI on Android&#34; target=&#34;_blank&#34;&gt;Tips for better CI on Android&lt;/a&gt; &lt;/strong&gt; from &lt;strong&gt;&lt;a href=&#34;//www.slideshare.net/tomoakiimai2&#34; target=&#34;_blank&#34;&gt;Tomoaki Imai&lt;/a&gt;&lt;/strong&gt; &lt;/div&gt;&lt;/p&gt;
+
+&lt;p&gt;The presentation contains tips to use both Travis CI and Circle CI to split tasks into them to run in parallel.&lt;/p&gt;
+
+&lt;h3 id=&#34;groovy-spock-for-android-app-testing:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Groovy/Spock for Android app testing&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/izumin5210&#34;&gt;izumin5210&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;48b9734572ed4c5ab69d1754bcb83f92&#34; data-ratio=&#34;1.33333333333333&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;RSpec-like testing framework &lt;a href=&#34;http://spockframework.org&#34;&gt;Spock&lt;/a&gt; was introduced. It has parameterized test with simple descriptions and messages like &lt;a href=&#34;https://github.com/power-assert-js/power-assert&#34;&gt;power-assert&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;regexp-in-android-and-java:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Regexp in Android and Java&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/KeithYokoma&#34;&gt;KeithYokoma&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;script async class=&#34;speakerdeck-embed&#34; data-id=&#34;6791ff09049b415dbe14e05751312f00&#34; data-ratio=&#34;1.77777777777778&#34; src=&#34;//speakerdeck.com/assets/embed.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;The presenter talked about differences between Android and Java, especially in regular expressions. The regular expression engines implemented in them are different, causing different behavior.&lt;/p&gt;
+
+&lt;h3 id=&#34;a-primer-of-scketch3-for-engineers-2nd:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;A Primer of Scketch3 for Engineers (2nd)&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/androhi&#34;&gt;androhi&lt;/a&gt; with &lt;a href=&#34;https://speakerdeck.com/androhi/sok-enziniafalsetamefalsesketch3ru-men&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.sketchapp.com&#34;&gt;Sketch3&lt;/a&gt; was introduced in the talk. The presenter told the tool is good not only for designers but engineers. What I was interested in was &lt;code&gt;sketchtool&lt;/code&gt; command, which might be able to combine with &lt;a href=&#34;https://github.com/KrauseFx/fastlane&#34;&gt;fastlane&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;hand-made-crash-report-of-android-library:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Hand-made Crash Report of Android Library&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/petitviolet&#34;&gt;petitviolet&lt;/a&gt; with &lt;a href=&#34;https://speakerdeck.com/petitviolet/hand-made-crash-report-of-android-library&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter shared his experience to develop his own crash reporter to report crashes only within libraries embedded in an app.&lt;/p&gt;
+
+&lt;h3 id=&#34;investigation-of-uploading-downloading:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Investigation of Uploading/Downloading&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/rejasupotaro&#34;&gt;rejasupotaro&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter shared his investigation on data upload/download especially for targeting low bandwidth countries. Image format using WEBP instead of JPEG was interesting.&lt;/p&gt;
+
+&lt;h3 id=&#34;encryption-library-conceal:0b699a3cd6d609650a3fca90a5cd32cc&#34;&gt;Encryption Library Conceal&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;Presented by &lt;a href=&#34;https://github.com/kobakei&#34;&gt;ksk_kbys&lt;/a&gt; with &lt;a href=&#34;https://speakerdeck.com/kobakei/an-hao-hua-raiburariconceal&#34;&gt;a slide in the local language&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The presenter introduced &lt;a href=&#34;https://github.com/facebook/conceal&#34;&gt;Conceal&lt;/a&gt; to store sensitive data in a mobile app.&lt;/p&gt;
+&lt;div class=&#34;footnotes&#34;&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li id=&#34;fn:0b699a3cd6d609650a3fca90a5cd32cc:1&#34;&gt;Some slides are written in the local language. Try reading them with &lt;a href=&#34;https://translate.google.com&#34;&gt;Google Translate&lt;/a&gt; if you are interested.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:0b699a3cd6d609650a3fca90a5cd32cc:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
