@@ -18,7 +18,7 @@
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -655,7 +655,7 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -1308,7 +1308,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -2032,7 +2032,7 @@ class ImageSearchSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 

@@ -18,7 +18,7 @@
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -655,7 +655,7 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -1378,7 +1378,10 @@ class ImageSearchSpec: QuickSpec {
       <guid>https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to Alamofire v3.x and Swinject v0.5.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/&#34;&gt;the last blog post&lt;/a&gt;, we walked through the concept of dependency injection and basic usage of &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.&lt;/p&gt;
 
@@ -1408,13 +1411,13 @@ class ImageSearchSpec: QuickSpec {
 platform :ios, &#39;8.0&#39;
 use_frameworks!
 
-pod &#39;Alamofire&#39;, &#39;~&amp;gt; 2.0.2&#39;
+pod &#39;Alamofire&#39;, &#39;~&amp;gt; 3.1.0&#39;
 pod &#39;SwiftyJSON&#39;, &#39;~&amp;gt; 2.3.0&#39;
-pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.2&#39;
+pod &#39;Swinject&#39;, &#39;0.5&#39;
 
 target &#39;SwinjectSimpleExampleTests&#39; do
-    pod &#39;Quick&#39;, &#39;0.6.0&#39;
-    pod &#39;Nimble&#39;, &#39;2.0.0-rc.2&#39;
+    pod &#39;Quick&#39;, &#39;0.8.0&#39;
+    pod &#39;Nimble&#39;, &#39;3.0.0&#39;
 end
 &lt;/code&gt;&lt;/pre&gt;
 

@@ -277,7 +277,7 @@
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -914,7 +914,7 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -1567,7 +1567,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -2291,7 +2291,7 @@ class ImageSearchSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -2550,17 +2550,17 @@ $(SRCROOT)/Carthage/Build/iOS/Swinject.framework
       <guid>https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-2/</guid>
       <description>
 
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to Alamofire v3.x and Swinject v0.5.&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the last blog post&lt;/a&gt;, we developed the model part of the simple weather app, and learnt how to remove tightly coupled dependencies by using dependency injection and &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;. We found the decoupling made unit testing easier. In this blog post, we are going to develop the UI part of the app, and will learn how to wire up the decoupled components with Swinject.&lt;/p&gt;
 
 &lt;p&gt;The source code used in this blog post is available at &lt;a href=&#34;https://github.com/Swinject/SwinjectSimpleExample&#34;&gt;a repository on GitHub&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&#34;basic-ui-structure:524204bd8810b54f3a02dbb14a1eb96e&#34;&gt;Basic UI Structure&lt;/h2&gt;
 
-&lt;p&gt;First, we are going to make a basic UI structure to show the weather information in a table view. The UI components will be instantiated from a storyboard, but instantiation of the storyboard itself will be written by hand to use &lt;code&gt;SwinjectStoryboard&lt;/code&gt; inheriting &lt;code&gt;UIStoryboard&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Open &lt;code&gt;Info.plist&lt;/code&gt; and remove &lt;code&gt;&amp;quot;Main storyboard file base name&amp;quot;&lt;/code&gt; key, which might be displayed as &lt;code&gt;&amp;quot;UIMainStoryboardFile&amp;quot;&lt;/code&gt; if you are showing raw keys.&lt;/p&gt;
-
-&lt;p&gt;Remove &lt;code&gt;ViewController.swift&lt;/code&gt; and add &lt;code&gt;WeatherTableViewController.swift&lt;/code&gt;, which has an empty definition of &lt;code&gt;WeatherTableViewController&lt;/code&gt;. We will implement the class later with the dependency injection pattern.&lt;/p&gt;
+&lt;p&gt;First, we are going to make a basic UI structure to show the weather information in a table view. Remove &lt;code&gt;ViewController.swift&lt;/code&gt; and add &lt;code&gt;WeatherTableViewController.swift&lt;/code&gt;, which has an empty definition of &lt;code&gt;WeatherTableViewController&lt;/code&gt;. We will implement the class later with the dependency injection pattern.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;WeatherTableViewController.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -2578,38 +2578,7 @@ class WeatherTableViewController: UITableViewController {
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectSimpleExampleStoryboardScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Storyboard Screenshot&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Modify &lt;code&gt;AppDelegate.swift&lt;/code&gt; to instantiate the initial view controller from the storyboard by hand. Here, we use &lt;code&gt;SwinjectStoryboard&lt;/code&gt; instead of &lt;code&gt;UIStoryboard&lt;/code&gt; to add dependency injection later. The instantiation of &lt;code&gt;SwinjectStoryboard&lt;/code&gt; is not performed with an initializer but &lt;code&gt;create&lt;/code&gt;  function&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:524204bd8810b54f3a02dbb14a1eb96e:1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:524204bd8810b54f3a02dbb14a1eb96e:1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;AppDelegate.swift&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;import UIKit
-import Swinject
-
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-
-    func application(
-        application: UIApplication,
-        didFinishLaunchingWithOptions
-        launchOptions: [NSObject: AnyObject]?) -&amp;gt; Bool
-    {
-        let window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window.backgroundColor = UIColor.whiteColor()
-        window.makeKeyAndVisible()
-        self.window = window
-
-        let storyboard = SwinjectStoryboard.create(name: &amp;quot;Main&amp;quot;, bundle: nil)
-        window.rootViewController = storyboard.instantiateInitialViewController()
-
-        return true
-    }
-
-    ...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now we are ready to run the app. Type &lt;code&gt;Command-R&lt;/code&gt; to run. You will see an empty table view like the following image.&lt;/p&gt;
+&lt;p&gt;Ok, we are ready to run the app. Type &lt;code&gt;Command-R&lt;/code&gt; to run. You will see an empty table view like the following image.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectSimpleExampleEmptyScreenshot.png&#34; alt=&#34;SwinjectSimpleExample Empty Screenshot&#34; /&gt;&lt;/p&gt;
 
@@ -2626,55 +2595,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Modify &lt;code&gt;AppDelegate&lt;/code&gt; to instantiate &lt;code&gt;SwinjectStoryboard&lt;/code&gt; with a configured &lt;code&gt;Container&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Add a file named &lt;code&gt;SwinjectStoryboard+Setup.swift&lt;/code&gt; with the following implementation of an extension.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;AppDelegate.swift&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;SwinjectStoryboard+Setup.swift&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
+&lt;pre&gt;&lt;code&gt;import Swinject
 
-    func application(
-        application: UIApplication,
-        didFinishLaunchingWithOptions
-        launchOptions: [NSObject: AnyObject]?) -&amp;gt; Bool
-    {
-        let window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window.backgroundColor = UIColor.whiteColor()
-        window.makeKeyAndVisible()
-        self.window = window
-
-        let container = createContainer()
-        let storyboard = SwinjectStoryboard.create(
-            name: &amp;quot;Main&amp;quot;,
-            bundle: nil,
-            container: container)
-        window.rootViewController = storyboard.instantiateInitialViewController()
-
-        return true
-    }
-
-    private func createContainer() -&amp;gt; Container {
-        let container = Container()
-        container.registerForStoryboard(WeatherTableViewController.self) { r, c in
+extension SwinjectStoryboard {
+    class func setup() {
+        defaultContainer.registerForStoryboard(WeatherTableViewController.self) { r, c in
             c.weatherFetcher = r.resolve(WeatherFetcher.self)
         }
-        container.register(Networking.self) { _ in Network() }
-        container.register(WeatherFetcher.self) { r in
+        defaultContainer.register(Networking.self) { _ in Network() }
+        defaultContainer.register(WeatherFetcher.self) { r in
             WeatherFetcher(networking: r.resolve(Networking.self)!)
         }
-        return container
     }
-
-    ...
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;In &lt;code&gt;createContainer&lt;/code&gt; method, first, a &lt;code&gt;Container&lt;/code&gt; instance is created, then configured. &lt;code&gt;registerForStoryboard&lt;/code&gt; is used to configure dependencies of a view controller. Here &lt;code&gt;WeatherTableViewController&lt;/code&gt; is configured to get &lt;code&gt;weatherFetcher&lt;/code&gt; property set to a resolved instance of &lt;code&gt;WeatherFetcher&lt;/code&gt;. This is called &amp;ldquo;property injection&amp;rdquo;. &lt;code&gt;Networking&lt;/code&gt; protocol, which was defined in &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the last blog post&lt;/a&gt;, is configured to be &lt;code&gt;Network&lt;/code&gt; encapsulating Alamofire. &lt;code&gt;WeatherFetcher&lt;/code&gt; is configured to be initialized with a resolved &lt;code&gt;Networking&lt;/code&gt; instance. This is called &amp;ldquo;initializer injection&amp;rdquo;. At the end, the method returns the configured &lt;code&gt;container&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;setup&lt;/code&gt; method in the extension is called only once before the first instance of &lt;code&gt;SwinjectStoryboard&lt;/code&gt; is instantiated. The method is used to setup &lt;code&gt;defaultContainer&lt;/code&gt; static property, which is used by an instance of &lt;code&gt;SwinjectStoryboard&lt;/code&gt; if no container is passed to the initializer of &lt;code&gt;SwinjectStoryboard&lt;/code&gt; or the instance is created by the runtime. We define the dependencies in the extension because we want to instantiate &lt;code&gt;SwinjectStoryboard&lt;/code&gt; from &lt;code&gt;Main.storyboard&lt;/code&gt; by the runtime when our app is launched. &lt;code&gt;SwinjectStoryboard&lt;/code&gt; is automatically instantiated when the runtime tries to instantiate &lt;code&gt;UIStoryboard&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;In &lt;code&gt;application:didFinishLaunchingWithOptions:&lt;/code&gt; method, the configured &lt;code&gt;container&lt;/code&gt; is passed to &lt;code&gt;SwinjectStoryboard&lt;/code&gt;. That&amp;rsquo;s all. Simple, isn&amp;rsquo;t it? Just configured and passed it.&lt;/p&gt;
+&lt;p&gt;In the &lt;code&gt;setup&lt;/code&gt; method, first, &lt;code&gt;registerForStoryboard&lt;/code&gt; is used to configure dependency injection to &lt;code&gt;WeatherTableViewController&lt;/code&gt;. Here &lt;code&gt;weatherFetcher&lt;/code&gt; property is configured to be set to an instance of &lt;code&gt;WeatherFetcher&lt;/code&gt; when the view controller is instantiated. This style of dependency injection to a property is called &amp;ldquo;property injection&amp;rdquo;. Second, &lt;code&gt;Networking&lt;/code&gt; protocol, which was defined in &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the last blog post&lt;/a&gt;, is configured to be &lt;code&gt;Network&lt;/code&gt; encapsulating Alamofire. Third, &lt;code&gt;WeatherFetcher&lt;/code&gt; is configured to be initialized with a resolved &lt;code&gt;Networking&lt;/code&gt; instance. This style of dependency injection to an initializer argument is called &amp;ldquo;initializer injection&amp;rdquo;.&lt;/p&gt;
 
-&lt;p&gt;Let&amp;rsquo;s move on to the implementation of &lt;code&gt;WeatherTableViewController&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Ok, we finished configuring the dependency injection. Let&amp;rsquo;s move on to the implementation of &lt;code&gt;WeatherTableViewController&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;WeatherTableViewController.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -2724,7 +2668,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 &lt;p&gt;First, &lt;code&gt;cities&lt;/code&gt; property is added with an initial empty array of &lt;code&gt;City&lt;/code&gt;. Setting the property triggers refreshing the table view.&lt;/p&gt;
 
-&lt;p&gt;Second, &lt;code&gt;viewWillAppear&lt;/code&gt; is overridden to start fetching weather information by &lt;code&gt;fetch&lt;/code&gt; method&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. It takes a closure, and invokes the closure with an array of &lt;code&gt;City&lt;/code&gt; when the weather data are retrieved. In the closure, &lt;code&gt;self.cities&lt;/code&gt; is set and the table view is refreshed consequently. If &lt;code&gt;fetch&lt;/code&gt; fails, it passes &lt;code&gt;nil&lt;/code&gt; to the closure. In this blog post, the error handling is omitted, but the source code in &lt;a href=&#34;https://github.com/Swinject/SwinjectSimpleExample&#34;&gt;the GitHub repository&lt;/a&gt; has an implementation to show an error message.&lt;/p&gt;
+&lt;p&gt;Second, &lt;code&gt;viewWillAppear&lt;/code&gt; is overridden to start fetching weather information by &lt;code&gt;fetch&lt;/code&gt; method&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. It takes a closure, and invokes the closure with an array of &lt;code&gt;City&lt;/code&gt; when the weather data are retrieved. In the closure, &lt;code&gt;self.cities&lt;/code&gt; is set and the table view is refreshed consequently. If &lt;code&gt;fetch&lt;/code&gt; fails, it passes &lt;code&gt;nil&lt;/code&gt; to the closure. In this blog post, the error handling is omitted, but the source code in &lt;a href=&#34;https://github.com/Swinject/SwinjectSimpleExample&#34;&gt;the GitHub repository&lt;/a&gt; has an implementation to show an error message.&lt;/p&gt;
 
 &lt;p&gt;At last, &lt;code&gt;tableView:numberOfRowsInSection:&lt;/code&gt; and &lt;code&gt;tableView:cellForRowAtIndexPath:&lt;/code&gt; are implemented to tell the number of rows and to set city name and weather labels of a cell.&lt;/p&gt;
 
@@ -2800,8 +2744,6 @@ class WeatherTableViewControllerSpec: QuickSpec {
 &lt;hr /&gt;
 
 &lt;ol&gt;
-&lt;li id=&#34;fn:524204bd8810b54f3a02dbb14a1eb96e:1&#34;&gt;The instantiation of &lt;code&gt;SwinjectStoryboard&lt;/code&gt; is a bit tricky because &lt;code&gt;UIStoryboard&lt;/code&gt; does not have a normal designated initializer to override by its child classes. To workaround this problem, &lt;code&gt;SwinjectStoryboard&lt;/code&gt; is instantiated with &lt;code&gt;create&lt;/code&gt; function instead of an initializer.
- &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:524204bd8810b54f3a02dbb14a1eb96e:1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li id=&#34;fn:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;In the example app, &lt;code&gt;fetch&lt;/code&gt; is called only in &lt;code&gt;viewWillAppear&lt;/code&gt;, but a product app should have a button or something else to refresh the weather information.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:524204bd8810b54f3a02dbb14a1eb96e:2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -2817,7 +2759,10 @@ class WeatherTableViewControllerSpec: QuickSpec {
       <guid>https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to Alamofire v3.x and Swinject v0.5.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-introduction-to-swinject/&#34;&gt;the last blog post&lt;/a&gt;, we walked through the concept of dependency injection and basic usage of &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt;, the dependency injection framework for Swift. In this blog post, we are going to develop the simple weather app that you saw its screenshot in the last blog post. During the simple but essential steps of the development, you will see how to get rid of tightly coupled dependencies by using the dependency injection pattern and Swinject.&lt;/p&gt;
 
@@ -2847,13 +2792,13 @@ class WeatherTableViewControllerSpec: QuickSpec {
 platform :ios, &#39;8.0&#39;
 use_frameworks!
 
-pod &#39;Alamofire&#39;, &#39;~&amp;gt; 2.0.2&#39;
+pod &#39;Alamofire&#39;, &#39;~&amp;gt; 3.1.0&#39;
 pod &#39;SwiftyJSON&#39;, &#39;~&amp;gt; 2.3.0&#39;
-pod &#39;Swinject&#39;, &#39;~&amp;gt; 0.2.2&#39;
+pod &#39;Swinject&#39;, &#39;0.5&#39;
 
 target &#39;SwinjectSimpleExampleTests&#39; do
-    pod &#39;Quick&#39;, &#39;0.6.0&#39;
-    pod &#39;Nimble&#39;, &#39;2.0.0-rc.2&#39;
+    pod &#39;Quick&#39;, &#39;0.8.0&#39;
+    pod &#39;Nimble&#39;, &#39;3.0.0&#39;
 end
 &lt;/code&gt;&lt;/pre&gt;
 
