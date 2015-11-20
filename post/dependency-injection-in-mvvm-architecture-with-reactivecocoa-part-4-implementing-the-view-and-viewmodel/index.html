@@ -83,15 +83,16 @@
     <article>
       
 
-<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+<p><strong>Updated on Nov 20, 2015</strong> to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.
+<strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
 
-<p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/">the last blog post</a>, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use <code>PropertyOf</code> and <code>MutableProperty</code> types, which are observable properties provided by <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/">ReactiveCocoa</a>.</p>
+<p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/">the last blog post</a>, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use <code>AnyProperty</code> and <code>MutableProperty</code> types, which are observable properties provided by <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/">ReactiveCocoa</a>.</p>
 
 <p>The source code used in the blog posts is available at:</p>
 
 <ul>
 <li><a href="https://github.com/Swinject/SwinjectMVVMExample">SwinjectMVVMExample</a>: Complete version of the project.</li>
-<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts.</li>
+<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).</li>
 </ul>
 
 <h2 id="notice:8877ce3a4a69e6ded4cb59057183d3db">Notice</h2>
@@ -239,7 +240,7 @@ internal final class ImageSearchTableViewCell: UITableViewCell {
 
 <h3 id="applying-dependency-injection:8877ce3a4a69e6ded4cb59057183d3db">Applying Dependency Injection</h3>
 
-<p>To apply dependency injection in <code>AppDelegate</code>, add <code>container</code> property registering the dependencies as below. The <code>container</code> is passed to the factory method of <code>SwinjectStoryboard</code>.</p>
+<p>To apply dependency injection in <code>AppDelegate</code>, add <code>container</code> property registering the dependencies as below. Here a convenience initializer of <code>Container</code> taking a closure to configure the instantiated <code>container</code> is used. The <code>container</code> is passed to the factory method of <code>SwinjectStoryboard</code>.</p>
 
 <p><strong>AppDelegate.swift</strong></p>
 
@@ -252,9 +253,7 @@ import ExampleView
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    var container: Container {
-        let container = Container()
-
+    let container = Container() { container in
         // Models
         container.register(Networking.self) { _ in Network() }
         container.register(ImageSearching.self) { r in
@@ -271,8 +270,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             r, c in
             c.viewModel = r.resolve(ImageSearchTableViewModeling.self)!
         }
-
-        return container
     }
 
     func application(
@@ -358,12 +355,12 @@ class AppDelegateSpec: QuickSpec {
 <pre><code>import ReactiveCocoa
 
 public protocol ImageSearchTableViewModeling {
-    var cellModels: PropertyOf&lt;[ImageSearchTableViewCellModeling]&gt; { get }
+    var cellModels: AnyProperty&lt;[ImageSearchTableViewCellModeling]&gt; { get }
     func startSearch()
 }
 </code></pre>
 
-<p><code>cellModels</code> property is defined as <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/ReactiveCocoa/Swift/Property.swift"><code>PropertyOf</code> type</a> to make it observable. The type provides <code>producer</code> property as <code>SignalProducer</code> type to add observers.</p>
+<p><code>cellModels</code> property is defined as <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/ReactiveCocoa/Swift/Property.swift"><code>AnyProperty</code> type</a> to make it observable. The type provides <code>producer</code> property as <code>SignalProducer</code> type to add observers.</p>
 
 <p>Modify <code>ImageSearchTableViewModel</code> to implement the property and method.</p>
 
@@ -373,8 +370,8 @@ public protocol ImageSearchTableViewModeling {
     import ExampleModel
 
     public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
-        public var cellModels: PropertyOf&lt;[ImageSearchTableViewCellModeling]&gt; {
-            return PropertyOf(_cellModels)
+        public var cellModels: AnyProperty&lt;[ImageSearchTableViewCellModeling]&gt; {
+            return AnyProperty(_cellModels)
         }
         private let _cellModels = MutableProperty&lt;[ImageSearchTableViewCellModeling]&gt;([])
         private let imageSearch: ImageSearching
@@ -400,7 +397,7 @@ public protocol ImageSearchTableViewModeling {
     }
 </code></pre>
 
-<p><code>cellModels</code> property wraps <code>_cellModels</code> property as <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#properties"><code>MutableProperty</code> type</a>. Because the type is not only observable but also modifiable, <code>_cellModels</code> is <code>private</code> and is wrapped by <code>PropertyOf</code> type to provide a read-only property.</p>
+<p><code>cellModels</code> property wraps <code>_cellModels</code> property as <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#properties"><code>MutableProperty</code> type</a>. Because the type is not only observable but also modifiable, <code>_cellModels</code> is <code>private</code> and is wrapped by <code>AnyProperty</code> type to provide a read-only property.</p>
 
 <p><code>startSearch</code> method starts the <code>SignalProducer</code> returned by <code>imageSearch.searchImages</code>. As a side effect on the <code>next</code> event, it sets the value of <code>_cellModels</code> to an array of <code>ImageSearchTableViewCellModeling</code> instances that is mapped from <code>response</code> from <code>imageSearch</code>. Notice that the side effect is configured to run in the main thread by <code>.observeOn(UIScheduler())</code>. ViewModel should ensure that events from ViewModel to View are performed in the main thread.</p>
 
@@ -679,7 +676,7 @@ import ExampleViewModel
 class ImageSearchTableViewControllerSpec: QuickSpec {
     // MARK: Mock
     class MockViewModel: ImageSearchTableViewModeling {
-        let cellModels = PropertyOf(
+        let cellModels = AnyProperty(
             MutableProperty&lt;[ImageSearchTableViewCellModeling]&gt;([]))
         var startSearchCallCount = 0
 
@@ -714,7 +711,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
 <h2 id="conclusion:8877ce3a4a69e6ded4cb59057183d3db">Conclusion</h2>
 
-<p>We implemented the View and ViewModel parts of the example app. First, the empty implementation of View and ViewModel was added to the project to get working software as the agile practices promote. Then the actual implementation was added. It was demonstrated that the dependencies of Model, View and ViewModel were injected by the application. By adding <code>container</code> as a property of <code>AppDelegate</code>, the dependency injection was tested. We learned property types of ReactiveCocoa. <code>MutableProperty</code> was used as an observable property with its value modifiable. <code>PropertyOf</code> was used to provide a read-only view to <code>MutableProperty</code>. In the next blog post, we will implement asynchronous image load feature.</p>
+<p>We implemented the View and ViewModel parts of the example app. First, the empty implementation of View and ViewModel was added to the project to get working software as the agile practices promote. Then the actual implementation was added. It was demonstrated that the dependencies of Model, View and ViewModel were injected by the application. By adding <code>container</code> as a property of <code>AppDelegate</code>, the dependency injection was tested. We learned property types of ReactiveCocoa. <code>MutableProperty</code> was used as an observable property with its value modifiable. <code>AnyProperty</code> was used to provide a read-only view to <code>MutableProperty</code>. In the next blog post, we will implement asynchronous image load feature.</p>
 
 <p>If you have questions, suggestions or problems, feel free to leave comments.</p>
 <div class="footnotes">

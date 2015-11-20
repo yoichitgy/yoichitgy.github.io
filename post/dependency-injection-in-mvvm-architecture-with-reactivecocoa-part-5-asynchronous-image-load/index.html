@@ -85,7 +85,8 @@
     <article>
       
 
-<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+<p><strong>Updated on Nov 20, 2015</strong> to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.
+<strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
 
 <p>By <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-4-implementing-the-view-and-viewmodel/">the previous blog post</a>, we developed an example app, in MVVM architecture, displaying meta data of images received from <a href="https://pixabay.com/">Pixabay</a> server. In this blog post, we are going add a feature to asynchronously load the images. To handle the asynchronous events, <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a> will be used as we did in the previous posts. Through the development, we will learn how to add a feature in MVVM architecture with unit tests and dependency injection are updated.</p>
 
@@ -93,7 +94,7 @@
 
 <ul>
 <li><a href="https://github.com/Swinject/SwinjectMVVMExample">SwinjectMVVMExample</a>: Complete version of the project.</li>
-<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts.</li>
+<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).</li>
 </ul>
 
 <h2 id="notice:e195b0dcdb12716d5c3e3911b931c7d6">Notice</h2>
@@ -134,17 +135,17 @@ public final class Network: Networking {
             let serializer = Alamofire.Request.dataResponseSerializer()
             Alamofire.request(.GET, url)
                 .response(queue: self.queue, responseSerializer: serializer) {
-                    _, _, result in
-                    switch result {
+                    response in
+                    switch response.result {
                     case .Success(let data):
                         guard let image = UIImage(data: data) else {
                             sendError(observer, .IncorrectDataReturned)
                             return
                         }
-                        sendNext(observer, image)
-                        sendCompleted(observer)
-                    case .Failure(_, let error):
-                        sendError(observer, NetworkError(error: error))
+                        observer.sendNext(image)
+                        observer.sendCompleted()
+                    case .Failure(let error):
+                        observer.sendFailed(NetworkError(error: error))
                     }
             }
         }
@@ -374,9 +375,7 @@ public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
 <pre><code>@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    var container: Container {
-        let container = Container()
-
+    let container = Container() { container in
         // Models
         container.register(Networking.self) { _ in Network() }
         container.register(ImageSearching.self) { r in
@@ -394,8 +393,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.registerForStoryboard(ImageSearchTableViewController.self) { r, c in
             c.viewModel = r.resolve(ImageSearchTableViewModeling.self)!
         }
-
-        return container
     }
 
     // Omitted

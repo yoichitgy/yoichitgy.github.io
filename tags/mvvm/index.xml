@@ -17,7 +17,8 @@
       <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-5-asynchronous-image-load/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.
+&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
 &lt;p&gt;By &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-4-implementing-the-view-and-viewmodel/&#34;&gt;the previous blog post&lt;/a&gt;, we developed an example app, in MVVM architecture, displaying meta data of images received from &lt;a href=&#34;https://pixabay.com/&#34;&gt;Pixabay&lt;/a&gt; server. In this blog post, we are going add a feature to asynchronously load the images. To handle the asynchronous events, &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; will be used as we did in the previous posts. Through the development, we will learn how to add a feature in MVVM architecture with unit tests and dependency injection are updated.&lt;/p&gt;
 
@@ -25,7 +26,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&#34;notice:e195b0dcdb12716d5c3e3911b931c7d6&#34;&gt;Notice&lt;/h2&gt;
@@ -66,17 +67,17 @@ public final class Network: Networking {
             let serializer = Alamofire.Request.dataResponseSerializer()
             Alamofire.request(.GET, url)
                 .response(queue: self.queue, responseSerializer: serializer) {
-                    _, _, result in
-                    switch result {
+                    response in
+                    switch response.result {
                     case .Success(let data):
                         guard let image = UIImage(data: data) else {
                             sendError(observer, .IncorrectDataReturned)
                             return
                         }
-                        sendNext(observer, image)
-                        sendCompleted(observer)
-                    case .Failure(_, let error):
-                        sendError(observer, NetworkError(error: error))
+                        observer.sendNext(image)
+                        observer.sendCompleted()
+                    case .Failure(let error):
+                        observer.sendFailed(NetworkError(error: error))
                     }
             }
         }
@@ -306,9 +307,7 @@ public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
 &lt;pre&gt;&lt;code&gt;@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    var container: Container {
-        let container = Container()
-
+    let container = Container() { container in
         // Models
         container.register(Networking.self) { _ in Network() }
         container.register(ImageSearching.self) { r in
@@ -326,8 +325,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.registerForStoryboard(ImageSearchTableViewController.self) { r, c in
             c.viewModel = r.resolve(ImageSearchTableViewModeling.self)!
         }
-
-        return container
     }
 
     // Omitted
@@ -655,15 +652,16 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-4-implementing-the-view-and-viewmodel/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3 and Alamofire to v3.x.
+&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
-&lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/&#34;&gt;the last blog post&lt;/a&gt;, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use &lt;code&gt;PropertyOf&lt;/code&gt; and &lt;code&gt;MutableProperty&lt;/code&gt; types, which are observable properties provided by &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/&#34;&gt;ReactiveCocoa&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/&#34;&gt;the last blog post&lt;/a&gt;, we developed the Model part of the example app. In this blog post, we will move on to the View and ViewModel parts. First, empty implementation of View and ViewModel will be added to the project to get working software. Then actual implementation will be added with unit tests. During the development, we will learn how to use &lt;code&gt;AnyProperty&lt;/code&gt; and &lt;code&gt;MutableProperty&lt;/code&gt; types, which are observable properties provided by &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/&#34;&gt;ReactiveCocoa&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The source code used in the blog posts is available at:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&#34;notice:8877ce3a4a69e6ded4cb59057183d3db&#34;&gt;Notice&lt;/h2&gt;
@@ -811,7 +809,7 @@ internal final class ImageSearchTableViewCell: UITableViewCell {
 
 &lt;h3 id=&#34;applying-dependency-injection:8877ce3a4a69e6ded4cb59057183d3db&#34;&gt;Applying Dependency Injection&lt;/h3&gt;
 
-&lt;p&gt;To apply dependency injection in &lt;code&gt;AppDelegate&lt;/code&gt;, add &lt;code&gt;container&lt;/code&gt; property registering the dependencies as below. The &lt;code&gt;container&lt;/code&gt; is passed to the factory method of &lt;code&gt;SwinjectStoryboard&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To apply dependency injection in &lt;code&gt;AppDelegate&lt;/code&gt;, add &lt;code&gt;container&lt;/code&gt; property registering the dependencies as below. Here a convenience initializer of &lt;code&gt;Container&lt;/code&gt; taking a closure to configure the instantiated &lt;code&gt;container&lt;/code&gt; is used. The &lt;code&gt;container&lt;/code&gt; is passed to the factory method of &lt;code&gt;SwinjectStoryboard&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;AppDelegate.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -824,9 +822,7 @@ import ExampleView
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    var container: Container {
-        let container = Container()
-
+    let container = Container() { container in
         // Models
         container.register(Networking.self) { _ in Network() }
         container.register(ImageSearching.self) { r in
@@ -843,8 +839,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             r, c in
             c.viewModel = r.resolve(ImageSearchTableViewModeling.self)!
         }
-
-        return container
     }
 
     func application(
@@ -930,12 +924,12 @@ class AppDelegateSpec: QuickSpec {
 &lt;pre&gt;&lt;code&gt;import ReactiveCocoa
 
 public protocol ImageSearchTableViewModeling {
-    var cellModels: PropertyOf&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; { get }
+    var cellModels: AnyProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; { get }
     func startSearch()
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;cellModels&lt;/code&gt; property is defined as &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/ReactiveCocoa/Swift/Property.swift&#34;&gt;&lt;code&gt;PropertyOf&lt;/code&gt; type&lt;/a&gt; to make it observable. The type provides &lt;code&gt;producer&lt;/code&gt; property as &lt;code&gt;SignalProducer&lt;/code&gt; type to add observers.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cellModels&lt;/code&gt; property is defined as &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/ReactiveCocoa/Swift/Property.swift&#34;&gt;&lt;code&gt;AnyProperty&lt;/code&gt; type&lt;/a&gt; to make it observable. The type provides &lt;code&gt;producer&lt;/code&gt; property as &lt;code&gt;SignalProducer&lt;/code&gt; type to add observers.&lt;/p&gt;
 
 &lt;p&gt;Modify &lt;code&gt;ImageSearchTableViewModel&lt;/code&gt; to implement the property and method.&lt;/p&gt;
 
@@ -945,8 +939,8 @@ public protocol ImageSearchTableViewModeling {
     import ExampleModel
 
     public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
-        public var cellModels: PropertyOf&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; {
-            return PropertyOf(_cellModels)
+        public var cellModels: AnyProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; {
+            return AnyProperty(_cellModels)
         }
         private let _cellModels = MutableProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt;([])
         private let imageSearch: ImageSearching
@@ -972,7 +966,7 @@ public protocol ImageSearchTableViewModeling {
     }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;cellModels&lt;/code&gt; property wraps &lt;code&gt;_cellModels&lt;/code&gt; property as &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#properties&#34;&gt;&lt;code&gt;MutableProperty&lt;/code&gt; type&lt;/a&gt;. Because the type is not only observable but also modifiable, &lt;code&gt;_cellModels&lt;/code&gt; is &lt;code&gt;private&lt;/code&gt; and is wrapped by &lt;code&gt;PropertyOf&lt;/code&gt; type to provide a read-only property.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cellModels&lt;/code&gt; property wraps &lt;code&gt;_cellModels&lt;/code&gt; property as &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#properties&#34;&gt;&lt;code&gt;MutableProperty&lt;/code&gt; type&lt;/a&gt;. Because the type is not only observable but also modifiable, &lt;code&gt;_cellModels&lt;/code&gt; is &lt;code&gt;private&lt;/code&gt; and is wrapped by &lt;code&gt;AnyProperty&lt;/code&gt; type to provide a read-only property.&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;startSearch&lt;/code&gt; method starts the &lt;code&gt;SignalProducer&lt;/code&gt; returned by &lt;code&gt;imageSearch.searchImages&lt;/code&gt;. As a side effect on the &lt;code&gt;next&lt;/code&gt; event, it sets the value of &lt;code&gt;_cellModels&lt;/code&gt; to an array of &lt;code&gt;ImageSearchTableViewCellModeling&lt;/code&gt; instances that is mapped from &lt;code&gt;response&lt;/code&gt; from &lt;code&gt;imageSearch&lt;/code&gt;. Notice that the side effect is configured to run in the main thread by &lt;code&gt;.observeOn(UIScheduler())&lt;/code&gt;. ViewModel should ensure that events from ViewModel to View are performed in the main thread.&lt;/p&gt;
 
@@ -1251,7 +1245,7 @@ import ExampleViewModel
 class ImageSearchTableViewControllerSpec: QuickSpec {
     // MARK: Mock
     class MockViewModel: ImageSearchTableViewModeling {
-        let cellModels = PropertyOf(
+        let cellModels = AnyProperty(
             MutableProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt;([]))
         var startSearchCallCount = 0
 
@@ -1286,7 +1280,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
 &lt;h2 id=&#34;conclusion:8877ce3a4a69e6ded4cb59057183d3db&#34;&gt;Conclusion&lt;/h2&gt;
 
-&lt;p&gt;We implemented the View and ViewModel parts of the example app. First, the empty implementation of View and ViewModel was added to the project to get working software as the agile practices promote. Then the actual implementation was added. It was demonstrated that the dependencies of Model, View and ViewModel were injected by the application. By adding &lt;code&gt;container&lt;/code&gt; as a property of &lt;code&gt;AppDelegate&lt;/code&gt;, the dependency injection was tested. We learned property types of ReactiveCocoa. &lt;code&gt;MutableProperty&lt;/code&gt; was used as an observable property with its value modifiable. &lt;code&gt;PropertyOf&lt;/code&gt; was used to provide a read-only view to &lt;code&gt;MutableProperty&lt;/code&gt;. In the next blog post, we will implement asynchronous image load feature.&lt;/p&gt;
+&lt;p&gt;We implemented the View and ViewModel parts of the example app. First, the empty implementation of View and ViewModel was added to the project to get working software as the agile practices promote. Then the actual implementation was added. It was demonstrated that the dependencies of Model, View and ViewModel were injected by the application. By adding &lt;code&gt;container&lt;/code&gt; as a property of &lt;code&gt;AppDelegate&lt;/code&gt;, the dependency injection was tested. We learned property types of ReactiveCocoa. &lt;code&gt;MutableProperty&lt;/code&gt; was used as an observable property with its value modifiable. &lt;code&gt;AnyProperty&lt;/code&gt; was used to provide a read-only view to &lt;code&gt;MutableProperty&lt;/code&gt;. In the next blog post, we will implement asynchronous image load feature.&lt;/p&gt;
 
 &lt;p&gt;If you have questions, suggestions or problems, feel free to leave comments.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
@@ -1309,7 +1303,8 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
       <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.
+&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the last blog post&lt;/a&gt;, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; to define mappings from JSON data to Swift types.&lt;/p&gt;
 
@@ -1317,7 +1312,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
@@ -1339,9 +1334,9 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
 
 extension SomeValue: Decodable {
     static func decode(e: Extractor) throws -&amp;gt; Group {
-        return try build(SomeValue.init)(
-            e &amp;lt;| &amp;quot;some_name&amp;quot;,
-            e &amp;lt;| &amp;quot;some_value&amp;quot;
+        return try SomeValue(
+            name: e &amp;lt;| &amp;quot;some_name&amp;quot;,
+            value: e &amp;lt;| &amp;quot;some_value&amp;quot;
         )
     }
 }
@@ -1451,26 +1446,26 @@ extension ImageEntity: Decodable {
                 }
         }
 
-        return try build(ImageEntity.init)(
-            e &amp;lt;| &amp;quot;id&amp;quot;,
+        return try ImageEntity(
+            id: e &amp;lt;| &amp;quot;id&amp;quot;,
 
-            e &amp;lt;| &amp;quot;pageURL&amp;quot;,
-            e &amp;lt;| &amp;quot;imageWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;imageHeight&amp;quot;,
+            pageURL: e &amp;lt;| &amp;quot;pageURL&amp;quot;,
+            pageImageWidth: e &amp;lt;| &amp;quot;imageWidth&amp;quot;,
+            pageImageHeight: e &amp;lt;| &amp;quot;imageHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;previewURL&amp;quot;,
-            e &amp;lt;| &amp;quot;previewWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;previewHeight&amp;quot;,
+            previewURL: e &amp;lt;| &amp;quot;previewURL&amp;quot;,
+            previewWidth: e &amp;lt;| &amp;quot;previewWidth&amp;quot;,
+            previewHeight: e &amp;lt;| &amp;quot;previewHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;webformatURL&amp;quot;,
-            e &amp;lt;| &amp;quot;webformatWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;webformatHeight&amp;quot;,
+            imageURL: e &amp;lt;| &amp;quot;webformatURL&amp;quot;,
+            imageWidth: e &amp;lt;| &amp;quot;webformatWidth&amp;quot;,
+            imageHeight: e &amp;lt;| &amp;quot;webformatHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;views&amp;quot;,
-            e &amp;lt;| &amp;quot;downloads&amp;quot;,
-            e &amp;lt;| &amp;quot;likes&amp;quot;,
-            (try? e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV) ?? [],
-            e &amp;lt;| &amp;quot;user&amp;quot;
+            viewCount: e &amp;lt;| &amp;quot;views&amp;quot;,
+            downloadCount: e &amp;lt;| &amp;quot;downloads&amp;quot;,
+            likeCount: e &amp;lt;| &amp;quot;likes&amp;quot;,
+            tags: (try? e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV) ?? [],
+            username: e &amp;lt;| &amp;quot;user&amp;quot;
         )
     }
 }
@@ -1494,9 +1489,9 @@ public struct ResponseEntity {
 // MARK: Decodable
 extension ResponseEntity: Decodable {
     public static func decode(e: Extractor) throws -&amp;gt; ResponseEntity {
-        return try build(ResponseEntity.init)(
-            e &amp;lt;| &amp;quot;totalHits&amp;quot;,
-            e &amp;lt;|| &amp;quot;hits&amp;quot;
+        return try ResponseEntity(
+            totalCount: e &amp;lt;| &amp;quot;totalHits&amp;quot;,
+            images: e &amp;lt;|| &amp;quot;hits&amp;quot;
         )
     }
 }
@@ -1654,13 +1649,13 @@ public final class Network: Networking {
             let serializer = Alamofire.Request.JSONResponseSerializer()
             Alamofire.request(.GET, url, parameters: parameters)
                 .response(queue: self.queue, responseSerializer: serializer) {
-                    _, _, result in
-                    switch result {
+                    response in
+                    switch response.result {
                     case .Success(let value):
-                        sendNext(observer, value)
-                        sendCompleted(observer)
-                    case .Failure(_, let error):
-                        sendError(observer, NetworkError(error: error))
+                        observer.sendNext(value)
+                        observer.sendCompleted()
+                    case .Failure(let error):
+                        observer.sendFailed(NetworkError(error: error))
                     }
                 }
         }
@@ -1699,10 +1694,9 @@ public enum NetworkError: ErrorType {
     /// Incorrect data returned from the server.
     case IncorrectDataReturned
 
-    internal init(error: ErrorType) {
-        let nsError = error as NSError
-        if nsError.domain == NSURLErrorDomain {
-            switch nsError.code {
+    internal init(error: NSError) {
+        if error.domain == NSURLErrorDomain {
+            switch error.code {
             case NSURLErrorUnknown:
                 self = .Unknown
             case NSURLErrorCancelled:
@@ -2031,7 +2025,8 @@ class ImageSearchSpec: QuickSpec {
       <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.
+&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-1-introduction/&#34;&gt;the last blog post&lt;/a&gt;, the basic concepts of MVVM (Model-View-ViewModel) and &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; were introduced. From this blog post, we are going to develop an example app to demonstrate dependency injection with &lt;a href=&#34;https://github.com/Swinject/Swinject&#34;&gt;Swinject&lt;/a&gt; in MVVM architecture. We will use ReactiveCococa to handle events passed between MVVM components. In this blog post, you will learn how to setup an Xcode project composing Molel, View and ViewModel as  frameworks.&lt;/p&gt;
 
@@ -2039,7 +2034,7 @@ class ImageSearchSpec: QuickSpec {
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
@@ -2047,13 +2042,13 @@ class ImageSearchSpec: QuickSpec {
 &lt;h2 id=&#34;requirements:11d7c6379da90efdd5e0a41c688871dd&#34;&gt;Requirements&lt;/h2&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Swift 2.0&lt;/li&gt;
-&lt;li&gt;Xcode 7&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt; 0.9.2 or later&lt;/li&gt;
+&lt;li&gt;Swift 2.1&lt;/li&gt;
+&lt;li&gt;Xcode 7.1&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt; 0.10.0 or later&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;Pixabay&lt;/a&gt; API username and key&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;To use with Swift 2 and Xcode 7, ReactiveCocoa &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/releases&#34;&gt;version 4.0&lt;/a&gt; is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but version 4 APIs are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To use with Swift 2.1 and Xcode 7.1, ReactiveCocoa &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/releases&#34;&gt;version 4.0&lt;/a&gt; is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but version 4 APIs are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Carthage can be installed by &lt;a href=&#34;https://github.com/Carthage/Carthage/releases&#34;&gt;its installer (Carthage.pkg)&lt;/a&gt;. If you are new to Carthage, check &lt;a href=&#34;http://www.raywenderlich.com/109330/carthage-tutorial-getting-started&#34;&gt;this tutorial page&lt;/a&gt;.&lt;/p&gt;
 
@@ -2127,13 +2122,13 @@ class ImageSearchSpec: QuickSpec {
 
 &lt;p&gt;&lt;strong&gt;Cartfile&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;github &amp;quot;ReactiveCocoa/ReactiveCocoa&amp;quot; &amp;quot;v4.0-alpha.1&amp;quot;
-github &amp;quot;ikesyo/Himotoki&amp;quot; ~&amp;gt; 1.0.0
-github &amp;quot;Alamofire/Alamofire&amp;quot; ~&amp;gt; 2.0.0
-github &amp;quot;Swinject/Swinject&amp;quot; ~&amp;gt; 0.2.1
+&lt;pre&gt;&lt;code&gt;github &amp;quot;ReactiveCocoa/ReactiveCocoa&amp;quot; &amp;quot;v4.0.0-alpha.3&amp;quot;
+github &amp;quot;ikesyo/Himotoki&amp;quot; ~&amp;gt; 1.3.0
+github &amp;quot;Alamofire/Alamofire&amp;quot; ~&amp;gt; 3.1.2
+github &amp;quot;Swinject/Swinject&amp;quot; == 0.5.0
 
-github &amp;quot;Quick/Quick&amp;quot; == 0.6.0
-github &amp;quot;Quick/Nimble&amp;quot; &amp;quot;v2.0.0-rc.3&amp;quot;
+github &amp;quot;Quick/Quick&amp;quot; == 0.8.0
+github &amp;quot;Quick/Nimble&amp;quot; == 3.0.0
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Run &lt;code&gt;carthage update --no-use-binaries&lt;/code&gt; in Terminal&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:11d7c6379da90efdd5e0a41c688871dd:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:11d7c6379da90efdd5e0a41c688871dd:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. Wait for a couple of minutes (or more) until Carthage finishes building the frameworks&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:11d7c6379da90efdd5e0a41c688871dd:3&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:11d7c6379da90efdd5e0a41c688871dd:3&#34;&gt;3&lt;/a&gt;&lt;/sup&gt;. If you use &lt;a href=&#34;https://git-scm.com&#34;&gt;Git&lt;/a&gt;, &lt;a href=&#34;https://github.com/github/gitignore/blob/master/Swift.gitignore&#34;&gt;here is a &lt;code&gt;.gitignore&lt;/code&gt; for Swift&lt;/a&gt; excluding frameworks built by Carthage.&lt;/p&gt;

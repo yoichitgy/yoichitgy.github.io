@@ -87,7 +87,8 @@
     <article>
       
 
-<p><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
+<p><strong>Updated on Nov 20, 2015</strong> to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.
+<strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</p>
 
 <p>In <a href="/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/">the last blog post</a>, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. <a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a> is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use <a href="https://github.com/ikesyo/Himotoki">Himotoki</a> to define mappings from JSON data to Swift types.</p>
 
@@ -95,7 +96,7 @@
 
 <ul>
 <li><a href="https://github.com/Swinject/SwinjectMVVMExample">SwinjectMVVMExample</a>: Complete version of the project.</li>
-<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts.</li>
+<li><a href="https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog">SwinjectMVVMExample_ForBlog</a>: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).</li>
 </ul>
 
 <p><img src="/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif" alt="SwinjectMVVMExample ScreenRecord" /></p>
@@ -117,9 +118,9 @@
 
 extension SomeValue: Decodable {
     static func decode(e: Extractor) throws -&gt; Group {
-        return try build(SomeValue.init)(
-            e &lt;| &quot;some_name&quot;,
-            e &lt;| &quot;some_value&quot;
+        return try SomeValue(
+            name: e &lt;| &quot;some_name&quot;,
+            value: e &lt;| &quot;some_value&quot;
         )
     }
 }
@@ -229,26 +230,26 @@ extension ImageEntity: Decodable {
                 }
         }
 
-        return try build(ImageEntity.init)(
-            e &lt;| &quot;id&quot;,
+        return try ImageEntity(
+            id: e &lt;| &quot;id&quot;,
 
-            e &lt;| &quot;pageURL&quot;,
-            e &lt;| &quot;imageWidth&quot;,
-            e &lt;| &quot;imageHeight&quot;,
+            pageURL: e &lt;| &quot;pageURL&quot;,
+            pageImageWidth: e &lt;| &quot;imageWidth&quot;,
+            pageImageHeight: e &lt;| &quot;imageHeight&quot;,
 
-            e &lt;| &quot;previewURL&quot;,
-            e &lt;| &quot;previewWidth&quot;,
-            e &lt;| &quot;previewHeight&quot;,
+            previewURL: e &lt;| &quot;previewURL&quot;,
+            previewWidth: e &lt;| &quot;previewWidth&quot;,
+            previewHeight: e &lt;| &quot;previewHeight&quot;,
 
-            e &lt;| &quot;webformatURL&quot;,
-            e &lt;| &quot;webformatWidth&quot;,
-            e &lt;| &quot;webformatHeight&quot;,
+            imageURL: e &lt;| &quot;webformatURL&quot;,
+            imageWidth: e &lt;| &quot;webformatWidth&quot;,
+            imageHeight: e &lt;| &quot;webformatHeight&quot;,
 
-            e &lt;| &quot;views&quot;,
-            e &lt;| &quot;downloads&quot;,
-            e &lt;| &quot;likes&quot;,
-            (try? e &lt;| &quot;tags&quot;).map(splitCSV) ?? [],
-            e &lt;| &quot;user&quot;
+            viewCount: e &lt;| &quot;views&quot;,
+            downloadCount: e &lt;| &quot;downloads&quot;,
+            likeCount: e &lt;| &quot;likes&quot;,
+            tags: (try? e &lt;| &quot;tags&quot;).map(splitCSV) ?? [],
+            username: e &lt;| &quot;user&quot;
         )
     }
 }
@@ -272,9 +273,9 @@ public struct ResponseEntity {
 // MARK: Decodable
 extension ResponseEntity: Decodable {
     public static func decode(e: Extractor) throws -&gt; ResponseEntity {
-        return try build(ResponseEntity.init)(
-            e &lt;| &quot;totalHits&quot;,
-            e &lt;|| &quot;hits&quot;
+        return try ResponseEntity(
+            totalCount: e &lt;| &quot;totalHits&quot;,
+            images: e &lt;|| &quot;hits&quot;
         )
     }
 }
@@ -432,13 +433,13 @@ public final class Network: Networking {
             let serializer = Alamofire.Request.JSONResponseSerializer()
             Alamofire.request(.GET, url, parameters: parameters)
                 .response(queue: self.queue, responseSerializer: serializer) {
-                    _, _, result in
-                    switch result {
+                    response in
+                    switch response.result {
                     case .Success(let value):
-                        sendNext(observer, value)
-                        sendCompleted(observer)
-                    case .Failure(_, let error):
-                        sendError(observer, NetworkError(error: error))
+                        observer.sendNext(value)
+                        observer.sendCompleted()
+                    case .Failure(let error):
+                        observer.sendFailed(NetworkError(error: error))
                     }
                 }
         }
@@ -477,10 +478,9 @@ public enum NetworkError: ErrorType {
     /// Incorrect data returned from the server.
     case IncorrectDataReturned
 
-    internal init(error: ErrorType) {
-        let nsError = error as NSError
-        if nsError.domain == NSURLErrorDomain {
-            switch nsError.code {
+    internal init(error: NSError) {
+        if error.domain == NSURLErrorDomain {
+            switch error.code {
             case NSURLErrorUnknown:
                 self = .Unknown
             case NSURLErrorCancelled:

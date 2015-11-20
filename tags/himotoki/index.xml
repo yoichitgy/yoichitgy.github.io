@@ -17,7 +17,8 @@
       <guid>https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-3-designing-the-model/</guid>
       <description>
 
-&lt;p&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate ReactiveCocoa to v4.0.0 alpha 3, Alamofire to v3.x and Himotoki to v1.3.
+&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/p&gt;
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-in-mvvm-architecture-with-reactivecocoa-part-2-project-setup/&#34;&gt;the last blog post&lt;/a&gt;, we setup an Xcode project to develop an app composed of Model, View and ViewModel frameworks. In this blog post, we are going to develop the Model part in the MVVM architecture. We will learn how to design our Model consisting of entities and services with dependencies injected. Decoupling of the dependencies is the advantage of the MVVM architecture. &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa&#34;&gt;ReactiveCocoa&lt;/a&gt; is used for event handling, which is essential to decouple Model, View and ViewModel in the MVVM architecture. We will also learn how to use &lt;a href=&#34;https://github.com/ikesyo/Himotoki&#34;&gt;Himotoki&lt;/a&gt; to define mappings from JSON data to Swift types.&lt;/p&gt;
 
@@ -25,7 +26,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
@@ -47,9 +48,9 @@
 
 extension SomeValue: Decodable {
     static func decode(e: Extractor) throws -&amp;gt; Group {
-        return try build(SomeValue.init)(
-            e &amp;lt;| &amp;quot;some_name&amp;quot;,
-            e &amp;lt;| &amp;quot;some_value&amp;quot;
+        return try SomeValue(
+            name: e &amp;lt;| &amp;quot;some_name&amp;quot;,
+            value: e &amp;lt;| &amp;quot;some_value&amp;quot;
         )
     }
 }
@@ -159,26 +160,26 @@ extension ImageEntity: Decodable {
                 }
         }
 
-        return try build(ImageEntity.init)(
-            e &amp;lt;| &amp;quot;id&amp;quot;,
+        return try ImageEntity(
+            id: e &amp;lt;| &amp;quot;id&amp;quot;,
 
-            e &amp;lt;| &amp;quot;pageURL&amp;quot;,
-            e &amp;lt;| &amp;quot;imageWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;imageHeight&amp;quot;,
+            pageURL: e &amp;lt;| &amp;quot;pageURL&amp;quot;,
+            pageImageWidth: e &amp;lt;| &amp;quot;imageWidth&amp;quot;,
+            pageImageHeight: e &amp;lt;| &amp;quot;imageHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;previewURL&amp;quot;,
-            e &amp;lt;| &amp;quot;previewWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;previewHeight&amp;quot;,
+            previewURL: e &amp;lt;| &amp;quot;previewURL&amp;quot;,
+            previewWidth: e &amp;lt;| &amp;quot;previewWidth&amp;quot;,
+            previewHeight: e &amp;lt;| &amp;quot;previewHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;webformatURL&amp;quot;,
-            e &amp;lt;| &amp;quot;webformatWidth&amp;quot;,
-            e &amp;lt;| &amp;quot;webformatHeight&amp;quot;,
+            imageURL: e &amp;lt;| &amp;quot;webformatURL&amp;quot;,
+            imageWidth: e &amp;lt;| &amp;quot;webformatWidth&amp;quot;,
+            imageHeight: e &amp;lt;| &amp;quot;webformatHeight&amp;quot;,
 
-            e &amp;lt;| &amp;quot;views&amp;quot;,
-            e &amp;lt;| &amp;quot;downloads&amp;quot;,
-            e &amp;lt;| &amp;quot;likes&amp;quot;,
-            (try? e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV) ?? [],
-            e &amp;lt;| &amp;quot;user&amp;quot;
+            viewCount: e &amp;lt;| &amp;quot;views&amp;quot;,
+            downloadCount: e &amp;lt;| &amp;quot;downloads&amp;quot;,
+            likeCount: e &amp;lt;| &amp;quot;likes&amp;quot;,
+            tags: (try? e &amp;lt;| &amp;quot;tags&amp;quot;).map(splitCSV) ?? [],
+            username: e &amp;lt;| &amp;quot;user&amp;quot;
         )
     }
 }
@@ -202,9 +203,9 @@ public struct ResponseEntity {
 // MARK: Decodable
 extension ResponseEntity: Decodable {
     public static func decode(e: Extractor) throws -&amp;gt; ResponseEntity {
-        return try build(ResponseEntity.init)(
-            e &amp;lt;| &amp;quot;totalHits&amp;quot;,
-            e &amp;lt;|| &amp;quot;hits&amp;quot;
+        return try ResponseEntity(
+            totalCount: e &amp;lt;| &amp;quot;totalHits&amp;quot;,
+            images: e &amp;lt;|| &amp;quot;hits&amp;quot;
         )
     }
 }
@@ -362,13 +363,13 @@ public final class Network: Networking {
             let serializer = Alamofire.Request.JSONResponseSerializer()
             Alamofire.request(.GET, url, parameters: parameters)
                 .response(queue: self.queue, responseSerializer: serializer) {
-                    _, _, result in
-                    switch result {
+                    response in
+                    switch response.result {
                     case .Success(let value):
-                        sendNext(observer, value)
-                        sendCompleted(observer)
-                    case .Failure(_, let error):
-                        sendError(observer, NetworkError(error: error))
+                        observer.sendNext(value)
+                        observer.sendCompleted()
+                    case .Failure(let error):
+                        observer.sendFailed(NetworkError(error: error))
                     }
                 }
         }
@@ -407,10 +408,9 @@ public enum NetworkError: ErrorType {
     /// Incorrect data returned from the server.
     case IncorrectDataReturned
 
-    internal init(error: ErrorType) {
-        let nsError = error as NSError
-        if nsError.domain == NSURLErrorDomain {
-            switch nsError.code {
+    internal init(error: NSError) {
+        if error.domain == NSURLErrorDomain {
+            switch error.code {
             case NSURLErrorUnknown:
                 self = .Unknown
             case NSURLErrorCancelled:
