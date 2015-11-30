@@ -118,7 +118,7 @@ public protocol Networking {
 }
 </code></pre>
 
-<p>Modify <code>Network</code> class to implement <code>requestImage</code> method. In the method, the initializer of <code>SignalProducer</code> with a trailing closure is used to convert an asynchronous response of Alamofire to a <code>Signal</code> of ReactiveCocoa. If the response is successful and its data are valid, <code>.Next</code> and <code>.Completed</code> events are sent to <code>observer</code>. Otherwise an <code>.Error</code> event is sent. Because the response of Alamofire runs in the main thread by default, a serial queue is passed to Alamofire.</p>
+<p>Modify <code>Network</code> class to implement <code>requestImage</code> method. In the method, the initializer of <code>SignalProducer</code> with a trailing closure is used to convert an asynchronous response of Alamofire to a <code>Signal</code> of ReactiveCocoa. If the response is successful and its data are valid, <code>.Next</code> and <code>.Completed</code> events are sent to <code>observer</code>. Otherwise an <code>.Failed</code> event is sent. Because the response of Alamofire runs in the main thread by default, a serial queue is passed to Alamofire.</p>
 
 <p><strong>Network.swift</strong></p>
 
@@ -141,7 +141,7 @@ public final class Network: Networking {
                     switch response.result {
                     case .Success(let data):
                         guard let image = UIImage(data: data) else {
-                            sendError(observer, .IncorrectDataReturned)
+                            observer.sendFailed(.IncorrectDataReturned)
                             return
                         }
                         observer.sendNext(image)
@@ -223,7 +223,7 @@ class NetworkSpec: QuickSpec {
             it(&quot;eventually gets an error if incorrect data for an image is returned.&quot;) {
                 var error: NetworkError?
                 network.requestImage(&quot;https://httpbin.org/get&quot;)
-                    .on(error: { error = $0 })
+                    .on(failed: { error = $0 })
                     .start()
 
                 expect(error).toEventually(
@@ -232,7 +232,7 @@ class NetworkSpec: QuickSpec {
             it(&quot;eventually gets an error if the network has a problem.&quot;) {
                 var error: NetworkError? = nil
                 network.requestImage(&quot;https://not.existing.server.comm/image/jpeg&quot;)
-                    .on(error: { error = $0 })
+                    .on(failed: { error = $0 })
                     .start()
 
                 expect(error).toEventually(
@@ -341,8 +341,8 @@ public final class ImageSearchTableViewCellModel
 import ExampleModel
 
 public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
-    public var cellModels: PropertyOf&lt;[ImageSearchTableViewCellModeling]&gt; {
-        return PropertyOf(_cellModels)
+    public var cellModels: AnyProperty&lt;[ImageSearchTableViewCellModeling]&gt; {
+        return AnyProperty(_cellModels)
     }
     private let _cellModels = MutableProperty&lt;[ImageSearchTableViewCellModeling]&gt;([])
     private let imageSearch: ImageSearching
@@ -410,8 +410,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     class StubImageSearch: ImageSearching {
         func searchImages() -&gt; SignalProducer&lt;ResponseEntity, NetworkError&gt; {
             return SignalProducer { observer, disposable in
-                sendNext(observer, dummyResponse)
-                sendCompleted(observer)
+                observer.sendNext(dummyResponse)
+                observer.sendCompleted()
             }
             .observeOn(QueueScheduler())
         }
@@ -652,7 +652,7 @@ class ImageSearchTableViewCellSpec: QuickSpec {
         func getPreviewImage() -&gt; SignalProducer&lt;UIImage?, NoError&gt; {
             return SignalProducer&lt;UIImage?, NoError&gt; { observer, _ in
                 self.getPreviewImageStarted = true
-                sendCompleted(observer)
+                observer.sendCompleted()
             }
         }
     }

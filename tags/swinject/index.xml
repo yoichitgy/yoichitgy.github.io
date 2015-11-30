@@ -50,7 +50,7 @@ public protocol Networking {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Modify &lt;code&gt;Network&lt;/code&gt; class to implement &lt;code&gt;requestImage&lt;/code&gt; method. In the method, the initializer of &lt;code&gt;SignalProducer&lt;/code&gt; with a trailing closure is used to convert an asynchronous response of Alamofire to a &lt;code&gt;Signal&lt;/code&gt; of ReactiveCocoa. If the response is successful and its data are valid, &lt;code&gt;.Next&lt;/code&gt; and &lt;code&gt;.Completed&lt;/code&gt; events are sent to &lt;code&gt;observer&lt;/code&gt;. Otherwise an &lt;code&gt;.Error&lt;/code&gt; event is sent. Because the response of Alamofire runs in the main thread by default, a serial queue is passed to Alamofire.&lt;/p&gt;
+&lt;p&gt;Modify &lt;code&gt;Network&lt;/code&gt; class to implement &lt;code&gt;requestImage&lt;/code&gt; method. In the method, the initializer of &lt;code&gt;SignalProducer&lt;/code&gt; with a trailing closure is used to convert an asynchronous response of Alamofire to a &lt;code&gt;Signal&lt;/code&gt; of ReactiveCocoa. If the response is successful and its data are valid, &lt;code&gt;.Next&lt;/code&gt; and &lt;code&gt;.Completed&lt;/code&gt; events are sent to &lt;code&gt;observer&lt;/code&gt;. Otherwise an &lt;code&gt;.Failed&lt;/code&gt; event is sent. Because the response of Alamofire runs in the main thread by default, a serial queue is passed to Alamofire.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Network.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -73,7 +73,7 @@ public final class Network: Networking {
                     switch response.result {
                     case .Success(let data):
                         guard let image = UIImage(data: data) else {
-                            sendError(observer, .IncorrectDataReturned)
+                            observer.sendFailed(.IncorrectDataReturned)
                             return
                         }
                         observer.sendNext(image)
@@ -155,7 +155,7 @@ class NetworkSpec: QuickSpec {
             it(&amp;quot;eventually gets an error if incorrect data for an image is returned.&amp;quot;) {
                 var error: NetworkError?
                 network.requestImage(&amp;quot;https://httpbin.org/get&amp;quot;)
-                    .on(error: { error = $0 })
+                    .on(failed: { error = $0 })
                     .start()
 
                 expect(error).toEventually(
@@ -164,7 +164,7 @@ class NetworkSpec: QuickSpec {
             it(&amp;quot;eventually gets an error if the network has a problem.&amp;quot;) {
                 var error: NetworkError? = nil
                 network.requestImage(&amp;quot;https://not.existing.server.comm/image/jpeg&amp;quot;)
-                    .on(error: { error = $0 })
+                    .on(failed: { error = $0 })
                     .start()
 
                 expect(error).toEventually(
@@ -273,8 +273,8 @@ public final class ImageSearchTableViewCellModel
 import ExampleModel
 
 public final class ImageSearchTableViewModel: ImageSearchTableViewModeling {
-    public var cellModels: PropertyOf&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; {
-        return PropertyOf(_cellModels)
+    public var cellModels: AnyProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt; {
+        return AnyProperty(_cellModels)
     }
     private let _cellModels = MutableProperty&amp;lt;[ImageSearchTableViewCellModeling]&amp;gt;([])
     private let imageSearch: ImageSearching
@@ -342,8 +342,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     class StubImageSearch: ImageSearching {
         func searchImages() -&amp;gt; SignalProducer&amp;lt;ResponseEntity, NetworkError&amp;gt; {
             return SignalProducer { observer, disposable in
-                sendNext(observer, dummyResponse)
-                sendCompleted(observer)
+                observer.sendNext(dummyResponse)
+                observer.sendCompleted()
             }
             .observeOn(QueueScheduler())
         }
@@ -584,7 +584,7 @@ class ImageSearchTableViewCellSpec: QuickSpec {
         func getPreviewImage() -&amp;gt; SignalProducer&amp;lt;UIImage?, NoError&amp;gt; {
             return SignalProducer&amp;lt;UIImage?, NoError&amp;gt; { observer, _ in
                 self.getPreviewImageStarted = true
-                sendCompleted(observer)
+                observer.sendCompleted()
             }
         }
     }
@@ -1065,8 +1065,8 @@ class ImageSearchTableViewModelSpec: QuickSpec {
     class StubImageSearch: ImageSearching {
         func searchImages() -&amp;gt; SignalProducer&amp;lt;ResponseEntity, NetworkError&amp;gt; {
             return SignalProducer { observer, disposable in
-                sendNext(observer, dummyResponse)
-                sendCompleted(observer)
+                observer.sendNext(dummyResponse)
+                observer.sendCompleted()
             }
             .observeOn(QueueScheduler())
         }
@@ -1671,11 +1671,11 @@ public final class Network: Networking {
 
 &lt;p&gt;In &lt;a href=&#34;https://yoichitgy.github.io/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/&#34;&gt;the previous example&lt;/a&gt;, the network service took a callback to pass a response. This time, &lt;code&gt;requestJSON&lt;/code&gt; method returns &lt;code&gt;SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;&lt;/code&gt; to deliver network events to its observer. The &lt;code&gt;SignalProducer&lt;/code&gt; takes a generic argument as &lt;code&gt;AnyObject&lt;/code&gt; because Alamofire (or NSJSONSerialization) returns JSON data as &lt;code&gt;AnyObject&lt;/code&gt; that is actually an array or dictionary.&lt;/p&gt;
 
-&lt;p&gt;The &lt;code&gt;requestJSON&lt;/code&gt; method creates &lt;code&gt;SignalProducer&lt;/code&gt; instance with its trailing closure, and returns the instance. Within the closure, a response event of Alamofire is converted to a ReactiveCocoa event by calling &lt;code&gt;sendNext&lt;/code&gt;, &lt;code&gt;sendCompleted&lt;/code&gt; and &lt;code&gt;sendError&lt;/code&gt;. Notice that the closure passed to &lt;code&gt;SignalProducer&lt;/code&gt; is not actually invoked until &lt;code&gt;start&lt;/code&gt; method is called on the &lt;code&gt;SignalProducer&lt;/code&gt; instance.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;requestJSON&lt;/code&gt; method creates &lt;code&gt;SignalProducer&lt;/code&gt; instance with its trailing closure, and returns the instance. Within the closure, a response event of Alamofire is converted to a ReactiveCocoa event by calling &lt;code&gt;sendNext&lt;/code&gt;, &lt;code&gt;sendCompleted&lt;/code&gt; and &lt;code&gt;sendFailed&lt;/code&gt;. Notice that the closure passed to &lt;code&gt;SignalProducer&lt;/code&gt; is not actually invoked until &lt;code&gt;start&lt;/code&gt; method is called on the &lt;code&gt;SignalProducer&lt;/code&gt; instance.&lt;/p&gt;
 
 &lt;p&gt;A dispatch queue is passed to Alamofire to run the response in a background thread because Alamofire by default runs the response in the main thread (main queue).&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;sendError&lt;/code&gt; function takes an instance of &lt;code&gt;NetworkError&lt;/code&gt; type. Add &lt;code&gt;NetworkError.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It converts an &lt;code&gt;NSError&lt;/code&gt; passed from Alamofire to our own error type&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sendFailed&lt;/code&gt; method takes an instance of &lt;code&gt;NetworkError&lt;/code&gt; type. Add &lt;code&gt;NetworkError.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It converts an &lt;code&gt;NSError&lt;/code&gt; passed from Alamofire to our own error type&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:4&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:4&#34;&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;NetworkError.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -1804,7 +1804,7 @@ class NetworkSpec: QuickSpec {
                 var error: NetworkError? = nil
                 let url = &amp;quot;https://not.existing.server.comm/get&amp;quot;
                 network.requestJSON(url, parameters: [&amp;quot;a&amp;quot;: &amp;quot;b&amp;quot;, &amp;quot;x&amp;quot;: &amp;quot;y&amp;quot;])
-                    .on(error: { error = $0 })
+                    .on(failed: { error = $0 })
                     .start()
 
                 expect(error)
@@ -1926,8 +1926,8 @@ class ImageSearchSpec: QuickSpec {
             ]
 
             return SignalProducer { observer, disposable in
-                sendNext(observer, json)
-                sendCompleted(observer)
+                observer.sendNext(json)
+                observer.sendCompleted()
             }.observeOn(QueueScheduler())
         }
     }
@@ -1939,8 +1939,8 @@ class ImageSearchSpec: QuickSpec {
             let json = [String: AnyObject]()
 
             return SignalProducer { observer, disposable in
-                sendNext(observer, json)
-                sendCompleted(observer)
+                observer.sendNext(json)
+                observer.sendCompleted()
             }.observeOn(QueueScheduler())
         }
     }
@@ -1950,7 +1950,7 @@ class ImageSearchSpec: QuickSpec {
             -&amp;gt; SignalProducer&amp;lt;AnyObject, NetworkError&amp;gt;
         {
             return SignalProducer { observer, disposable in
-                sendError(observer, .NotConnectedToInternet)
+                observer.sendFailed(.NotConnectedToInternet)
             }.observeOn(QueueScheduler())
         }
     }
@@ -1974,7 +1974,7 @@ class ImageSearchSpec: QuickSpec {
             var error: NetworkError? = nil
             let search = ImageSearch(network: BadStubNetwork())
             search.searchImages()
-                .on(error: { error = $0 })
+                .on(failed: { error = $0 })
                 .start()
 
             expect(error).toEventually(equal(NetworkError.IncorrectDataReturned))
@@ -1983,7 +1983,7 @@ class ImageSearchSpec: QuickSpec {
             var error: NetworkError? = nil
             let search = ImageSearch(network: ErrorStubNetwork())
             search.searchImages()
-                .on(error: { error = $0 })
+                .on(failed: { error = $0 })
                 .start()
 
             expect(error).toEventually(equal(NetworkError.NotConnectedToInternet))

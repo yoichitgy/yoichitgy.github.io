@@ -451,11 +451,11 @@ public final class Network: Networking {
 
 <p>In <a href="/post/dependency-injection-framework-for-swift-simple-weather-app-example-with-swinject-part-1/">the previous example</a>, the network service took a callback to pass a response. This time, <code>requestJSON</code> method returns <code>SignalProducer&lt;AnyObject, NetworkError&gt;</code> to deliver network events to its observer. The <code>SignalProducer</code> takes a generic argument as <code>AnyObject</code> because Alamofire (or NSJSONSerialization) returns JSON data as <code>AnyObject</code> that is actually an array or dictionary.</p>
 
-<p>The <code>requestJSON</code> method creates <code>SignalProducer</code> instance with its trailing closure, and returns the instance. Within the closure, a response event of Alamofire is converted to a ReactiveCocoa event by calling <code>sendNext</code>, <code>sendCompleted</code> and <code>sendError</code>. Notice that the closure passed to <code>SignalProducer</code> is not actually invoked until <code>start</code> method is called on the <code>SignalProducer</code> instance.</p>
+<p>The <code>requestJSON</code> method creates <code>SignalProducer</code> instance with its trailing closure, and returns the instance. Within the closure, a response event of Alamofire is converted to a ReactiveCocoa event by calling <code>sendNext</code>, <code>sendCompleted</code> and <code>sendFailed</code>. Notice that the closure passed to <code>SignalProducer</code> is not actually invoked until <code>start</code> method is called on the <code>SignalProducer</code> instance.</p>
 
 <p>A dispatch queue is passed to Alamofire to run the response in a background thread because Alamofire by default runs the response in the main thread (main queue).</p>
 
-<p><code>sendError</code> function takes an instance of <code>NetworkError</code> type. Add <code>NetworkError.swift</code> with the following content to <code>ExampleModel</code> target. It converts an <code>NSError</code> passed from Alamofire to our own error type<sup class="footnote-ref" id="fnref:10506297541d45beaf70d97ca007d866:4"><a rel="footnote" href="#fn:10506297541d45beaf70d97ca007d866:4">4</a></sup>.</p>
+<p><code>sendFailed</code> method takes an instance of <code>NetworkError</code> type. Add <code>NetworkError.swift</code> with the following content to <code>ExampleModel</code> target. It converts an <code>NSError</code> passed from Alamofire to our own error type<sup class="footnote-ref" id="fnref:10506297541d45beaf70d97ca007d866:4"><a rel="footnote" href="#fn:10506297541d45beaf70d97ca007d866:4">4</a></sup>.</p>
 
 <p><strong>NetworkError.swift</strong></p>
 

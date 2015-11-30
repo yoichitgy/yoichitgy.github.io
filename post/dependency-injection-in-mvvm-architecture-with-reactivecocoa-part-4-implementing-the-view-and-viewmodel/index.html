@@ -494,8 +494,8 @@ class ImageSearchTableViewModelSpec: QuickSpec {
     class StubImageSearch: ImageSearching {
         func searchImages() -&gt; SignalProducer&lt;ResponseEntity, NetworkError&gt; {
             return SignalProducer { observer, disposable in
-                sendNext(observer, dummyResponse)
-                sendCompleted(observer)
+                observer.sendNext(dummyResponse)
+                observer.sendCompleted()
             }
             .observeOn(QueueScheduler())
         }
