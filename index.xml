@@ -1567,6 +1567,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Dec 23, 2015&lt;/strong&gt; for the update of Pixabay API dropping &lt;code&gt;username&lt;/code&gt; field.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
@@ -2086,7 +2087,7 @@ class NetworkSpec: QuickSpec {
 
 &lt;p&gt;In this section, we are going to define the service to search images through Pixabay API. This is the main part of &lt;code&gt;ExampleModel&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;First, add &lt;code&gt;Pixabay.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It defines the URL and parameters for the API. Please fill &lt;code&gt;apiUsername&lt;/code&gt; and &lt;code&gt;apiKey&lt;/code&gt; with &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;your own username and API key obtained from Pixabay&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;First, add &lt;code&gt;Pixabay.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It defines the URL and parameters for the API. Please fill &lt;code&gt;apiKey&lt;/code&gt; with &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;your own API key obtained from Pixabay&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Pixabay.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -2095,7 +2096,6 @@ class NetworkSpec: QuickSpec {
 
     internal static var requestParameters: [String: AnyObject] {
         return [
-            &amp;quot;username&amp;quot;: Config.apiUsername,
             &amp;quot;key&amp;quot;: Config.apiKey,
             &amp;quot;image_type&amp;quot;: &amp;quot;photo&amp;quot;,
             &amp;quot;safesearch&amp;quot;: true,
@@ -2106,7 +2106,6 @@ class NetworkSpec: QuickSpec {
 
 extension Pixabay {
     private struct Config {
-        private static let apiUsername = &amp;quot;&amp;quot; // Fill with your own username.
         private static let apiKey = &amp;quot;&amp;quot; // Fill with your own API key.
     }
 }
@@ -2291,6 +2290,7 @@ class ImageSearchSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Dec 23, 2015&lt;/strong&gt; for the update of Pixabay API dropping &lt;code&gt;username&lt;/code&gt; field.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Dec 2, 2015&lt;/strong&gt; for the update of ReactiveCocoa to v4.0.0 alpha 4 in Cartfile.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
@@ -2313,14 +2313,14 @@ class ImageSearchSpec: QuickSpec {
 &lt;li&gt;Swift 2.1&lt;/li&gt;
 &lt;li&gt;Xcode 7.1&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/Carthage/Carthage&#34;&gt;Carthage&lt;/a&gt; 0.10.0 or later&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;Pixabay&lt;/a&gt; API username and key&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;Pixabay&lt;/a&gt; API key&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;To use with Swift 2.1 and Xcode 7.1, ReactiveCocoa &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/releases&#34;&gt;version 4.0&lt;/a&gt; is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but version 4 APIs are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Carthage can be installed by &lt;a href=&#34;https://github.com/Carthage/Carthage/releases&#34;&gt;its installer (Carthage.pkg)&lt;/a&gt;. If you are new to Carthage, check &lt;a href=&#34;http://www.raywenderlich.com/109330/carthage-tutorial-getting-started&#34;&gt;this tutorial page&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;You can get a free API username and key at &lt;a href=&#34;https://pixabay.com/&#34;&gt;Pixabay&lt;/a&gt;. First, sign up and log in there. Then, access its &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;API documentation page&lt;/a&gt;. Your API username and key will be displayed in &amp;ldquo;Request parameters&amp;rdquo; section.&lt;/p&gt;
+&lt;p&gt;You can get a free API key at &lt;a href=&#34;https://pixabay.com/&#34;&gt;Pixabay&lt;/a&gt;. First, sign up and log in there. Then, access its &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;API documentation page&lt;/a&gt;. Your API key will be displayed in &amp;ldquo;Request parameters&amp;rdquo; section.&lt;/p&gt;
 
 &lt;h2 id=&#34;project-setup-overview:11d7c6379da90efdd5e0a41c688871dd&#34;&gt;Project Setup Overview&lt;/h2&gt;
 

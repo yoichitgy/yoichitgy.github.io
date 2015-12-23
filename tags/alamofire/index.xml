@@ -655,6 +655,7 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Dec 23, 2015&lt;/strong&gt; for the update of Pixabay API dropping &lt;code&gt;username&lt;/code&gt; field.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
@@ -1174,7 +1175,7 @@ class NetworkSpec: QuickSpec {
 
 &lt;p&gt;In this section, we are going to define the service to search images through Pixabay API. This is the main part of &lt;code&gt;ExampleModel&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;First, add &lt;code&gt;Pixabay.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It defines the URL and parameters for the API. Please fill &lt;code&gt;apiUsername&lt;/code&gt; and &lt;code&gt;apiKey&lt;/code&gt; with &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;your own username and API key obtained from Pixabay&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;First, add &lt;code&gt;Pixabay.swift&lt;/code&gt; with the following content to &lt;code&gt;ExampleModel&lt;/code&gt; target. It defines the URL and parameters for the API. Please fill &lt;code&gt;apiKey&lt;/code&gt; with &lt;a href=&#34;https://pixabay.com/api/docs/&#34;&gt;your own API key obtained from Pixabay&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Pixabay.swift&lt;/strong&gt;&lt;/p&gt;
 
@@ -1183,7 +1184,6 @@ class NetworkSpec: QuickSpec {
 
     internal static var requestParameters: [String: AnyObject] {
         return [
-            &amp;quot;username&amp;quot;: Config.apiUsername,
             &amp;quot;key&amp;quot;: Config.apiKey,
             &amp;quot;image_type&amp;quot;: &amp;quot;photo&amp;quot;,
             &amp;quot;safesearch&amp;quot;: true,
@@ -1194,7 +1194,6 @@ class NetworkSpec: QuickSpec {
 
 extension Pixabay {
     private struct Config {
-        private static let apiUsername = &amp;quot;&amp;quot; // Fill with your own username.
         private static let apiKey = &amp;quot;&amp;quot; // Fill with your own API key.
     }
 }

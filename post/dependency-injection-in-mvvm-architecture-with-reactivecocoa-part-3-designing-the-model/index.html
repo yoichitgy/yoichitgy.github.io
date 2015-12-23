@@ -88,6 +88,7 @@
       
 
 <ul>
+<li><strong>Updated on Dec 23, 2015</strong> for the update of Pixabay API dropping <code>username</code> field.</li>
 <li><strong>Updated on Nov 20, 2015</strong> to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.</li>
 <li><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</li>
 </ul>
@@ -607,7 +608,7 @@ class NetworkSpec: QuickSpec {
 
 <p>In this section, we are going to define the service to search images through Pixabay API. This is the main part of <code>ExampleModel</code>.</p>
 
-<p>First, add <code>Pixabay.swift</code> with the following content to <code>ExampleModel</code> target. It defines the URL and parameters for the API. Please fill <code>apiUsername</code> and <code>apiKey</code> with <a href="https://pixabay.com/api/docs/">your own username and API key obtained from Pixabay</a>.</p>
+<p>First, add <code>Pixabay.swift</code> with the following content to <code>ExampleModel</code> target. It defines the URL and parameters for the API. Please fill <code>apiKey</code> with <a href="https://pixabay.com/api/docs/">your own API key obtained from Pixabay</a>.</p>
 
 <p><strong>Pixabay.swift</strong></p>
 
@@ -616,7 +617,6 @@ class NetworkSpec: QuickSpec {
 
     internal static var requestParameters: [String: AnyObject] {
         return [
-            &quot;username&quot;: Config.apiUsername,
             &quot;key&quot;: Config.apiKey,
             &quot;image_type&quot;: &quot;photo&quot;,
             &quot;safesearch&quot;: true,
@@ -627,7 +627,6 @@ class NetworkSpec: QuickSpec {
 
 extension Pixabay {
     private struct Config {
-        private static let apiUsername = &quot;&quot; // Fill with your own username.
         private static let apiKey = &quot;&quot; // Fill with your own API key.
     }
 }
