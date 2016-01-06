@@ -18,6 +18,7 @@
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Jan 7, 2016&lt;/strong&gt; to remove notice about pre-release version of ReactiveCocoa v4.0.0.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3 and Alamofire v3.x.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
 &lt;/ul&gt;
@@ -30,10 +31,6 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/Swinject/SwinjectMVVMExample&#34;&gt;SwinjectMVVMExample&lt;/a&gt;: Complete version of the project.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/yoichitgy/SwinjectMVVMExample_ForBlog&#34;&gt;SwinjectMVVMExample_ForBlog&lt;/a&gt;: Simplified version of the project to follow the blog posts (except updates of Xcode and frameworks).&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;h2 id=&#34;notice:e195b0dcdb12716d5c3e3911b931c7d6&#34;&gt;Notice&lt;/h2&gt;
-
-&lt;p&gt;To use with Swift 2 and Xcode 7, ReactiveCocoa &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/releases&#34;&gt;version 4.0&lt;/a&gt; is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but version 4 APIs are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h2 id=&#34;model:e195b0dcdb12716d5c3e3911b931c7d6&#34;&gt;Model&lt;/h2&gt;
 
@@ -655,6 +652,7 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Jan 7, 2016&lt;/strong&gt; to remove notice about pre-release version of ReactiveCocoa v4.0.0.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Jan 7, 2015&lt;/strong&gt; for Himotoki v1.3 usage without &lt;code&gt;build&lt;/code&gt; function.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Dec 23, 2015&lt;/strong&gt; for the update of Pixabay API dropping &lt;code&gt;username&lt;/code&gt; field.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
@@ -671,10 +669,6 @@ private func createTableViewCell() -&amp;gt; ImageSearchTableViewCell {
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleScreenRecord.gif&#34; alt=&#34;SwinjectMVVMExample ScreenRecord&#34; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;notice:10506297541d45beaf70d97ca007d866&#34;&gt;Notice&lt;/h2&gt;
-
-&lt;p&gt;To use with Swift 2 and Xcode 7, ReactiveCocoa &lt;a href=&#34;https://github.com/ReactiveCocoa/ReactiveCocoa/releases&#34;&gt;version 4.0&lt;/a&gt; is used though it is still in an alpha version at the moment. Notice that ReactiveCocoa 3.0 has functional style APIs like &lt;code&gt;|&amp;gt; map&lt;/code&gt; or &lt;code&gt;|&amp;gt; flatMap&lt;/code&gt;, but version 4 APIs are in protocol oriented and fluent style like &lt;code&gt;.map()&lt;/code&gt; or &lt;code&gt;.flatMap()&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h2 id=&#34;himotoki:10506297541d45beaf70d97ca007d866&#34;&gt;Himotoki&lt;/h2&gt;
 
