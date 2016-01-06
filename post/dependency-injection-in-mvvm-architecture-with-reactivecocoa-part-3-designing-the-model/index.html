@@ -88,6 +88,7 @@
       
 
 <ul>
+<li><strong>Updated on Jan 7, 2015</strong> for Himotoki v1.3 usage without <code>build</code> function.</li>
 <li><strong>Updated on Dec 23, 2015</strong> for the update of Pixabay API dropping <code>username</code> field.</li>
 <li><strong>Updated on Nov 20, 2015</strong> to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.</li>
 <li><strong>Updated on Oct 1, 2015</strong> for the release versions of Swift 2 and Xcode 7.</li>
@@ -129,7 +130,7 @@ extension SomeValue: Decodable {
 }
 </code></pre>
 
-<p>In <code>decode</code> function, the mappings are defined as the parameters to <code>build</code> function. Here <code>some_name</code> is mapped to <code>name</code> property of <code>SomeValue</code>, and <code>some_value</code> to <code>value</code> property. The mappings are defined in the order as the properties of <code>SomeValue</code> type are defined.</p>
+<p>In <code>decode</code> function, the mappings are defined as the parameters passed to the initializer of <code>SomveValue</code>. Here <code>some_name</code> is mapped to <code>name</code> property of <code>SomeValue</code>, and <code>some_value</code> to <code>value</code> property.</p>
 
 <p>To get an instance mapped from JSON data, call <code>decode</code> function with JSON data as <code>[String: AnyObject]</code> returned from Alamofire or NSJSONSerialization.</p>
 
@@ -187,7 +188,7 @@ extension SomeValue: Decodable {
 
 <p>We are going to design our Model to be composed of entities and services. In short, an entity is a concept or object that exists in a model<sup class="footnote-ref" id="fnref:10506297541d45beaf70d97ca007d866:2"><a rel="footnote" href="#fn:10506297541d45beaf70d97ca007d866:2">2</a></sup>. A service is a stateless operation that does not fit in an entity.</p>
 
-<p>To decouple ViewModel and Model, and Model and external system, the interfaces are defined by protocols. In the diagram below, <code>ImageSearching</code> and <code>Networking</code> are protocols. <code>ImageSearch</code> and <code>Network</code> are their implementations conforming the protocols. <code>ViewModel</code> accesses <code>Model</code> through <code>ImageSearching</code> protocol, and its implementation <code>ImageSearch</code> accesses the external system through <code>Networking</code> protocol. The external system raises events with JSON data. The data are converted to <code>ResponseEntity</code> and <code>ImageEntity</code> by <code>ImageSearch</code> when the events are propagated to <code>ViewModel</code>.</p>
+<p>To decouple ViewModel and Model, and Model and external system, the interfaces are defined by protocols. In the diagram below, <code>ImageSearching</code> and <code>Networking</code> are protocols. <code>ImageSearch</code> and <code>Network</code> are implementations conforming the protocols. ViewModel accesses Model through <code>ImageSearching</code> protocol, and its implementation <code>ImageSearch</code> accesses the external system through <code>Networking</code> protocol. The external system raises events with JSON data. The data are converted to <code>ResponseEntity</code> and <code>ImageEntity</code> by <code>ImageSearch</code> when the events are propagated to ViewModel.</p>
 
 <p><img src="/images/post/2015-08/SwinjectMVVMExampleModelDesign.png" alt="Model Design" /></p>
 

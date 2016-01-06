@@ -1308,6 +1308,7 @@ class ImageSearchTableViewControllerSpec: QuickSpec {
       <description>
 
 &lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Updated on Jan 7, 2015&lt;/strong&gt; for Himotoki v1.3 usage without &lt;code&gt;build&lt;/code&gt; function.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Dec 23, 2015&lt;/strong&gt; for the update of Pixabay API dropping &lt;code&gt;username&lt;/code&gt; field.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Nov 20, 2015&lt;/strong&gt; to migrate to ReactiveCocoa v4.0.0 alpha 3, Alamofire v3.x and Himotoki v1.3.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Updated on Oct 1, 2015&lt;/strong&gt; for the release versions of Swift 2 and Xcode 7.&lt;/li&gt;
@@ -1349,7 +1350,7 @@ extension SomeValue: Decodable {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;In &lt;code&gt;decode&lt;/code&gt; function, the mappings are defined as the parameters to &lt;code&gt;build&lt;/code&gt; function. Here &lt;code&gt;some_name&lt;/code&gt; is mapped to &lt;code&gt;name&lt;/code&gt; property of &lt;code&gt;SomeValue&lt;/code&gt;, and &lt;code&gt;some_value&lt;/code&gt; to &lt;code&gt;value&lt;/code&gt; property. The mappings are defined in the order as the properties of &lt;code&gt;SomeValue&lt;/code&gt; type are defined.&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;decode&lt;/code&gt; function, the mappings are defined as the parameters passed to the initializer of &lt;code&gt;SomveValue&lt;/code&gt;. Here &lt;code&gt;some_name&lt;/code&gt; is mapped to &lt;code&gt;name&lt;/code&gt; property of &lt;code&gt;SomeValue&lt;/code&gt;, and &lt;code&gt;some_value&lt;/code&gt; to &lt;code&gt;value&lt;/code&gt; property.&lt;/p&gt;
 
 &lt;p&gt;To get an instance mapped from JSON data, call &lt;code&gt;decode&lt;/code&gt; function with JSON data as &lt;code&gt;[String: AnyObject]&lt;/code&gt; returned from Alamofire or NSJSONSerialization.&lt;/p&gt;
 
@@ -1407,7 +1408,7 @@ extension SomeValue: Decodable {
 
 &lt;p&gt;We are going to design our Model to be composed of entities and services. In short, an entity is a concept or object that exists in a model&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:10506297541d45beaf70d97ca007d866:2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:10506297541d45beaf70d97ca007d866:2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;. A service is a stateless operation that does not fit in an entity.&lt;/p&gt;
 
-&lt;p&gt;To decouple ViewModel and Model, and Model and external system, the interfaces are defined by protocols. In the diagram below, &lt;code&gt;ImageSearching&lt;/code&gt; and &lt;code&gt;Networking&lt;/code&gt; are protocols. &lt;code&gt;ImageSearch&lt;/code&gt; and &lt;code&gt;Network&lt;/code&gt; are their implementations conforming the protocols. &lt;code&gt;ViewModel&lt;/code&gt; accesses &lt;code&gt;Model&lt;/code&gt; through &lt;code&gt;ImageSearching&lt;/code&gt; protocol, and its implementation &lt;code&gt;ImageSearch&lt;/code&gt; accesses the external system through &lt;code&gt;Networking&lt;/code&gt; protocol. The external system raises events with JSON data. The data are converted to &lt;code&gt;ResponseEntity&lt;/code&gt; and &lt;code&gt;ImageEntity&lt;/code&gt; by &lt;code&gt;ImageSearch&lt;/code&gt; when the events are propagated to &lt;code&gt;ViewModel&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To decouple ViewModel and Model, and Model and external system, the interfaces are defined by protocols. In the diagram below, &lt;code&gt;ImageSearching&lt;/code&gt; and &lt;code&gt;Networking&lt;/code&gt; are protocols. &lt;code&gt;ImageSearch&lt;/code&gt; and &lt;code&gt;Network&lt;/code&gt; are implementations conforming the protocols. ViewModel accesses Model through &lt;code&gt;ImageSearching&lt;/code&gt; protocol, and its implementation &lt;code&gt;ImageSearch&lt;/code&gt; accesses the external system through &lt;code&gt;Networking&lt;/code&gt; protocol. The external system raises events with JSON data. The data are converted to &lt;code&gt;ResponseEntity&lt;/code&gt; and &lt;code&gt;ImageEntity&lt;/code&gt; by &lt;code&gt;ImageSearch&lt;/code&gt; when the events are propagated to ViewModel.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://yoichitgy.github.io/images/post/2015-08/SwinjectMVVMExampleModelDesign.png&#34; alt=&#34;Model Design&#34; /&gt;&lt;/p&gt;
 
